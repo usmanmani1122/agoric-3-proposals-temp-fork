@@ -8,7 +8,6 @@ import {
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
-  BOOTSTRAP_MODE,
   PSM_PAIR,
 } from '../constants.js';
 import { openVault } from '../econHelpers.js';
@@ -99,12 +98,7 @@ test('Validate PSM denoms', async t => {
 
   t.not(psmISTChildren.children.legnth, 0);
 
-  let denoms = ['USDC_axl', 'DAI_axl', 'DAI_grv'];
-  if (BOOTSTRAP_MODE === 'main') {
-    denoms = [...denoms, 'USDC_grv', 'USDT_axl', 'USDT_grv'];
-  } else {
-    denoms = [...denoms, 'ToyUSD'];
-  }
+  const denoms = ['USDC_axl', 'DAI_axl', 'DAI_grv', 'USDC_grv', 'USDT_axl', 'USDT_grv'];
 
   for (const denom of denoms) {
     t.truthy(psmISTChildren.children.includes(denom));

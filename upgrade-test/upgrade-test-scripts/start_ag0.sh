@@ -61,9 +61,6 @@ waitForBlock 2
 voting_period_s=10
 latest_height=$(ag0 status | jq -r .SyncInfo.latest_block_height)
 height=$(( $latest_height + $voting_period_s + 10 ))
-if [[ "$BOOTSTRAP_MODE" == "test" ]]; then
-  UPGRADE_TO=${UPGRADE_TO//agoric-/agorictest-}
-fi
 
 info=${UPGRADE_INFO-"{}"}
 if echo "$info" | jq .; then :
