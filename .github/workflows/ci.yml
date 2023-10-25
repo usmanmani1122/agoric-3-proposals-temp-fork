@@ -1,0 +1,48 @@
+name: Proposal tests
+
+# run on all PRs
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-proposals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: free up disk space
+        run: |
+          # Workaround to provide additional free space for testing.
+          #   https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
+          # If this turns out not to be enough, maybe look instead at
+          #   https://github.com/actions/runner-images/issues/2840#issuecomment-1540506686
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          echo "=== After cleanup:"
+          df -h
+      - uses: actions/checkout@v3
+      - name: build proposals test
+        run: |
+          cd upgrade-test
+          docker build \
+            -t docker-upgrade-test:latest \
+            -f Dockerfile upgrade-test-scripts
+      - name: run final proposal
+        run: docker run --env "DEST=0" docker-upgrade-test:latest
+      - name: notify on failure
+        if: failure() && github.event_name != 'pull_request'
+        uses: ./.github/actions/notify-status
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          from: ${{ secrets.NOTIFY_EMAIL_FROM }}
+          to: ${{ secrets.NOTIFY_EMAIL_TO }}
+          password: ${{ secrets.NOTIFY_EMAIL_PASSWORD }}
