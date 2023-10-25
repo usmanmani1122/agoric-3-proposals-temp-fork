@@ -6,7 +6,7 @@
 # UPGRADE+TEST      legacy layer type in which the chain upgrade and its tests are comingled
 # UPGRADE           layer that only runs the upgrade handler
 # TEST              layer that only tests a previous upgrade
-# DEST              the final layer this build is producing, opening an interactive shell
+# FINAL             the final layer this build is producing, running the chain
 
 ## START
 # on agoric-uprade-7-2, with upgrade to agoric-upgrade-8
@@ -130,10 +130,10 @@ RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
-# DEST (TEST)
+# FINAL (TEST)
 #this is agoric-upgrade-12 / multi-collateral, etc.
-ARG DEST_IMAGE
-ENV THIS_NAME=agoric-upgrade-12
+FROM ghcr.io/agoric/agoric-sdk:dev as agoric-upgrade-12
+ENV THIS_NAME=agoric-upgrade-12 USE_JS=1
 COPY --from=propose-agoric-upgrade-12 /root/.agoric /root/.agoric
 # start-chain boilerplate
 WORKDIR /usr/src/agoric-sdk/
