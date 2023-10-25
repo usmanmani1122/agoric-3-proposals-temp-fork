@@ -32,7 +32,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: build proposals test
         run: |
-          cd upgrade-test
           docker build \
             -t docker-upgrade-test:latest \
             -f Dockerfile upgrade-test-scripts
