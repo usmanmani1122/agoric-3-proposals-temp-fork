@@ -20,18 +20,11 @@ This will build all previous upgrades and upgrade each one.
 make build
 ```
 
-By default pre-releases use the lastest image tagged `dev` in our [container repository](https://github.com/agoric/agoric-sdk/pkgs/container/agoric-sdk). To use
-a specific build:
+Each stage specifies the SDK version in service when it was deployed.
 
-```shell
-DEST_IMAGE=docker pull ghcr.io/agoric/agoric-sdk:20230515033839-e56ae7
-```
-To use a build based on local changes:
-```shell
-# build ghcr.io/agoric/agoric-sdk:latest
-make local_sdk build
-# or DEST_IMAGE=ghcr.io/agoric/agoric-sdk:latest make build
-```
+The last stage hasn't been deployed so it uses the lastest image tagged `dev` in our [container repository](https://github.com/agoric/agoric-sdk/pkgs/container/agoric-sdk).
+
+This repo doesn't yet support specifying an SDK version to test against.
 
 **To run the latest upgrade interactively**
 
@@ -49,10 +42,6 @@ The container and chain will halt once you detach from the session.
 
 ### Troubleshooting
 If you get an error about port 26656 already in use, you have a local chain running on your OS.
-
-If you run into other problems, you might have a local `agoric-sdk:latest` that
-is stale. Either `make local_sdk` or delete your local image so Docker pulls
-from the repository instead.
 
 **To build and run a specific upgrade**
 
@@ -113,21 +102,12 @@ To make the wallet ui talk to your local chain, set the network config to
   - the two targets to `Makefile` (e.g. `propose-agoric-upgrade-12` and `agoric-upgrade-12`)
   - set the default TARGET (e.g. `agoric-upgrade-12`)
   - add the DEST target to the `.phony` in `Makefile`
-7. Test with `make local_sdk build run`
+7. Test with `make build run`
 
 
 ## Development
 
 You can iterate on a particular upgrade by targeting. When you exit and run again, it will be a fresh state.
-
-By default targets that use "agoric-sdk:latest" will source from CI builds. To use your local checkout of agoric-sdk inside Docker run,
-
-```shell
-make local_sdk
-```
-Builds an image: ghcr.io/agoric/agoric-sdk:latest that will be used by all your builds.
-
-That will produce the an image tagged agoric-sdk:latest in your local resolution. (Then run `make build run` again.)
 
 You can send information from one run to the next using `/envs`. A release N can append ENV variable setting shell commands to `"$HOME/.agoric/envs"`. The N+1 release will then have them in its environment. (Because `env_setup.sh` starts with `source "$HOME/.agoric/envs"`)
 
@@ -138,7 +118,6 @@ Note that whatever changes you make within the running container will be lost wh
 
 # TODO
 - [X] make the Docker test environment log verbosely (agd start is just printing "block N" begin, commit)
-- [ ] a target like `local_sdk` that just copies the local filesystem, without a full rebuild
 - [ ] alternately, mount the local agoric-sdk in the container
 - [ ] provide a utility to import the Docker's GOV123 keys into a local keyring
 

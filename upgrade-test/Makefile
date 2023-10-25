@@ -1,15 +1,10 @@
 REPOSITORY = agoric/upgrade-test
 # use :dev (latest prerelease image) unless we build local sdk
-DEST_IMAGE ?= $(if $(findstring local_sdk,$(MAKECMDGOALS)),ghcr.io/agoric/agoric-sdk:latest,ghcr.io/agoric/agoric-sdk:dev)
 TARGET?=agoric-upgrade-12
 dockerLabel?=$(TARGET)
 @echo target: $(TARGET)
 
-local_sdk:
-	(cd ../ && make docker-build-sdk)
-
 BUILD = docker build --progress=plain $(BUILD_OPTS) \
-	--build-arg DEST_IMAGE=$(DEST_IMAGE) \
 	-f Dockerfile upgrade-test-scripts
 
 agoric-upgrade-7-2:
@@ -62,4 +57,4 @@ run_bash:
 shell:
 	docker exec -it `docker ps --latest --format json | jq -r .Names` bash
 
-.PHONY: local_sdk agoric-upgrade-7-2 agoric-upgrade-8 agoric-upgrade-8-1 agoric-upgrade-9 agoric-upgrade-10 agoric-upgrade-11 agoric-upgrade-12 build build_test run
+.PHONY: agoric-upgrade-7-2 agoric-upgrade-8 agoric-upgrade-8-1 agoric-upgrade-9 agoric-upgrade-10 agoric-upgrade-11 agoric-upgrade-12 build build_test run
