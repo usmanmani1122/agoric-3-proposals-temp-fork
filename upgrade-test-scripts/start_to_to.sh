@@ -1,7 +1,7 @@
 #!/bin/bash
 
-grep -qF 'env_setup.sh' /root/.bashrc || echo ". ./upgrade-test-scripts/env_setup.sh" >> /root/.bashrc
-grep -qF 'printKeys' /root/.bashrc || echo "printKeys" >> /root/.bashrc
+grep -qF 'env_setup.sh' /root/.bashrc || echo ". ./upgrade-test-scripts/env_setup.sh" >>/root/.bashrc
+grep -qF 'printKeys' /root/.bashrc || echo "printKeys" >>/root/.bashrc
 
 . ./upgrade-test-scripts/env_setup.sh
 
@@ -9,7 +9,9 @@ export SLOGFILE=slog.slog
 
 startAgd
 
-if ! test -f "$HOME/.agoric/runActions-${THIS_NAME}"; then
+DONE_MARKER="$HOME/.agoric/runActions-${THIS_NAME}"
+
+if ! test -f "$DONE_MARKER"; then
   if [[ "${USE_JS}" == "1" ]]; then
     pushd upgrade-test-scripts
     yarn upgrade-tests || exit 1
@@ -20,8 +22,8 @@ if ! test -f "$HOME/.agoric/runActions-${THIS_NAME}"; then
     runActions "actions"
     runActions "test"
   fi
-  
-  touch "$HOME/.agoric/runActions-${THIS_NAME}"
+
+  touch "$DONE_MARKER"
 fi
 
 if [[ "$DEST" != "1" ]]; then
@@ -34,9 +36,10 @@ if [[ "$DEST" != "1" ]]; then
 
   voting_period_s=10
   latest_height=$(agd status | jq -r .SyncInfo.latest_block_height)
-  height=$(( $latest_height + $voting_period_s + 10 ))
+  height=$((latest_height + voting_period_s + 10))
   info=${UPGRADE_INFO-"{}"}
-  if echo "$info" | jq .; then :
+  if echo "$info" | jq .; then
+    echo "upgrade-info: $info"
   else
     status=$?
     echo "Upgrade info is not valid JSON: $info"
