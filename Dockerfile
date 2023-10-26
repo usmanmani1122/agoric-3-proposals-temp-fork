@@ -1,6 +1,3 @@
-# Defaults
-ARG DEST_IMAGE=ghcr.io/agoric/agoric-sdk:dev
-
 # TODO different naming scheme for upgrade handler (in app.go) and the image name
 
 ###
@@ -9,7 +6,7 @@ ARG DEST_IMAGE=ghcr.io/agoric/agoric-sdk:dev
 # UPGRADE+TEST      legacy layer type in which the chain upgrade and its tests are comingled
 # UPGRADE           layer that only runs the upgrade handler
 # TEST              layer that only tests a previous upgrade
-# DEST              the final layer this build is producing, opening an interactive shell
+# FINAL             the final layer this build is producing, running the chain
 
 ## START
 # on agoric-uprade-7-2, with upgrade to agoric-upgrade-8
@@ -40,7 +37,6 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
 ## UPGRADE+TEST
-ARG DEST_IMAGE
 #this is agoric-upgrade-8-1 aka pismoB
 FROM ghcr.io/agoric/agoric-sdk:30 as agoric-upgrade-8-1
 ARG UPGRADE_INFO_9
@@ -54,7 +50,6 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # UPGRADE+TEST
-ARG DEST_IMAGE
 # this is agoric-upgrade-9 / pismoC with upgrade to agoric-upgrade-10
 FROM ghcr.io/agoric/agoric-sdk:31 as agoric-upgrade-9
 ARG UPGRADE_INFO_10
@@ -70,7 +65,6 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # UPGRADE+TEST
-ARG DEST_IMAGE
 #this is agoric-upgrade-10 / vaults
 FROM ghcr.io/agoric/agoric-sdk:35 as agoric-upgrade-10
 ENV THIS_NAME=agoric-upgrade-10 USE_JS=1
@@ -87,7 +81,6 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # UPGRADE
-ARG DEST_IMAGE
 #this is agoric-upgrade-10 upgrading to 11
 #it's a separate target because agoric-upgrade-10 takes so long to test
 FROM ghcr.io/agoric/agoric-sdk:35 as propose-agoric-upgrade-11
@@ -106,7 +99,6 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # TEST
 #this is agoric-upgrade-11 / vaults+1
-ARG DEST_IMAGE
 FROM ghcr.io/agoric/agoric-sdk:36 as agoric-upgrade-11
 ENV THIS_NAME=agoric-upgrade-11 USE_JS=1
 # start-chain boilerplate
@@ -122,7 +114,6 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # UPGRADE
-ARG DEST_IMAGE
 FROM ghcr.io/agoric/agoric-sdk:36 as propose-agoric-upgrade-12
 # TODO: Replace with actual Zoe core proposal for upgrade 12 (MCS, Kread, Zoe, restart-contracts, etc)
 ARG UPGRADE_INFO_12='{"coreProposals":["@agoric/builders/scripts/vats/init-network.js"]}'
@@ -139,11 +130,10 @@ RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 
-# DEST (TEST)
+# FINAL (TEST)
 #this is agoric-upgrade-12 / multi-collateral, etc.
-ARG DEST_IMAGE
-FROM ${DEST_IMAGE} as agoric-upgrade-12
-ENV THIS_NAME=agoric-upgrade-12
+FROM ghcr.io/agoric/agoric-sdk:dev as agoric-upgrade-12
+ENV THIS_NAME=agoric-upgrade-12 USE_JS=1
 COPY --from=propose-agoric-upgrade-12 /root/.agoric /root/.agoric
 # start-chain boilerplate
 WORKDIR /usr/src/agoric-sdk/
