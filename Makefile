@@ -4,6 +4,9 @@ TARGET?=agoric-upgrade-12
 dockerLabel?=$(TARGET)
 @echo target: $(TARGET)
 
+Dockerfile:
+	./makeDockerfile.ts
+
 BUILD = docker build --progress=plain $(BUILD_OPTS) \
 	-f Dockerfile upgrade-test-scripts
 
@@ -13,10 +16,7 @@ agoric-upgrade-7-2:
 agoric-upgrade-8: agoric-upgrade-7-2
 	$(BUILD) --target agoric-upgrade-8 -t $(REPOSITORY):agoric-upgrade-8$(TAG_SUFFIX)
 
-agoric-upgrade-8-1: agoric-upgrade-8
-	$(BUILD) --target agoric-upgrade-8-1 -t $(REPOSITORY):agoric-upgrade-8-1$(TAG_SUFFIX)
-
-agoric-upgrade-9: agoric-upgrade-8-1
+agoric-upgrade-9: agoric-upgrade-8
 	$(BUILD) --target agoric-upgrade-9 -t $(REPOSITORY):agoric-upgrade-9$(TAG_SUFFIX)
 
 agoric-upgrade-10: agoric-upgrade-9
@@ -35,7 +35,7 @@ agoric-upgrade-12: propose-agoric-upgrade-12
 	$(BUILD) --target agoric-upgrade-12 -t $(REPOSITORY):agoric-upgrade-12$(TAG_SUFFIX)
 
 # build main bootstrap
-build: $(TARGET)
+build: Dockerfile $(TARGET)
 
 DEBUG ?= SwingSet:ls,SwingSet:vat
 RUN = docker run --rm -it \
