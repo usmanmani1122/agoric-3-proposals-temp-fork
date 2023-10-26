@@ -71,7 +71,7 @@ ENV THIS_NAME=agoric-upgrade-10 USE_JS=1
 
 WORKDIR /usr/src/agoric-sdk/
 COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
-RUN cd upgrade-test-scripts && yarn
+RUN cd upgrade-test-scripts && yarn install
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
 COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
@@ -88,7 +88,7 @@ ARG UPGRADE_INFO_11
 ENV THIS_NAME=propose-agoric-upgrade-11 UPGRADE_TO=agoric-upgrade-11 UPGRADE_INFO=${UPGRADE_INFO_11}
 WORKDIR /usr/src/agoric-sdk/
 COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
-RUN cd upgrade-test-scripts && yarn
+RUN cd upgrade-test-scripts && yarn install
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
 COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
@@ -104,7 +104,7 @@ ENV THIS_NAME=agoric-upgrade-11 USE_JS=1
 # start-chain boilerplate
 WORKDIR /usr/src/agoric-sdk/
 COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
-RUN cd upgrade-test-scripts && yarn
+RUN cd upgrade-test-scripts && yarn install
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
 COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
@@ -122,7 +122,7 @@ COPY --from=agoric-upgrade-11 /root/.agoric /root/.agoric
 # start-chain boilerplate
 WORKDIR /usr/src/agoric-sdk/
 COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
-RUN cd upgrade-test-scripts && yarn
+RUN cd upgrade-test-scripts && yarn install
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
 COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
@@ -138,7 +138,7 @@ COPY --from=propose-agoric-upgrade-12 /root/.agoric /root/.agoric
 # start-chain boilerplate
 WORKDIR /usr/src/agoric-sdk/
 COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
-RUN cd upgrade-test-scripts && yarn
+RUN cd upgrade-test-scripts && yarn install
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
 COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
