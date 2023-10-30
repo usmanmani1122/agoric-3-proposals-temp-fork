@@ -9,23 +9,6 @@ export SLOGFILE=slog.slog
 
 startAgd
 
-DONE_MARKER="$HOME/.agoric/runActions-${THIS_NAME}"
-
-if ! test -f "$DONE_MARKER"; then
-  if [[ "${USE_JS}" == "1" ]]; then
-    pushd upgrade-test-scripts
-    yarn upgrade-tests || exit 1
-    popd
-    runActions "legacy"
-  else
-    runActions "pre_test"
-    runActions "actions"
-    runActions "test"
-  fi
-
-  touch "$DONE_MARKER"
-fi
-
 if [[ "$DEST" != "1" ]]; then
   #Destined for an upgrade
   if [[ -z "${UPGRADE_TO}" ]]; then
