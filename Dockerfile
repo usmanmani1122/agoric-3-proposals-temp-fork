@@ -5,8 +5,8 @@ FROM ghcr.io/agoric/ag0:agoric-upgrade-7-2 as prepare-upgrade-8
 ENV UPGRADE_TO=agoric-upgrade-8 THIS_NAME=agoric-upgrade-7-2
 RUN mkdir -p /usr/src/agoric-sdk/upgrade-test-scripts
 WORKDIR /usr/src/agoric-sdk/
-COPY ./start_ag0.sh ./upgrade-test-scripts/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/start_ag0.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 # put env functions into shell environment
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 SHELL ["/bin/bash", "-c"]
@@ -14,18 +14,33 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_ag0.sh
 #---------------------------------------------------
 
-# USE upgrade-8
-FROM ghcr.io/agoric/agoric-sdk:29 as use-upgrade-8
-ENV THIS_NAME=agoric-upgrade-8 USE_JS=1
+# EXECUTE upgrade-8
+FROM ghcr.io/agoric/agoric-sdk:29 as execute-upgrade-8
+ENV THIS_NAME=agoric-upgrade-8
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-8 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh 
+RUN . ./upgrade-test-scripts/start_to_to.sh
+#---------------------------------------------------
+
+# USE upgrade-8
+FROM execute-upgrade-8 as use-upgrade-8
+ENV THIS_NAME=agoric-upgrade-8
+
+WORKDIR /usr/src/agoric-sdk/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/16:upgrade-8/actions.sh ./upgrade-test-scripts/
+
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+RUN chmod +x ./upgrade-test-scripts/*.sh
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
+ENTRYPOINT ./run_actions.sh
 #---------------------------------------------------
 
 # PREPARE upgrade-9
@@ -33,7 +48,7 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 FROM ghcr.io/agoric/agoric-sdk:29 as prepare-upgrade-9
 ENV UPGRADE_TO=agoric-upgrade-9
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
 COPY --from=use-upgrade-8 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -41,18 +56,33 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 #---------------------------------------------------
 
-# USE upgrade-9
-FROM ghcr.io/agoric/agoric-sdk:31 as use-upgrade-9
-ENV THIS_NAME=agoric-upgrade-9 USE_JS=1
+# EXECUTE upgrade-9
+FROM ghcr.io/agoric/agoric-sdk:31 as execute-upgrade-9
+ENV THIS_NAME=agoric-upgrade-9
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-9 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh 
+RUN . ./upgrade-test-scripts/start_to_to.sh
+#---------------------------------------------------
+
+# USE upgrade-9
+FROM execute-upgrade-9 as use-upgrade-9
+ENV THIS_NAME=agoric-upgrade-9
+
+WORKDIR /usr/src/agoric-sdk/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/29:upgrade-9/actions.sh ./upgrade-test-scripts/
+
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+RUN chmod +x ./upgrade-test-scripts/*.sh
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
+ENTRYPOINT ./run_actions.sh
 #---------------------------------------------------
 
 # PREPARE upgrade-10
@@ -60,7 +90,7 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 FROM ghcr.io/agoric/agoric-sdk:31 as prepare-upgrade-10
 ENV UPGRADE_TO=agoric-upgrade-10
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
 COPY --from=use-upgrade-9 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -68,18 +98,33 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 #---------------------------------------------------
 
-# USE upgrade-10
-FROM ghcr.io/agoric/agoric-sdk:35 as use-upgrade-10
-ENV THIS_NAME=agoric-upgrade-10 USE_JS=1
+# EXECUTE upgrade-10
+FROM ghcr.io/agoric/agoric-sdk:35 as execute-upgrade-10
+ENV THIS_NAME=agoric-upgrade-10
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-10 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh 
+RUN . ./upgrade-test-scripts/start_to_to.sh
+#---------------------------------------------------
+
+# USE upgrade-10
+FROM execute-upgrade-10 as use-upgrade-10
+ENV THIS_NAME=agoric-upgrade-10
+
+WORKDIR /usr/src/agoric-sdk/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/34:upgrade-10/actions.sh ./upgrade-test-scripts/
+
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+RUN chmod +x ./upgrade-test-scripts/*.sh
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
+ENTRYPOINT ./run_actions.sh
 #---------------------------------------------------
 
 # PREPARE upgrade-11
@@ -87,7 +132,7 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 FROM ghcr.io/agoric/agoric-sdk:35 as prepare-upgrade-11
 ENV UPGRADE_TO=agoric-upgrade-11
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
 COPY --from=use-upgrade-10 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -95,15 +140,30 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 #---------------------------------------------------
 
-# USE upgrade-11
-FROM ghcr.io/agoric/agoric-sdk:36 as use-upgrade-11
-ENV THIS_NAME=agoric-upgrade-11 USE_JS=1
+# EXECUTE upgrade-11
+FROM ghcr.io/agoric/agoric-sdk:36 as execute-upgrade-11
+ENV THIS_NAME=agoric-upgrade-11
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-11 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh 
+RUN . ./upgrade-test-scripts/start_to_to.sh
+#---------------------------------------------------
+
+# USE upgrade-11
+FROM execute-upgrade-11 as use-upgrade-11
+ENV THIS_NAME=agoric-upgrade-11
+
+WORKDIR /usr/src/agoric-sdk/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/43:upgrade-11/actions.sh ./upgrade-test-scripts/
+
+COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
+RUN chmod +x ./upgrade-test-scripts/*.sh
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
+ENTRYPOINT ./run_actions.sh

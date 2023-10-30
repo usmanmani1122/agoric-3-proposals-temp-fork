@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./upgrade-test-scripts/env_setup.sh
+source ./env_setup.sh
 
 # NOTE: agoric follow doesn't have the `-F` parameter in this version
 # so we use a hack

@@ -39,8 +39,8 @@ FROM ghcr.io/agoric/ag0:${agZeroUpgrade} as prepare-${proposalName}
 ENV UPGRADE_TO=${to} THIS_NAME=${agZeroUpgrade}
 RUN mkdir -p /usr/src/agoric-sdk/upgrade-test-scripts
 WORKDIR /usr/src/agoric-sdk/
-COPY ./start_ag0.sh ./upgrade-test-scripts/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/start_ag0.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 # put env functions into shell environment
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 SHELL ["/bin/bash", "-c"]
@@ -60,8 +60,8 @@ ENV THIS_NAME=${thisName}
 COPY --from=${from} /root/.agoric /root/.agoric
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
-COPY ./\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
@@ -79,9 +79,9 @@ ENV THIS_NAME=${to} USE_JS=1
 COPY --from=${from} /root/.agoric /root/.agoric
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/package.json ./*.js ./upgrade-test-scripts/
 RUN cd upgrade-test-scripts && yarn install
-COPY ./\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
@@ -109,7 +109,7 @@ COPY --from=use-${lastProposal.proposalName} /root/.agoric /root/.agoric
 FROM ghcr.io/agoric/agoric-sdk:${lastProposal.sdkVersion} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
 COPY --from=use-${lastProposal.proposalName} /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -127,33 +127,47 @@ FROM ghcr.io/agoric/agoric-sdk:${sdk_version} as ${current}
 ENV THIS_NAME=${current} USE_JS=1
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/package.json ./*.js ./upgrade-test-scripts/
 RUN cd upgrade-test-scripts && yarn install
 
-COPY ./\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 COPY --from=propose-${current} /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh 
 `;
   },
-  /**
-   * stage that only tests a previous upgrade
-   */
-  USE({ proposalName, planName, sdkVersion }: ProposalInfo) {
+  EXECUTE({ proposalName, planName, sdkVersion }: ProposalInfo) {
     return `
-# USE ${proposalName}
-FROM ghcr.io/agoric/agoric-sdk:${sdkVersion} as use-${proposalName}
-ENV THIS_NAME=${planName} USE_JS=1
+# EXECUTE ${proposalName}
+FROM ghcr.io/agoric/agoric-sdk:${sdkVersion} as execute-${proposalName}
+ENV THIS_NAME=${planName}
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 COPY --from=prepare-${proposalName} /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh 
+RUN . ./upgrade-test-scripts/start_to_to.sh
+`;
+  },
+  USE({ proposalName, proposalIdentifier, planName }: ProposalInfo) {
+    return `
+# USE ${proposalName}
+FROM execute-${proposalName} as use-${proposalName}
+ENV THIS_NAME=${planName}
+
+WORKDIR /usr/src/agoric-sdk/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/${proposalIdentifier}:${proposalName}/actions.sh ./upgrade-test-scripts/
+
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+RUN chmod +x ./upgrade-test-scripts/*.sh
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
+ENTRYPOINT ./run_actions.sh
 `;
   },
   /**
@@ -167,10 +181,10 @@ ENV THIS_NAME=${from} USE_JS=1
 COPY --from=propose-${from} /root/.agoric /root/.agoric
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/package.json ./*.js ./upgrade-test-scripts/
 RUN cd upgrade-test-scripts && yarn install
 
-COPY ./\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 SHELL ["/bin/bash", "-c"]
 RUN chmod +x ./upgrade-test-scripts/*.sh
 # enter image in interactive shell
@@ -189,19 +203,16 @@ let previousProposal: ProposalInfo | null = null;
 for (const path of proposalPaths) {
   const proposal = readInfo(path);
   // handle the first proposal specially
-  if (!previousProposal) {
+  if (previousProposal) {
+    blocks.push(stage.PREPARE(proposal, previousProposal));
+  } else {
     if (!proposal.planName) {
       throw new Error('first proposal must have a planName');
     }
     blocks.push(stage.START(proposal.proposalName, proposal.planName));
-    blocks.push(stage.USE(proposal));
-    previousProposal = proposal;
-    continue;
   }
-
-  blocks.push(stage.PREPARE(proposal, previousProposal));
+  blocks.push(stage.EXECUTE(proposal));
   blocks.push(stage.USE(proposal));
-
   previousProposal = proposal;
 }
 
@@ -220,11 +231,11 @@ FROM ghcr.io/agoric/agoric-sdk:35 as agoric-upgrade-10
 ENV THIS_NAME=agoric-upgrade-10 USE_JS=1
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./env_setup.sh ./start_to_to.sh ./package.json ./*.js ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/package.json ./*.js ./upgrade-test-scripts/
 RUN cd upgrade-test-scripts && yarn install
 RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
-COPY ./\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
+COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 COPY --from=agoric-upgrade-9 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
