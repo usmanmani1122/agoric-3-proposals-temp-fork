@@ -3,7 +3,7 @@
 grep -qF 'env_setup.sh' /root/.bashrc || echo ". ./upgrade-test-scripts/env_setup.sh" >>/root/.bashrc
 grep -qF 'printKeys' /root/.bashrc || echo "printKeys" >>/root/.bashrc
 
-. ./upgrade-test-scripts/env_setup.sh
+source ./upgrade-test-scripts/env_setup.sh
 
 export SLOGFILE=slog.slog
 
@@ -37,22 +37,23 @@ if [[ "$DEST" != "1" ]]; then
 
   voteLatestProposalAndWait
 
-  echo "Chain in to be upgraded state for $UPGRADE_TO"
+  echo "Chain in to-be-upgraded state for $UPGRADE_TO"
 
   while true; do
     latest_height=$(agd status | jq -r .SyncInfo.latest_block_height)
     if [ "$latest_height" != "$height" ]; then
-      echo "Waiting for upgrade $UPGRADE_TO to happen (need $height, have $latest_height)"
+      echo "Waiting for upgrade height for $UPGRADE_TO to be reached (need $height, have $latest_height)"
       sleep 1
     else
       echo "Upgrade height for $UPGRADE_TO reached. Killing agd"
+      echo "(CONSENSUS FAILURE above for height $height is expected)"
       break
     fi
   done
 
   sleep 2
   killAgd
-  echo "ready for upgrade to $UPGRADE_TO"
+  echo "state directory $HOME/.agoric ready for upgrade to $UPGRADE_TO"
 else
 
   waitAgd
