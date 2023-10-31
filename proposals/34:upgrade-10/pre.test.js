@@ -2,16 +2,19 @@ import test from 'ava';
 
 import { promises as fs } from 'fs';
 
-import { agd, agoric, agops } from '../cliHelper.js';
+import { agd, agoric, agops } from '../../upgrade-test-scripts/cliHelper.js';
 
 import {
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
   PSM_PAIR,
-} from '../constants.js';
-import { openVault } from '../econHelpers.js';
-import { getUser, waitForBlock } from '../commonUpgradeHelpers.js';
+} from '../../upgrade-test-scripts/constants.js';
+import { openVault } from '../../upgrade-test-scripts/econHelpers.js';
+import {
+  getUser,
+  waitForBlock,
+} from '../../upgrade-test-scripts/commonUpgradeHelpers.js';
 
 test.before(async () => {
   console.log('Wait for upgrade to settle');
@@ -98,7 +101,14 @@ test('Validate PSM denoms', async t => {
 
   t.not(psmISTChildren.children.legnth, 0);
 
-  const denoms = ['USDC_axl', 'DAI_axl', 'DAI_grv', 'USDC_grv', 'USDT_axl', 'USDT_grv'];
+  const denoms = [
+    'USDC_axl',
+    'DAI_axl',
+    'DAI_grv',
+    'USDC_grv',
+    'USDT_axl',
+    'USDT_grv',
+  ];
 
   for (const denom of denoms) {
     t.truthy(psmISTChildren.children.includes(denom));

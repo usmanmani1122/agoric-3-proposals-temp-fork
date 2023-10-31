@@ -36,7 +36,7 @@ FROM execute-upgrade-8 as use-upgrade-8
 ENV THIS_NAME=agoric-upgrade-8
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/16:upgrade-8/actions.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/16:upgrade-8/* ./upgrade-test-scripts/
 
 COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -81,7 +81,7 @@ FROM execute-upgrade-9 as use-upgrade-9
 ENV THIS_NAME=agoric-upgrade-9
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/29:upgrade-9/actions.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/29:upgrade-9/* ./upgrade-test-scripts/
 
 COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -126,7 +126,7 @@ FROM execute-upgrade-10 as use-upgrade-10
 ENV THIS_NAME=agoric-upgrade-10
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/34:upgrade-10/actions.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/34:upgrade-10/* ./upgrade-test-scripts/
 
 COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh
@@ -171,7 +171,7 @@ FROM execute-upgrade-11 as use-upgrade-11
 ENV THIS_NAME=agoric-upgrade-11
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/43:upgrade-11/actions.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/43:upgrade-11/* ./upgrade-test-scripts/
 
 COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh

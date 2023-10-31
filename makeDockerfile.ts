@@ -160,7 +160,7 @@ FROM execute-${proposalName} as use-${proposalName}
 ENV THIS_NAME=${planName}
 
 WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/${proposalIdentifier}:${proposalName}/actions.sh ./upgrade-test-scripts/
+COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/${proposalIdentifier}:${proposalName}/* ./upgrade-test-scripts/
 
 COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 RUN chmod +x ./upgrade-test-scripts/*.sh

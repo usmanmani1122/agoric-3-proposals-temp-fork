@@ -7,20 +7,20 @@ import {
   agops,
   agopsLocation,
   executeCommand,
-} from '../cliHelper.js';
+} from '../../upgrade-test-scripts/cliHelper.js';
 import {
   HOME,
   ATOM_DENOM,
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
-} from '../constants.js';
+} from '../../upgrade-test-scripts/constants.js';
 import {
   waitForBlock,
   executeOffer,
   getUser,
   provisionSmartWallet,
-} from '../commonUpgradeHelpers.js';
+} from '../../upgrade-test-scripts/commonUpgradeHelpers.js';
 
 const govAccounts = [GOV1ADDR, GOV2ADDR, GOV3ADDR];
 

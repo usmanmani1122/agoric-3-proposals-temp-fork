@@ -8,10 +8,10 @@ import {
   VALIDATORADDR,
   USER1ADDR,
   CHAINID,
-} from '../constants.js';
+} from '../../upgrade-test-scripts/constants.js';
 
-import { agd } from '../cliHelper.js';
-import { getUser } from '../commonUpgradeHelpers.js';
+import { agd } from '../../upgrade-test-scripts/cliHelper.js';
+import { getUser } from '../../upgrade-test-scripts/commonUpgradeHelpers.js';
 
 export const printKeys = async () => {
   console.log('========== GOVERNANCE KEYS ==========');
