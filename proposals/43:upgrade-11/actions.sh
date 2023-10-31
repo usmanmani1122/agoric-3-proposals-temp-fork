@@ -5,10 +5,10 @@ set -e
 
 source /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh
 
+ls -al
+
 yarn install
 
-yarn ava 34:upgrade-10/pre.test.js
-
-./performActions.js
+yarn ava --serial pre.test.js actions.test.js
 
 ./legacy.sh

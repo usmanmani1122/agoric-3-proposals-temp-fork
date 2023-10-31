@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source ./env_setup.sh
+# Exit when any command fails
+set -e
 
 # NOTE: agoric follow doesn't have the `-F` parameter in this version
 # so we use a hack

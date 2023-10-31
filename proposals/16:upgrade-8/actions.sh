@@ -1,7 +1,10 @@
 #!/bin/bash
-set +x
+
+# Exit when any command fails
+set -e
+
 # FIXME fewer assumptions about the environment
-source ./env_setup.sh
+source /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh
 
 # patch a bug in agoric-sdk:29
 sed -i "s/--econCommAcceptOfferId /--previousOfferId /g" "/usr/src/agoric-sdk/packages/agoric-cli/src/commands/psm.js"

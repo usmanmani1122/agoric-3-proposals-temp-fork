@@ -1,8 +1,12 @@
 import test from 'ava';
 
-import { agoric, agops } from '../cliHelper.js';
-import { GOV1ADDR } from '../constants.js';
-import { openVault, adjustVault, closeVault } from '../econHelpers.js';
+import { agoric, agops } from '../../upgrade-test-scripts/cliHelper.js';
+import { GOV1ADDR } from '../../upgrade-test-scripts/constants.js';
+import {
+  openVault,
+  adjustVault,
+  closeVault,
+} from '../../upgrade-test-scripts/econHelpers.js';
 
 test.serial('Open Vaults', async t => {
   const currentVaults = await agops.vaults('list', '--from', GOV1ADDR);

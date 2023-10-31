@@ -24,7 +24,6 @@ ENV THIS_NAME=agoric-upgrade-8
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-8 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
@@ -33,17 +32,21 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # USE upgrade-8
 FROM execute-upgrade-8 as use-upgrade-8
-ENV THIS_NAME=agoric-upgrade-8
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/16:upgrade-8/* ./upgrade-test-scripts/
+COPY ./proposals/package.json /usr/src/proposals/
+COPY --chmod=755 ./proposals/16:upgrade-8/* /usr/src/proposals/16:upgrade-8/
+RUN cd /usr/src/proposals/16:upgrade-8/ && yarn install
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
-RUN chmod +x ./upgrade-test-scripts/*.sh
-SHELL ["/bin/bash", "-c"]
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
+# XXX for JS module resolution
+# TODO get this out of agoric-sdk path
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
-ENTRYPOINT ./run_actions.sh
+RUN ./run_actions.sh 16:upgrade-8
+# no entrypoint; results of these actions are part of the image
+SHELL ["/bin/bash", "-c"]
 
 #----------------
 # upgrade-9
@@ -69,7 +72,6 @@ ENV THIS_NAME=agoric-upgrade-9
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-9 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
@@ -78,17 +80,21 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # USE upgrade-9
 FROM execute-upgrade-9 as use-upgrade-9
-ENV THIS_NAME=agoric-upgrade-9
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/29:upgrade-9/* ./upgrade-test-scripts/
+COPY ./proposals/package.json /usr/src/proposals/
+COPY --chmod=755 ./proposals/29:upgrade-9/* /usr/src/proposals/29:upgrade-9/
+RUN cd /usr/src/proposals/29:upgrade-9/ && yarn install
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
-RUN chmod +x ./upgrade-test-scripts/*.sh
-SHELL ["/bin/bash", "-c"]
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
+# XXX for JS module resolution
+# TODO get this out of agoric-sdk path
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
-ENTRYPOINT ./run_actions.sh
+RUN ./run_actions.sh 29:upgrade-9
+# no entrypoint; results of these actions are part of the image
+SHELL ["/bin/bash", "-c"]
 
 #----------------
 # upgrade-10
@@ -114,7 +120,6 @@ ENV THIS_NAME=agoric-upgrade-10
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-10 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
@@ -123,17 +128,21 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # USE upgrade-10
 FROM execute-upgrade-10 as use-upgrade-10
-ENV THIS_NAME=agoric-upgrade-10
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/34:upgrade-10/* ./upgrade-test-scripts/
+COPY ./proposals/package.json /usr/src/proposals/
+COPY --chmod=755 ./proposals/34:upgrade-10/* /usr/src/proposals/34:upgrade-10/
+RUN cd /usr/src/proposals/34:upgrade-10/ && yarn install
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
-RUN chmod +x ./upgrade-test-scripts/*.sh
-SHELL ["/bin/bash", "-c"]
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
+# XXX for JS module resolution
+# TODO get this out of agoric-sdk path
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
-ENTRYPOINT ./run_actions.sh
+RUN ./run_actions.sh 34:upgrade-10
+# no entrypoint; results of these actions are part of the image
+SHELL ["/bin/bash", "-c"]
 
 #----------------
 # upgrade-11
@@ -159,7 +168,6 @@ ENV THIS_NAME=agoric-upgrade-11
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
 COPY --from=prepare-upgrade-11 /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
@@ -168,14 +176,18 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 
 # USE upgrade-11
 FROM execute-upgrade-11 as use-upgrade-11
-ENV THIS_NAME=agoric-upgrade-11
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/43:upgrade-11/* ./upgrade-test-scripts/
+COPY ./proposals/package.json /usr/src/proposals/
+COPY --chmod=755 ./proposals/43:upgrade-11/* /usr/src/proposals/43:upgrade-11/
+RUN cd /usr/src/proposals/43:upgrade-11/ && yarn install
 
-COPY ./upgrade-test-scripts/${THIS_NAME} ./upgrade-test-scripts/${THIS_NAME}/
-RUN chmod +x ./upgrade-test-scripts/*.sh
-SHELL ["/bin/bash", "-c"]
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
+# XXX for JS module resolution
+# TODO get this out of agoric-sdk path
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
-ENTRYPOINT ./run_actions.sh
+RUN ./run_actions.sh 43:upgrade-11
+# no entrypoint; results of these actions are part of the image
+SHELL ["/bin/bash", "-c"]

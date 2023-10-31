@@ -146,7 +146,6 @@ ENV THIS_NAME=${planName}
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
 COPY --from=prepare-${proposalName} /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
@@ -157,17 +156,20 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
     return `
 # USE ${proposalName}
 FROM execute-${proposalName} as use-${proposalName}
-ENV THIS_NAME=${planName}
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_actions.sh ./proposals/${proposalIdentifier}:${proposalName}/* ./upgrade-test-scripts/
+COPY ./proposals/package.json /usr/src/proposals/
+COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName}/* /usr/src/proposals/${proposalIdentifier}:${proposalName}/
 
-COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
-RUN chmod +x ./upgrade-test-scripts/*.sh
-SHELL ["/bin/bash", "-c"]
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
+# XXX for JS module resolution
+# TODO get this out of agoric-sdk path
+COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
-ENTRYPOINT ./run_actions.sh
+RUN ./run_actions.sh ${proposalIdentifier}:${proposalName}
+# no entrypoint; results of these actions are part of the image
+SHELL ["/bin/bash", "-c"]
 `;
   },
   /**
@@ -182,6 +184,7 @@ COPY --from=propose-${from} /root/.agoric /root/.agoric
 
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/package.json ./*.js ./upgrade-test-scripts/
+# TODO zero install
 RUN cd upgrade-test-scripts && yarn install
 
 COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
@@ -193,7 +196,11 @@ ENTRYPOINT /usr/src/agoric-sdk/upgrade-test-scripts/start_to_to.sh
   },
 };
 
-const proposalPaths = fs.readdirSync('./proposals');
+const proposalPaths = fs
+  .readdirSync('./proposals', { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory()) // omit files
+  .map(dirent => dirent.name)
+  .filter(name => name.includes(':')); // omit node_modules
 
 // Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
 // The upgrade doesn't happen until the next stage begins executing.
