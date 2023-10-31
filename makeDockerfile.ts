@@ -202,6 +202,11 @@ const blocks: string[] = [];
 let previousProposal: ProposalInfo | null = null;
 for (const path of proposalPaths) {
   const proposal = readInfo(path);
+  //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
+  blocks.push(
+    `#----------------\n# ${proposal.proposalName}\n#----------------`,
+  );
+
   // handle the first proposal specially
   if (previousProposal) {
     blocks.push(stage.PREPARE(proposal, previousProposal));
@@ -249,7 +254,5 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 ].join('#---------------------------------------------------\n');
 */
 
-const contents = blocks.join(
-  '#---------------------------------------------------\n',
-);
+const contents = blocks.join('\n');
 fs.writeFileSync('Dockerfile', contents);
