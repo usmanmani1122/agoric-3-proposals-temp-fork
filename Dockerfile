@@ -35,7 +35,6 @@ FROM execute-upgrade-8 as use-upgrade-8
 
 COPY ./proposals/package.json /usr/src/proposals/
 COPY --chmod=755 ./proposals/16:upgrade-8/* /usr/src/proposals/16:upgrade-8/
-RUN cd /usr/src/proposals/16:upgrade-8/ && yarn install
 
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
 # XXX for JS module resolution
@@ -47,6 +46,14 @@ WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
 RUN ./run_actions.sh 16:upgrade-8
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]
+
+
+# TEST upgrade-8
+FROM use-upgrade-8 as test-upgrade-8
+
+# XXX the test files were already copied in the "use" stage
+# nothing to build, just an image for running tests
+ENTRYPOINT ./run_tests.sh 16:upgrade-8
 
 #----------------
 # upgrade-9
@@ -83,7 +90,6 @@ FROM execute-upgrade-9 as use-upgrade-9
 
 COPY ./proposals/package.json /usr/src/proposals/
 COPY --chmod=755 ./proposals/29:upgrade-9/* /usr/src/proposals/29:upgrade-9/
-RUN cd /usr/src/proposals/29:upgrade-9/ && yarn install
 
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
 # XXX for JS module resolution
@@ -95,6 +101,14 @@ WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
 RUN ./run_actions.sh 29:upgrade-9
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]
+
+
+# TEST upgrade-9
+FROM use-upgrade-9 as test-upgrade-9
+
+# XXX the test files were already copied in the "use" stage
+# nothing to build, just an image for running tests
+ENTRYPOINT ./run_tests.sh 29:upgrade-9
 
 #----------------
 # upgrade-10
@@ -131,7 +145,6 @@ FROM execute-upgrade-10 as use-upgrade-10
 
 COPY ./proposals/package.json /usr/src/proposals/
 COPY --chmod=755 ./proposals/34:upgrade-10/* /usr/src/proposals/34:upgrade-10/
-RUN cd /usr/src/proposals/34:upgrade-10/ && yarn install
 
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
 # XXX for JS module resolution
@@ -143,6 +156,14 @@ WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
 RUN ./run_actions.sh 34:upgrade-10
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]
+
+
+# TEST upgrade-10
+FROM use-upgrade-10 as test-upgrade-10
+
+# XXX the test files were already copied in the "use" stage
+# nothing to build, just an image for running tests
+ENTRYPOINT ./run_tests.sh 34:upgrade-10
 
 #----------------
 # upgrade-11
@@ -179,7 +200,6 @@ FROM execute-upgrade-11 as use-upgrade-11
 
 COPY ./proposals/package.json /usr/src/proposals/
 COPY --chmod=755 ./proposals/43:upgrade-11/* /usr/src/proposals/43:upgrade-11/
-RUN cd /usr/src/proposals/43:upgrade-11/ && yarn install
 
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
 # XXX for JS module resolution
@@ -191,3 +211,11 @@ WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
 RUN ./run_actions.sh 43:upgrade-11
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]
+
+
+# TEST upgrade-11
+FROM use-upgrade-11 as test-upgrade-11
+
+# XXX the test files were already copied in the "use" stage
+# nothing to build, just an image for running tests
+ENTRYPOINT ./run_tests.sh 43:upgrade-11

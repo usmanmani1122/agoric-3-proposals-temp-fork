@@ -117,24 +117,14 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 `;
   },
-  /**
-   * stage that only tests a previous upgrade
-   */
-  TEST(current: string, sdk_version: number) {
+  TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
     return `
-# TEST
-FROM ghcr.io/agoric/agoric-sdk:${sdk_version} as ${current}
-ENV THIS_NAME=${current} USE_JS=1
+# TEST ${proposalName}
+FROM use-${proposalName} as test-${proposalName}
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/package.json ./*.js ./upgrade-test-scripts/
-RUN cd upgrade-test-scripts && yarn install
-
-COPY ./upgrade-test-scripts/\${THIS_NAME} ./upgrade-test-scripts/\${THIS_NAME}/
-COPY --from=propose-${current} /root/.agoric /root/.agoric
-RUN chmod +x ./upgrade-test-scripts/*.sh
-SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh 
+# XXX the test files were already copied in the "use" stage
+# nothing to build, just an image for running tests
+ENTRYPOINT ./run_tests.sh ${proposalIdentifier}:${proposalName}
 `;
   },
   EXECUTE({ proposalName, planName, sdkVersion }: ProposalInfo) {
@@ -225,6 +215,7 @@ for (const path of proposalPaths) {
   }
   blocks.push(stage.EXECUTE(proposal));
   blocks.push(stage.USE(proposal));
+  blocks.push(stage.TEST(proposal));
   previousProposal = proposal;
 }
 

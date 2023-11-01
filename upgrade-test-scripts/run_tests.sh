@@ -1,5 +1,5 @@
 #!/bin/bash
-# Starts agd in the background and runs action.sh against it in the foreground
+# Starts agd in the background and runs test.sh against it in the foreground
 # Note that STDOUT mixes the two. TODO separate them cleanly with log output.
 
 set -e
@@ -13,9 +13,8 @@ PROPOSAL_PATH=$1
 
 startAgd
 
-echo "Agd started. Running actions.sh."
+echo "Agd started. Running test.sh."
 cd /usr/src/proposals/"$PROPOSAL_PATH/" || exit
-./actions.sh
+./test.sh
 
-echo "Actions completed. Running for a few blocks and exiting."
-waitForBlock 5
+echo "Testing completed."

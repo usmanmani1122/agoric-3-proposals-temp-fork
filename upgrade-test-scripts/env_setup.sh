@@ -84,7 +84,8 @@ provisionSmartWallet() {
   waitForBlock
   echo "provisioning $i"
   agd tx swingset provision-one my-wallet "$i" SMART_WALLET --keyring-backend=test --yes --chain-id="$CHAINID" --from="$i"
-  waitForBlock
+  # give time for wallet to be provisioned and published to vstorage
+  waitForBlock 2
   agoric wallet show --from $i
 }
 
