@@ -78,16 +78,6 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 `;
   },
-  TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
-    return `
-# TEST ${proposalName}
-FROM use-${proposalName} as test-${proposalName}
-
-# XXX the test files were already copied in the "use" stage
-# nothing to build, just an image for running tests
-ENTRYPOINT ./run_tests.sh ${proposalIdentifier}:${proposalName}
-`;
-  },
   EXECUTE({ proposalName, planName, sdkVersion }: ProposalInfo) {
     return `
 # EXECUTE ${proposalName}
@@ -122,6 +112,16 @@ WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
 RUN ./run_actions.sh ${proposalIdentifier}:${proposalName}
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]
+`;
+  },
+  TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
+    return `
+# TEST ${proposalName}
+FROM use-${proposalName} as test-${proposalName}
+
+# XXX the test files were already copied in the "use" stage
+# nothing to build, just an image for running tests
+ENTRYPOINT ./run_tests.sh ${proposalIdentifier}:${proposalName}
 `;
   },
 };
