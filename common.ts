@@ -4,9 +4,17 @@
 import fs from 'node:fs';
 import * as path from 'node:path';
 
-export type ProposalInfo = {
+type SoftwareUpgrade = {
   sdkVersion: string;
   planName?: string;
+  type: 'Software Upgrade Proposal';
+};
+
+type CoreEvalProposal = {
+  type: '/agoric.swingset.CoreEvalProposal';
+};
+
+export type ProposalInfo = (SoftwareUpgrade | CoreEvalProposal) & {
   proposalName: string;
   proposalIdentifier: string;
 };
