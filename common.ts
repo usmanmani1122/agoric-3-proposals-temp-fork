@@ -4,20 +4,24 @@
 import fs from 'node:fs';
 import * as path from 'node:path';
 
-type SoftwareUpgrade = {
+export const repository = 'ghcr.io/agoric/agoric-3-proposals';
+
+type ProposalCommon = {
+  proposalName: string;
+  proposalIdentifier: string;
+};
+
+export type SoftwareUpgradeProposal = ProposalCommon & {
   sdkVersion: string;
   planName?: string;
   type: 'Software Upgrade Proposal';
 };
 
-type CoreEvalProposal = {
+export type CoreEvalProposal = ProposalCommon & {
   type: '/agoric.swingset.CoreEvalProposal';
 };
 
-export type ProposalInfo = (SoftwareUpgrade | CoreEvalProposal) & {
-  proposalName: string;
-  proposalIdentifier: string;
-};
+export type ProposalInfo = SoftwareUpgradeProposal | CoreEvalProposal;
 
 function readInfo(proposalPath: string): ProposalInfo {
   const configPath = path.join('proposals', proposalPath, 'config.json');
@@ -30,11 +34,19 @@ function readInfo(proposalPath: string): ProposalInfo {
   };
 }
 
-export function readProposals() {
+export function readProposals(): ProposalInfo[] {
   const proposalPaths = fs
     .readdirSync('./proposals', { withFileTypes: true })
     .filter(dirent => dirent.isDirectory()) // omit files
     .map(dirent => dirent.name)
     .filter(name => name.includes(':')); // omit node_modules
   return proposalPaths.map(readInfo);
+}
+
+export function imageNameForProposalTest(proposal) {
+  const target = `test-${proposal.proposalName}`;
+  return {
+    name: `${repository}:${target}`,
+    target,
+  };
 }

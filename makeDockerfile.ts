@@ -2,7 +2,8 @@
 // @ts-check
 
 import fs from 'node:fs';
-import { ProposalInfo, readProposals } from './common';
+import { readProposals } from './common';
+import type { ProposalInfo, SoftwareUpgradeProposal } from './common';
 
 const agZeroUpgrade = 'agoric-upgrade-7-2';
 
@@ -34,33 +35,23 @@ RUN . ./upgrade-test-scripts/start_ag0.sh
    * stage that only runs the upgrade handler
    */
   PREPARE(
-    { planName, sdkVersion, proposalName }: ProposalInfo,
+    { planName, proposalName }: SoftwareUpgradeProposal,
     lastProposal: ProposalInfo,
   ) {
-    if (!planName) {
-      return `
-# PREPARE ${proposalName}
-# no-upgrade, just persist the state
-FROM ghcr.io/agoric/agoric-sdk:${lastProposal.sdkVersion} as prepare-${proposalName}
-WORKDIR /usr/src/agoric-sdk/
-COPY --from=use-${lastProposal.proposalName} /root/.agoric /root/.agoric
-`;
-    }
     return `
 # PREPARE ${proposalName}
 # upgrading to ${planName}
-FROM ghcr.io/agoric/agoric-sdk:${lastProposal.sdkVersion} as prepare-${proposalName}
+FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
 WORKDIR /usr/src/agoric-sdk/
 COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
 
-COPY --from=use-${lastProposal.proposalName} /root/.agoric /root/.agoric
 RUN chmod +x ./upgrade-test-scripts/*.sh
 SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 `;
   },
-  EXECUTE({ proposalName, planName, sdkVersion }: ProposalInfo) {
+  EXECUTE({ proposalName, planName, sdkVersion }: SoftwareUpgradeProposal) {
     return `
 # EXECUTE ${proposalName}
 FROM ghcr.io/agoric/agoric-sdk:${sdkVersion} as execute-${proposalName}
@@ -75,7 +66,7 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 `;
   },
-  USE({ proposalName, proposalIdentifier, planName }: ProposalInfo) {
+  USE({ proposalName, proposalIdentifier }: ProposalInfo) {
     return `
 # USE ${proposalName}
 FROM execute-${proposalName} as use-${proposalName}
