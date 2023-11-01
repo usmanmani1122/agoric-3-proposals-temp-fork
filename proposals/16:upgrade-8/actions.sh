@@ -4,7 +4,7 @@
 set -e
 
 # FIXME fewer assumptions about the environment
-source /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh
+source /usr/src/upgrade-test-scripts/env_setup.sh
 
 # override env (TODO incorporate "upstream" )
 provisionSmartWallet() {

@@ -45,7 +45,7 @@ RUN = docker run --rm -it \
 
 run:
 	$(RUN) -e "DEST=1" \
-		--entrypoint /usr/src/agoric-sdk/upgrade-test-scripts/start_to_to.sh \
+		--entrypoint /usr/src/upgrade-test-scripts/start_to_to.sh \
 		 $(REPOSITORY):$(dockerLabel)
 
 run_test:

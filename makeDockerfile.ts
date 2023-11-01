@@ -25,15 +25,14 @@ const stage = {
 # on ${agZeroUpgrade}, with upgrade to ${to}
 FROM ghcr.io/agoric/ag0:${agZeroUpgrade} as prepare-${proposalName}
 ENV UPGRADE_TO=${to} THIS_NAME=${agZeroUpgrade}
-RUN mkdir -p /usr/src/agoric-sdk/upgrade-test-scripts
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/start_ag0.sh ./upgrade-test-scripts/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
+
 # put env functions into shell environment
-RUN echo '. /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
+RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
+
+COPY --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0
-RUN . ./upgrade-test-scripts/start_ag0.sh
+RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 `;
   },
   /**
@@ -101,14 +100,12 @@ FROM ${previousStage}-${proposalName} as use-${proposalName}
 COPY ./proposals/package.json /usr/src/proposals/
 COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName}/* /usr/src/proposals/${proposalIdentifier}:${proposalName}/
 
-COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scripts/
 # XXX for JS module resolution
-# TODO get this out of agoric-sdk path
-COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+COPY --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts/
 # TODO remove network dependencies in stages
 RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
-WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
+WORKDIR /usr/src/upgrade-test-scripts/
 RUN ./run_actions.sh ${proposalIdentifier}:${proposalName}
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]

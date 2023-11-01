@@ -3,7 +3,7 @@
 # Exit when any command fails
 set -e
 
-source /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh
+source /usr/src/upgrade-test-scripts/env_setup.sh
 
 ls -al
 

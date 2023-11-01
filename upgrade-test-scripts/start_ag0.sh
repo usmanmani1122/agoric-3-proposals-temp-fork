@@ -9,7 +9,7 @@ for i in "${allaccounts[@]}"; do
   cat "$HOME/.agoric/$i.out" | tail -n1 | tee "$HOME/.agoric/$i.key"
 done
 
-. ./upgrade-test-scripts/env_setup.sh
+source /usr/src/upgrade-test-scripts/env_setup.sh
 
 sed -i.bak "s/^timeout_commit =.*/timeout_commit = \"1s\"/" "$HOME/.agoric/config/config.toml"
 sed -i.bak "s/^enabled-unsafe-cors =.*/enabled-unsafe-cors = true/" "$HOME/.agoric/config/app.toml"
