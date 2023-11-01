@@ -1,9 +1,14 @@
 #!/usr/bin/env tsx
 // @ts-check
 
+import assert from 'node:assert';
 import fs from 'node:fs';
 import { readProposals } from './common';
-import type { ProposalInfo, SoftwareUpgradeProposal } from './common';
+import type {
+  ProposalInfo,
+  SoftwareUpgradeProposal,
+  CoreEvalProposal,
+} from './common';
 
 const agZeroUpgrade = 'agoric-upgrade-7-2';
 
@@ -51,6 +56,9 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 `;
   },
+  /**
+   * Execute a prepared upgrade
+   */
   EXECUTE({ proposalName, planName, sdkVersion }: SoftwareUpgradeProposal) {
     return `
 # EXECUTE ${proposalName}
@@ -66,10 +74,29 @@ SHELL ["/bin/bash", "-c"]
 RUN . ./upgrade-test-scripts/start_to_to.sh
 `;
   },
-  USE({ proposalName, proposalIdentifier }: ProposalInfo) {
+  /**
+   * Run a core-eval proposal
+   */
+  EVAL(
+    { proposalIdentifier, proposalName }: CoreEvalProposal,
+    lastProposal: ProposalInfo,
+  ) {
+    return `
+# EVAL ${proposalName}
+FROM use-${lastProposal.proposalName} as eval-${proposalName}
+
+COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName}/* /usr/src/proposals/${proposalIdentifier}:${proposalName}/
+
+WORKDIR /usr/src/upgrade-test-scripts/
+RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
+`;
+  },
+  USE({ proposalName, proposalIdentifier, type }: ProposalInfo) {
+    const previousStage =
+      type === 'Software Upgrade Proposal' ? 'execute' : 'eval';
     return `
 # USE ${proposalName}
-FROM execute-${proposalName} as use-${proposalName}
+FROM ${previousStage}-${proposalName} as use-${proposalName}
 
 COPY ./proposals/package.json /usr/src/proposals/
 COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName}/* /usr/src/proposals/${proposalIdentifier}:${proposalName}/
@@ -110,16 +137,18 @@ for (const proposal of readProposals()) {
     `#----------------\n# ${proposal.proposalName}\n#----------------`,
   );
 
-  // handle the first proposal specially
-  if (previousProposal) {
-    blocks.push(stage.PREPARE(proposal, previousProposal));
-  } else {
-    if (!proposal.planName) {
-      throw new Error('first proposal must have a planName');
+  if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
+    blocks.push(stage.EVAL(proposal, previousProposal!));
+  } else if (proposal.type === 'Software Upgrade Proposal') {
+    // handle the first proposal specially
+    if (previousProposal) {
+      blocks.push(stage.PREPARE(proposal, previousProposal));
+    } else {
+      blocks.push(stage.START(proposal.proposalName, proposal.planName));
     }
-    blocks.push(stage.START(proposal.proposalName, proposal.planName));
+    blocks.push(stage.EXECUTE(proposal));
   }
-  blocks.push(stage.EXECUTE(proposal));
+
   blocks.push(stage.USE(proposal));
   blocks.push(stage.TEST(proposal));
   previousProposal = proposal;

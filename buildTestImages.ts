@@ -9,5 +9,6 @@ for (const proposal of readProposals()) {
   const { name, target } = imageNameForProposalTest(proposal);
   const cmd = `docker build --tag ${name} --target ${target} .`;
   console.log(cmd);
+  // TODO stream the output
   execSync(cmd);
 }

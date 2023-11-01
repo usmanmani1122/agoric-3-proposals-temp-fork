@@ -9,10 +9,14 @@ import dbOpenAmbient from 'better-sqlite3';
 import { tmpName as tmpNameAmbient } from 'tmp';
 import { ZipReader } from '@endo/zip';
 
-import { makeFileRW, makeWebCache, makeWebRd } from '../lib/webAsset.js';
-import { makeAgd } from '../lib/agd-lib.js';
-import { dbTool } from '../lib/vat-status.js';
-import { voteLatestProposalAndWait } from '../lib/commonUpgradeHelpers.js';
+import {
+  makeFileRW,
+  makeWebCache,
+  makeWebRd,
+} from '../../upgrade-test-scripts/lib/webAsset.js';
+import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
+import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
+import { voteLatestProposalAndWait } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
 import {
   bundleDetail,
   ensureISTForInstall,
@@ -22,7 +26,10 @@ import {
   testIncludes,
   txAbbr,
 } from './core-eval-support.js';
-import { agoric, wellKnownIdentities } from '../lib/cliHelper.js';
+import {
+  agoric,
+  wellKnownIdentities,
+} from '../../upgrade-test-scripts/lib/cliHelper.js';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
 /** @type {import('ava').TestFn<TestContext>}} */
@@ -222,7 +229,7 @@ test.serial('core eval not permitted to add/replace installations', async t => {
   }
 });
 
-test.serial('save installations before the poposal', async t => {
+test.serial('save installations before the proposal', async t => {
   const { agoric, before } = t.context;
   const { installation } = await wellKnownIdentities({ agoric });
   t.log(installation.priceAggregator);
@@ -332,14 +339,3 @@ test.serial('priceAuthority installation was not changed', async t => {
   t.log({ expected, actual });
   t.deepEqual(actual, expected);
 });
-
-// needs synchronization
-test.skip('stATOM-USD price feed instance in agoricNames', async t => {
-  const { agoric } = t.context;
-  const { instance } = await wellKnownIdentities({ agoric });
-  testIncludes(t, 'stATOM-USD price feed', Object.keys(instance), 'instance');
-});
-
-test.todo('manager in vstorage');
-test.todo('price feed in vstorage - after setting prices');
-test.todo('create a vault as dapp-inter does');

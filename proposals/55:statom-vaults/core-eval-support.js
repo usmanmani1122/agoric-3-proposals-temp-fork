@@ -1,11 +1,15 @@
 // @ts-check
-import { Far, makeMarshal, makeTranslationTable } from '../lib/unmarshal.js';
-import { Fail, NonNullish } from '../lib/assert.js';
+import {
+  Far,
+  makeMarshal,
+  makeTranslationTable,
+} from '../../upgrade-test-scripts/lib/unmarshal.js';
+import { Fail, NonNullish } from '../../upgrade-test-scripts/lib/assert.js';
 
 // TODO: factor out ambient authority from these
 // or at least allow caller to supply authority.
-import { mintIST } from '../lib/econHelpers.js';
-import { agoric } from '../lib/cliHelper.js';
+import { mintIST } from '../../upgrade-test-scripts/lib/econHelpers.js';
+import { agoric } from '../../upgrade-test-scripts/lib/cliHelper.js';
 
 // move to unmarshal.js?
 const makeBoardUnmarshal = () => {

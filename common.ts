@@ -13,7 +13,7 @@ type ProposalCommon = {
 
 export type SoftwareUpgradeProposal = ProposalCommon & {
   sdkVersion: string;
-  planName?: string;
+  planName: string;
   type: 'Software Upgrade Proposal';
 };
 
