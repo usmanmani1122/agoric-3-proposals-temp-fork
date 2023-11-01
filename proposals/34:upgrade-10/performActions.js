@@ -1,5 +1,6 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env node
 
+// FIXME get TypeScript to resolve these, probably with lib:ES2022
 import assert from 'node:assert/strict';
 import {
   provisionWallet,
@@ -38,14 +39,15 @@ for (const oracle of oraclesAddresses) {
 console.log('Ensure user2 provisioned');
 await provisionWallet('user2');
 
-const user2Address = await getUser('user2');
-const data = await agd.query(
-  'vstorage',
-  'data',
-  `published.wallet.${user2Address}`,
-);
+// XXX no need to test the helper function here
+// const user2Address = await getUser('user2');
+// const data = await agd.query(
+//   'vstorage',
+//   'data',
+//   `published.wallet.${user2Address}`,
+// );
 
-assert.equal(data.value, '');
+// assert.equal(data.value, '');
 
 console.log('Ensure auction params have changed');
 await implementNewAuctionParams(

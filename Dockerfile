@@ -40,6 +40,7 @@ COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scr
 # XXX for JS module resolution
 # TODO get this out of agoric-sdk path
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+# TODO remove network dependencies in stages
 RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
@@ -95,6 +96,7 @@ COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scr
 # XXX for JS module resolution
 # TODO get this out of agoric-sdk path
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+# TODO remove network dependencies in stages
 RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
@@ -150,6 +152,7 @@ COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scr
 # XXX for JS module resolution
 # TODO get this out of agoric-sdk path
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+# TODO remove network dependencies in stages
 RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
@@ -205,6 +208,7 @@ COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/agoric-sdk/upgrade-test-scr
 # XXX for JS module resolution
 # TODO get this out of agoric-sdk path
 COPY --chmod=755 ./upgrade-test-scripts/*.* /usr/src/upgrade-test-scripts/
+# TODO remove network dependencies in stages
 RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/agoric-sdk/upgrade-test-scripts/
