@@ -30,13 +30,10 @@ jobs:
           echo "=== After cleanup:"
           df -h
       - uses: actions/checkout@v3
-      - name: build proposals test
-        run: |
-          docker build \
-            -t docker-upgrade-test:latest \
-            -f Dockerfile upgrade-test-scripts
-      - name: run final proposal
-        run: docker run --env "DEST=0" docker-upgrade-test:latest
+      - name: build test images
+        run: ./buildTestImages.ts
+      - name: run test images
+        run: ./runTestImages.ts
       - name: notify on failure
         if: failure() && github.event_name != 'pull_request'
         uses: ./.github/actions/notify-status

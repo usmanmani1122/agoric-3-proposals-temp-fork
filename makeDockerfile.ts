@@ -2,27 +2,9 @@
 // @ts-check
 
 import fs from 'node:fs';
-import * as path from 'node:path';
+import { ProposalInfo, readProposals } from './common';
 
 const agZeroUpgrade = 'agoric-upgrade-7-2';
-
-type ProposalInfo = {
-  sdkVersion: string;
-  planName?: string;
-  proposalName: string;
-  proposalIdentifier: string;
-};
-
-function readInfo(proposalPath: string): ProposalInfo {
-  const configPath = path.join('proposals', proposalPath, 'config.json');
-  const config = fs.readFileSync(configPath, 'utf-8');
-  const [proposalIdentifier, proposalName] = proposalPath.split(':');
-  return {
-    ...JSON.parse(config),
-    proposalIdentifier,
-    proposalName,
-  };
-}
 
 /**
  * Templates for Dockerfile stages
@@ -126,19 +108,12 @@ ENTRYPOINT ./run_tests.sh ${proposalIdentifier}:${proposalName}
   },
 };
 
-const proposalPaths = fs
-  .readdirSync('./proposals', { withFileTypes: true })
-  .filter(dirent => dirent.isDirectory()) // omit files
-  .map(dirent => dirent.name)
-  .filter(name => name.includes(':')); // omit node_modules
-
 // Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
 // The upgrade doesn't happen until the next stage begins executing.
 const blocks: string[] = [];
 
 let previousProposal: ProposalInfo | null = null;
-for (const path of proposalPaths) {
-  const proposal = readInfo(path);
+for (const proposal of readProposals()) {
   //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
   blocks.push(
     `#----------------\n# ${proposal.proposalName}\n#----------------`,
