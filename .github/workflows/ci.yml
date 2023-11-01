@@ -30,6 +30,7 @@ jobs:
           echo "=== After cleanup:"
           df -h
       - uses: actions/checkout@v3
+      - run: yarn global add tsx
       - name: build test images
         run: ./buildTestImages.ts
       - name: run test images
