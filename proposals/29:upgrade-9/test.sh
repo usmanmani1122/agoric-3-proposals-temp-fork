@@ -1,5 +1,6 @@
 #!/bin/bash
-. ./upgrade-test-scripts/env_setup.sh
+source /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh
+
 # provision pool has right balance
 test_val $(agd query bank balances agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346 -o json | jq -r '.balances | first | .amount') "19000000"
 

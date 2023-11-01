@@ -3,7 +3,10 @@
 # Exit when any command fails
 set -e
 
-# NOTE: agoric follow doesn't have the `-F` parameter in this version
+# FIXME fewer assumptions about the environment
+source /usr/src/agoric-sdk/upgrade-test-scripts/env_setup.sh
+
+# NOTE: agoric follow doesn't have the `--first-value-only` parameter in this version
 # so we use a hack
 
 # save somewhere we can access later
