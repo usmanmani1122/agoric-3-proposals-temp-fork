@@ -1,7 +1,7 @@
 import test from 'ava';
 
-import { agd, agoric } from '../../upgrade-test-scripts/cliHelper.js';
-import { waitForBlock } from '../../upgrade-test-scripts/commonUpgradeHelpers.js';
+import { agd, agoric } from '../../upgrade-test-scripts/lib/cliHelper.js';
+import { waitForBlock } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
 
 test.before(async () => {
   console.log('Wait for upgrade to settle');

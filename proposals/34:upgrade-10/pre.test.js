@@ -2,19 +2,23 @@ import test from 'ava';
 
 import { promises as fs } from 'fs';
 
-import { agd, agoric, agops } from '../../upgrade-test-scripts/cliHelper.js';
+import {
+  agd,
+  agoric,
+  agops,
+} from '../../upgrade-test-scripts/lib/cliHelper.js';
 
 import {
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
   PSM_PAIR,
-} from '../../upgrade-test-scripts/constants.js';
-import { openVault } from '../../upgrade-test-scripts/econHelpers.js';
+} from '../../upgrade-test-scripts/lib/constants.js';
+import { openVault } from '../../upgrade-test-scripts/lib/econHelpers.js';
 import {
   getUser,
   waitForBlock,
-} from '../../upgrade-test-scripts/commonUpgradeHelpers.js';
+} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
 
 test.before(async () => {
   console.log('Wait for upgrade to settle');
