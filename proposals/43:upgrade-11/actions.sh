@@ -9,6 +9,8 @@ ls -al
 
 yarn install
 
-yarn ava --serial pre.test.js actions.test.js
+yarn ava 43:upgrade-11/pre.test.js
+
+./performActions.js
 
 ./legacy.sh
