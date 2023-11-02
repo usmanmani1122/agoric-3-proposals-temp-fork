@@ -138,7 +138,7 @@ FROM use-${proposalName} as test-${proposalName}
 # XXX the test files were already copied in the "use" stage
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
-ENTRYPOINT ./run_tests.sh ${proposalIdentifier}:${proposalName}
+ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
 `;
   },
 };
