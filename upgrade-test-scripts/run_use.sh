@@ -13,9 +13,9 @@ PROPOSAL_PATH=$1
 
 startAgd
 
-echo "Agd started. Running actions.sh."
+echo "Agd started. Running use.sh."
 cd /usr/src/proposals/"$PROPOSAL_PATH/" || exit
-./actions.sh
+./use.sh
 
 echo "Actions completed. Running for a few blocks and exiting."
 waitForBlock 5

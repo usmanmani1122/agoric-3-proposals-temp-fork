@@ -106,7 +106,7 @@ COPY --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts/
 RUN cd /usr/src/upgrade-test-scripts/ && yarn install
 
 WORKDIR /usr/src/upgrade-test-scripts/
-RUN ./run_actions.sh ${proposalIdentifier}:${proposalName}
+RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 # no entrypoint; results of these actions are part of the image
 SHELL ["/bin/bash", "-c"]
 `;
