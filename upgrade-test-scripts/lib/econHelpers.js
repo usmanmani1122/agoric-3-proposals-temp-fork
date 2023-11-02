@@ -2,6 +2,7 @@ import { agd, agops } from './cliHelper.js';
 import { ATOM_DENOM, CHAINID, VALIDATORADDR } from './constants.js';
 import { executeOffer } from './commonUpgradeHelpers.js';
 
+// TODO return the id of the new vault so subsquent commands can use it
 export const openVault = (address, mint, collateral) => {
   return executeOffer(
     address,

@@ -41,6 +41,7 @@ const test = anyTest;
 const assetInfo = {
   repo: {
     release:
+      // TODO update with actual release https://github.com/0xpatrickdev/agoric-vault-collateral-proposal/releases/tag/2023-16-10-agoric-3
       'https://github.com/dckc/agoric-vault-collateral-proposal/releases/tag/v0.13.0-beta1',
     url: 'https://github.com/0xpatrickdev/agoric-vault-collateral-proposal',
     name: 'agoric-vault-collateral-proposal',
@@ -103,18 +104,16 @@ const makeTestContext = async (t, io = {}) => {
     tmpName = tmpNameAmbient,
   } = io;
 
-  // @@ const src = makeWebRd(staticConfig.assetBase, { fetch });
   const src = makeWebRd(staticConfig.releaseAssets, { fetch });
 
   const td = await new Promise((resolve, reject) =>
     tmpName({ prefix: 'assets' }, (err, x) => (err ? reject(err) : resolve(x))),
   );
   const dest = makeFileRW(td, { fsp, path });
-  // @@ Error: `t.teardown()` is not allowed in hooks
+  // FIXME Error: `t.teardown()` is not allowed in hooks
   //   t.teardown(() => assets.remove());
   const assets = makeWebCache(src, dest);
   // assume filenames don't overlap
-  //@@alt const bundleAssets = makeWebCache(src.join('bundles/'), dest);
   const bundleAssets = makeWebCache(src, dest);
   console.log(`bundleAssets: ${bundleAssets}`);
 

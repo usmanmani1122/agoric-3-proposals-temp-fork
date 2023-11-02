@@ -46,7 +46,7 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
   ) {
     return `
 # PREPARE ${proposalName}
-// 
+
 # upgrading to ${planName}
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
