@@ -8,7 +8,9 @@ This repo serves several functions:
 - publishing an image with all passed proposals (TODO: https://github.com/Agoric/agoric-3-proposals/issues/6)
 - verify that certain tests pass after each proposal
 
-# Stages
+# Design
+
+## Stages
 
 The build is [multi-stage](https://docs.docker.com/build/building/multi-stage/) with several kinds of stages:
 
@@ -24,9 +26,15 @@ All proposals then have two additional stages:
 
 The `TEST` stage does not RUN as part of the build. It only deifnes the ENTRYPOINT and CI runs them all.
 
-# Adding a proposal
+## Proposals
 
-## Naming
+### Types
+
+- Software Upgrade à la https://hub.cosmos.network/main/hub-tutorials/live-upgrade-tutorial.html
+- Core Eval
+- Not yet supported: combo Upgrade/Eval
+
+### Naming
 
 Each proposal is defined as a subdirectory of `propoals`. E.g. `16:upgrade-8`.
 
@@ -36,14 +44,42 @@ The string after `:` is the local label for the proposal. It should be distinct,
 
 If the proposal is _pending_ and does not yet have a number, use a letter. The proposals are run in lexical order so all letters execute after all the numbers are done.
 
-## Files
+### Files
 
 - `config.json` specifies what kind of proposal it is. If it's a "Software Upgrade Proposal" it also includes additional parameters.
 - `use.sh` is the script that will be run in the USE stage of the build
 - `test.sh` is the script that will be _included_ in the TEST stage of the build, and run in CI
+
+# Usage
+
+To build the test images,
+
+```
+./buildTestImages.ts
+```
+
+To build the test images for particular proposals,
+
+```
+# build just upgrades
+./buildTestImages.ts --match upgrade
+```
+
+To run the tests for particular proposals,
+
+```
+# build just upgrades
+./runTestImages.ts --match upgrade
+```
+
+To add a proposal, see [./CONTRIBUTING.md]
 
 ## Future work
 
 - [ ] include a way to test soft patches that weren't proposals (e.g. PismoB)
 - [ ] documentation and tooling for debugging
 - [ ] separate console output for agd and the scripts (had been with tmux before but trouble, try Docker compose)
+- [ ] remove use of `agoric-sdk:dev`; that's a concern of SDK
+- [ ] separate agd and actions/test services with docker-compose (https://github.com/Agoric/agoric-sdk/discussions/8480#discussioncomment-7438329)
+- [ ] way to query capdata in one shot (not resorting to follow jsonlines hackery)
+- [ ] within each proposal, separate dirs for supporting files so images don't invalidate

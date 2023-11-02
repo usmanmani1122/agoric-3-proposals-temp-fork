@@ -36,7 +36,9 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 `;
   },
   /**
-   * stage that only runs the upgrade handler
+   * Prepare an upgrade handler to run.
+   *
+   * - Submit the software-upgrade proposal for planName and run until upgradeHeight, leaving the state-dir ready for next agd.
    */
   PREPARE(
     { planName, proposalName }: SoftwareUpgradeProposal,
@@ -44,6 +46,7 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
   ) {
     return `
 # PREPARE ${proposalName}
+// 
 # upgrading to ${planName}
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
@@ -56,7 +59,9 @@ RUN ./start_to_to.sh
 `;
   },
   /**
-   * Execute a prepared upgrade
+   * Execute a prepared upgrade.
+   * - Start agd with the SDK that has the upgradeHandler
+   * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
    */
   EXECUTE({ proposalName, planName, sdkVersion }: SoftwareUpgradeProposal) {
     return `
@@ -76,6 +81,7 @@ RUN ./start_to_to.sh
   },
   /**
    * Run a core-eval proposal
+   * - Run the core-eval scripts from the proposal. They are only guaranteed to have started, not completed.
    */
   EVAL(
     { proposalIdentifier, proposalName }: CoreEvalProposal,
@@ -92,6 +98,11 @@ SHELL ["/bin/bash", "-c"]
 RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 `;
   },
+  /**
+   * Use the proposal
+   *
+   * - Perform any mutations that should be part of chain history
+   */
   USE({ proposalName, proposalIdentifier, type }: ProposalInfo) {
     const previousStage =
       type === 'Software Upgrade Proposal' ? 'execute' : 'eval';
@@ -111,6 +122,14 @@ SHELL ["/bin/bash", "-c"]
 RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 `;
   },
+  /**
+   * Generate image than can test the proposal
+   *
+   * - Run with the image of the last "use"
+   * - Run tests of the proposal
+   *
+   * Needs to be an image to have access to the SwingSet db. run it with `docker run --rm` to not make the container ephemeral.
+   */
   TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
     return `
 # TEST ${proposalName}
