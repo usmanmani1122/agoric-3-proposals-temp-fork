@@ -8,7 +8,7 @@ export DEBUG="SwingSet:ls,SwingSet:vat"
 export CHAINID=agoriclocal
 shopt -s expand_aliases
 
-alias agops="yarn run --silent agops"
+alias agops="/usr/src/agoric-sdk/node_modules/.bin/agops"
 if test -f "$HOME/.agoric/envs"; then
   source "$HOME/.agoric/envs"
 fi

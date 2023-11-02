@@ -1,3 +1,6 @@
+// XXX subset of @endo/assert
+// consider using Node built-in assert https://nodejs.org/api/assert.html
+
 export const Fail = (template, ...args) => {
   throw Error(String.raw(template, ...args.map(val => String(val))));
 };

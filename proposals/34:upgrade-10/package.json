@@ -5,16 +5,9 @@
     "dependencies": {
         "ava": "^5.3.1",
         "better-sqlite3": "^8.5.1",
-        "execa": "^7.2.0",
-        "tsx": "^3.14.0"
+        "execa": "^7.2.0"
     },
     "scripts": {
         "agops": "yarn --cwd /usr/src/agoric-sdk/ --silent agops"
-    },
-    "ava": {
-        "files": [
-            "*/**/*.test.js"
-        ],
-        "timeout": "30m"
     }
 }

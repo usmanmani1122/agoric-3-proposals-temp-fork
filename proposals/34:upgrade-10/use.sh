@@ -5,9 +5,9 @@ set -e
 
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
-yarn install
+yarn install --frozen-lockfile
 
-yarn ava 34:upgrade-10/pre.test.js
+yarn ava pre.test.js
 
 ./performActions.js
 

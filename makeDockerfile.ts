@@ -47,12 +47,12 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 # upgrading to ${planName}
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
+# base is a fresh sdk image so copy these supports
+COPY  --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
 
-RUN chmod +x ./upgrade-test-scripts/*.sh
+WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh
+RUN ./start_to_to.sh
 `;
   },
   /**
@@ -64,13 +64,14 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 FROM ghcr.io/agoric/agoric-sdk:${sdkVersion} as execute-${proposalName}
 ENV THIS_NAME=${planName}
 
-WORKDIR /usr/src/agoric-sdk/
-COPY ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/
+# base is a fresh sdk image so copy these supports
+COPY  --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
 
 COPY --from=prepare-${proposalName} /root/.agoric /root/.agoric
-RUN chmod +x ./upgrade-test-scripts/*.sh
+
+WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
-RUN . ./upgrade-test-scripts/start_to_to.sh
+RUN ./start_to_to.sh
 `;
   },
   /**
@@ -84,9 +85,10 @@ RUN . ./upgrade-test-scripts/start_to_to.sh
 # EVAL ${proposalName}
 FROM use-${lastProposal.proposalName} as eval-${proposalName}
 
-COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName}/* /usr/src/proposals/${proposalIdentifier}:${proposalName}/
+COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
-WORKDIR /usr/src/upgrade-test-scripts/
+WORKDIR /usr/src/upgrade-test-scripts
+SHELL ["/bin/bash", "-c"]
 RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 `;
   },
@@ -97,18 +99,16 @@ RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 # USE ${proposalName}
 FROM ${previousStage}-${proposalName} as use-${proposalName}
 
-COPY ./proposals/package.json /usr/src/proposals/
-COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName}/* /usr/src/proposals/${proposalIdentifier}:${proposalName}/
+COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
-# XXX for JS module resolution
+# XXX for 'lib' dir for JS modules
 COPY --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts/
 # TODO remove network dependencies in stages
-RUN cd /usr/src/upgrade-test-scripts/ && yarn install
+RUN cd /usr/src/upgrade-test-scripts/lib/ && yarn install
 
-WORKDIR /usr/src/upgrade-test-scripts/
-RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
-# no entrypoint; results of these actions are part of the image
+WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
+RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 `;
   },
   TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
@@ -117,8 +117,9 @@ SHELL ["/bin/bash", "-c"]
 FROM use-${proposalName} as test-${proposalName}
 
 # XXX the test files were already copied in the "use" stage
-# nothing to build, just an image for running tests
-ENTRYPOINT ./run_tests.sh ${proposalIdentifier}:${proposalName}
+WORKDIR /usr/src/upgrade-test-scripts
+SHELL ["/bin/bash", "-c"]
+RUN ./run_tests.sh ${proposalIdentifier}:${proposalName}
 `;
   },
 };

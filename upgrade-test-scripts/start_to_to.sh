@@ -1,9 +1,9 @@
 #!/bin/bash
 
-grep -qF 'env_setup.sh' /root/.bashrc || echo ". ./upgrade-test-scripts/env_setup.sh" >>/root/.bashrc
+grep -qF 'env_setup.sh' /root/.bashrc || echo "source /usr/src/upgrade-test-scripts/env_setup.sh" >>/root/.bashrc
 grep -qF 'printKeys' /root/.bashrc || echo "printKeys" >>/root/.bashrc
 
-source ./upgrade-test-scripts/env_setup.sh
+source ./env_setup.sh
 
 export SLOGFILE=slog.slog
 
