@@ -16,4 +16,4 @@ cd /usr/src/upgrade-test-scripts/lib/ && yarn install --frozen-lockfile
 cd -
 
 # XXX using Ava serial to script the core-eval
-yarn ava add-collateral.test.js
+yarn ava upgrade-wf.test.js
