@@ -1,6 +1,7 @@
 // @ts-check
 import dbOpenAmbient from 'better-sqlite3';
 import { HOME } from './constants.js';
+import { NonNullish } from './assert.js';
 
 /**
  * @file look up vat incarnation from kernel DB
@@ -64,12 +65,6 @@ const makeSwingstore = db => {
     },
     lookupVat,
   });
-};
-
-/** @type {<T>(val: T | undefined) => T} */
-const NonNullish = val => {
-  if (!val) throw Error('required');
-  return val;
 };
 
 /**

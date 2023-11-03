@@ -3,7 +3,6 @@
 # Note that STDOUT mixes the two. TODO separate them cleanly with log output.
 
 set -e
-set -x
 
 source ./env_setup.sh
 

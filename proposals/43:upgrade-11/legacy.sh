@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# FIXME fewer assumptions about the environment
 source /usr/src/upgrade-test-scripts/env_setup.sh
-
-# Enable debugging
-set -x
 
 export_genesis() {
   GENESIS_EXPORT_DIR="$1"

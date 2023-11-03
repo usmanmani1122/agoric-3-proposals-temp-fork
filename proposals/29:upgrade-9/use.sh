@@ -3,7 +3,6 @@
 # Exit when any command fails
 set -e
 
-# FIXME fewer assumptions about the environment
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
 # NOTE: agoric follow doesn't have the `--first-value-only` parameter in this version

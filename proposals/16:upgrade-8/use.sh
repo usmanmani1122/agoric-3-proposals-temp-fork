@@ -3,23 +3,7 @@
 # Exit when any command fails
 set -e
 
-# FIXME fewer assumptions about the environment
 source /usr/src/upgrade-test-scripts/env_setup.sh
-
-# override env (TODO incorporate "upstream" )
-provisionSmartWallet() {
-  addr="$1"
-  amount="$2"
-  echo "funding $addr"
-  agd tx bank send "validator" "$addr" "$amount" -y --keyring-backend=test --chain-id="$CHAINID"
-  waitForBlock
-  echo "provisioning $addr"
-  agd tx swingset provision-one my-wallet "$addr" SMART_WALLET --keyring-backend=test --yes --chain-id="$CHAINID" --from="$addr"
-  echo "Waiting for wallet $addr to reach vstorage"
-  waitForBlock 5
-  echo "Reading $addr from vstorage"
-  agoric wallet show --from "$addr"
-}
 
 sed -i "s/--econCommAcceptOfferId /--previousOfferId /g" "/usr/src/agoric-sdk/packages/agoric-cli/src/commands/psm.js"
 

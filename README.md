@@ -78,8 +78,6 @@ To add a proposal, see [./CONTRIBUTING.md]
 
 - [ ] include a way to test soft patches that weren't proposals (e.g. PismoB)
 - [ ] documentation and tooling for debugging
-- [ ] separate console output for agd and the scripts (had been with tmux before but trouble, try Docker compose)
-- [ ] remove use of `agoric-sdk:dev`; that's a concern of SDK
-- [ ] separate agd and actions/test services with docker-compose (https://github.com/Agoric/agoric-sdk/discussions/8480#discussioncomment-7438329)
+- [ ] separate console output for agd and the scripts (had been with tmux before but trouble, try Docker compose https://github.com/Agoric/agoric-sdk/discussions/8480#discussioncomment-7438329)
 - [ ] way to query capdata in one shot (not resorting to follow jsonlines hackery)
 - [ ] within each proposal, separate dirs for supporting files so images don't invalidate
