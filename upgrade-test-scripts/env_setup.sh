@@ -77,16 +77,17 @@ waitAgd() {
 }
 
 provisionSmartWallet() {
-  i="$1"
+  addr="$1"
   amount="$2"
-  echo "funding $i"
-  agd tx bank send "validator" "$i" "$amount" -y --keyring-backend=test --chain-id="$CHAINID"
+  echo "funding $addr"
+  agd tx bank send "validator" "$addr" "$amount" -y --keyring-backend=test --chain-id="$CHAINID"
   waitForBlock
-  echo "provisioning $i"
-  agd tx swingset provision-one my-wallet "$i" SMART_WALLET --keyring-backend=test --yes --chain-id="$CHAINID" --from="$i"
-  # give time for wallet to be provisioned and published to vstorage
-  waitForBlock 2
-  agoric wallet show --from $i
+  echo "provisioning $addr"
+  agd tx swingset provision-one my-wallet "$addr" SMART_WALLET --keyring-backend=test --yes --chain-id="$CHAINID" --from="$addr"
+  echo "Waiting for wallet $addr to reach vstorage"
+  waitForBlock 5
+  echo "Reading $addr from vstorage"
+  agoric wallet show --from "$addr"
 }
 
 wait_for_bootstrap() {
