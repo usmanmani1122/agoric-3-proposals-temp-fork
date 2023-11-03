@@ -29,7 +29,7 @@ ENV UPGRADE_TO=${to} THIS_NAME=${agZeroUpgrade}
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
-COPY --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts
+COPY --link --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0
 RUN /usr/src/upgrade-test-scripts/start_ag0.sh
@@ -51,7 +51,7 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
 # base is a fresh sdk image so copy these supports
-COPY  --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
@@ -70,9 +70,9 @@ FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
 ENV THIS_NAME=${planName}
 
 # base is a fresh sdk image so copy these supports
-COPY  --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
 
-COPY --from=prepare-${proposalName} /root/.agoric /root/.agoric
+COPY --link --from=prepare-${proposalName} /root/.agoric /root/.agoric
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
@@ -91,7 +91,7 @@ RUN ./start_to_to.sh
 # EVAL ${proposalName}
 FROM use-${lastProposal.proposalName} as eval-${proposalName}
 
-COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
+COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
@@ -110,10 +110,10 @@ RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 # USE ${proposalName}
 FROM ${previousStage}-${proposalName} as use-${proposalName}
 
-COPY --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
+COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
 # XXX for 'lib' dir for JS modules
-COPY --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts/
 # TODO remove network dependencies in stages
 RUN cd /usr/src/upgrade-test-scripts/lib/ && yarn install
 
