@@ -26,7 +26,9 @@ for (const proposal of proposals) {
     console.log(`\nBuilding test image for proposal ${proposal.proposalName}`);
   }
   const { name, target } = imageNameForProposalTest(proposal);
-  const cmd = `docker build --tag ${name} --target ${target} .`;
+  // 'load' to ensure the images are output to the Docker client. Seems to be necessary
+  // for the CI docker/build-push-action to re-use the cached stages.
+  const cmd = `docker buildx build --load --tag ${name} --target ${target} .`;
   console.log(cmd);
   if (!dry) {
     execSync(cmd, { stdio: 'inherit' });
