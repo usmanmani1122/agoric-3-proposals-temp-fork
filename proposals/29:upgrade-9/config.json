@@ -1,6 +1,6 @@
 {
     "releaseNotes": "https://github.com/Agoric/agoric-sdk/releases/tag/pismoC",
-    "sdkVersion": "31",
+    "sdkImageTag": "31",
     "planName": "agoric-upgrade-9",
     "type": "Software Upgrade Proposal"
 }

@@ -63,10 +63,10 @@ RUN ./start_to_to.sh
    * - Start agd with the SDK that has the upgradeHandler
    * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
    */
-  EXECUTE({ proposalName, planName, sdkVersion }: SoftwareUpgradeProposal) {
+  EXECUTE({ proposalName, planName, sdkImageTag }: SoftwareUpgradeProposal) {
     return `
 # EXECUTE ${proposalName}
-FROM ghcr.io/agoric/agoric-sdk:${sdkVersion} as execute-${proposalName}
+FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
 ENV THIS_NAME=${planName}
 
 # base is a fresh sdk image so copy these supports
