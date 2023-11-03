@@ -171,5 +171,11 @@ for (const proposal of readProposals()) {
   previousProposal = proposal;
 }
 
-const contents = blocks.join('\n');
-fs.writeFileSync('Dockerfile', contents);
+export function refreshDockerfile() {
+  const contents = blocks.join('\n');
+  fs.writeFileSync('Dockerfile', contents);
+}
+
+if (require.main === module) {
+  refreshDockerfile();
+}

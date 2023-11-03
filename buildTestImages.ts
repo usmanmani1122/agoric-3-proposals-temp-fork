@@ -4,6 +4,9 @@
 import { parseArgs } from 'node:util';
 import { execSync } from 'node:child_process';
 import { imageNameForProposalTest, readProposals } from './common';
+import { refreshDockerfile } from './makeDockerfile';
+
+refreshDockerfile();
 
 const options = {
   match: { short: 'm', type: 'string' },

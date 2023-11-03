@@ -31,8 +31,6 @@ jobs:
           df -h
       - uses: actions/checkout@v3
       - run: yarn global add tsx
-      - name: generate Dockerfile
-        run: ./makeDockerfile.ts
       - name: build test images
         run: ./buildTestImages.ts
       - name: run test images
