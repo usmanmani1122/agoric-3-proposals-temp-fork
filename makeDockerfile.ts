@@ -135,10 +135,22 @@ RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 # TEST ${proposalName}
 FROM use-${proposalName} as test-${proposalName}
 
-# XXX the test files were already copied in the "use" stage
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
+`;
+  },
+  /**
+   * The last target in the file, for untargeted `docker build`
+   */
+  DEFAULT(lastProposal: ProposalInfo) {
+    return `
+# DEFAULT
+FROM use-${lastProposal.proposalName}
+
+WORKDIR /usr/src/upgrade-test-scripts
+SHELL ["/bin/bash", "-c"]
+ENTRYPOINT ./start_agd.sh
 `;
   },
 };
@@ -166,10 +178,13 @@ for (const proposal of readProposals()) {
     blocks.push(stage.EXECUTE(proposal));
   }
 
+  // The stages must be output in dependency order because if the builder finds a FROM
+  // that it hasn't built yet, it will search for it in the registry. But it won't be there!
   blocks.push(stage.USE(proposal));
   blocks.push(stage.TEST(proposal));
   previousProposal = proposal;
 }
+blocks.push(stage.DEFAULT(previousProposal!));
 
 export function refreshDockerfile() {
   const contents = blocks.join('\n');

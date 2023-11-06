@@ -1,5 +1,4 @@
 #!/usr/bin/env tsx
-// @ts-check
 
 import { parseArgs } from 'node:util';
 import { execSync } from 'node:child_process';
@@ -11,7 +10,7 @@ refreshDockerfile();
 const options = {
   match: { short: 'm', type: 'string' },
   dry: { type: 'boolean' },
-};
+} as const;
 const { values } = parseArgs({ options });
 
 const { match, dry } = values;
@@ -27,10 +26,11 @@ for (const proposal of proposals) {
     console.log(`\nBuilding test image for proposal ${proposal.proposalName}`);
   }
   const { name, target } = imageNameForProposalTest(proposal);
-  const cmd = `docker build --tag ${name} --target ${target} .`;
+  // 'load' to ensure the images are output to the Docker client. Seems to be necessary
+  // for the CI docker/build-push-action to re-use the cached stages.
+  const cmd = `docker buildx build --load --tag ${name} --target ${target} .`;
   console.log(cmd);
   if (!dry) {
-    // TODO stream the output
-    execSync(cmd);
+    execSync(cmd, { stdio: 'inherit' });
   }
 }

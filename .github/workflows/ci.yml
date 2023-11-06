@@ -11,7 +11,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
+  # see https://docs.docker.com/build/ci/github-actions/test-before-push/
   test-proposals:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -29,12 +34,49 @@ jobs:
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           echo "=== After cleanup:"
           df -h
-      - uses: actions/checkout@v3
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        # see https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+        # The .ts scripts depend upon this
       - run: yarn global add tsx
+
       - name: build test images
-        run: ./buildTestImages.ts
+        run: |
+          docker info
+          ./buildTestImages.ts
       - name: run test images
         run: ./runTestImages.ts
+
+      # XXX this should be instant because all the stages were already built in the steps above
+      # but it's re-building the last stage. This is deemed good enough for now.
+      # see https://github.com/moby/moby/issues/34715
+      - name: Build and push complete image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # push to registry on every repo push. A PR #2 will push with tag `pr-2` and `main` will have tag `main`.
+          # See https://github.com/docker/metadata-action?tab=readme-ov-file#basic.
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       - name: notify on failure
         if: failure() && github.event_name != 'pull_request'
         uses: ./.github/actions/notify-status
