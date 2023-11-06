@@ -8,4 +8,5 @@ source ./env_setup.sh
 
 export SLOGFILE=slog.slog
 
-startAgd
+# don't use startAgd() because that backgrounds
+agd start --log_level warn "$@"
