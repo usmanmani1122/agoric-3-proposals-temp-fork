@@ -7,8 +7,6 @@ source /usr/src/upgrade-test-scripts/env_setup.sh
 
 ls -al
 
-yarn install --frozen-lockfile
-
 # XXX to avoid rebuilding lower layers
 # TODO clean up JS lib code so it's more independent
 cp package.json yarn.lock /usr/src/upgrade-test-scripts/lib/

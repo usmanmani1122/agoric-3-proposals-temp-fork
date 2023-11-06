@@ -93,8 +93,14 @@ FROM use-${lastProposal.proposalName} as eval-${proposalName}
 
 COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/run_eval.sh
+# install using global cache
+RUN --mount=type=cache,target=/root/.yarn \
+  cd /usr/src/upgrade-test-scripts/lib/ \
+  && yarn install \
+  && cd /usr/src/proposals/${proposalIdentifier}:${proposalName} \
+  && test -n "yarn.lock" && yarn install --frozen-lockfile --production
 
+COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/run_eval.sh
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
@@ -114,12 +120,17 @@ FROM ${previousStage}-${proposalName} as use-${proposalName}
 
 COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/run_use.sh
 # XXX for 'lib' dir for JS modules
 COPY --link ./upgrade-test-scripts/lib /usr/src/upgrade-test-scripts/lib
 # TODO remove network dependencies in stages
-RUN cd /usr/src/upgrade-test-scripts/lib/ && yarn install
+# install using global cache
+RUN --mount=type=cache,target=/root/.yarn \
+  cd /usr/src/upgrade-test-scripts/lib/ \
+  && yarn install \
+  && cd /usr/src/proposals/${proposalIdentifier}:${proposalName} \
+  && test -n "yarn.lock" && yarn install --frozen-lockfile --production
 
+COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/run_use.sh
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
@@ -138,8 +149,14 @@ RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 # TEST ${proposalName}
 FROM use-${proposalName} as test-${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh /usr/src/upgrade-test-scripts/run_test.sh
+# install using global cache
+RUN --mount=type=cache,target=/root/.yarn \
+  cd /usr/src/upgrade-test-scripts/lib/ \
+  && yarn install \
+  && cd /usr/src/proposals/${proposalIdentifier}:${proposalName} \
+  && test -n "yarn.lock" && yarn install --frozen-lockfile --production
 
+COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh /usr/src/upgrade-test-scripts/run_test.sh
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
