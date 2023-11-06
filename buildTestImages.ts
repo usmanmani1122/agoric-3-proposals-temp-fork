@@ -1,5 +1,4 @@
 #!/usr/bin/env tsx
-// @ts-check
 
 import { parseArgs } from 'node:util';
 import { execSync } from 'node:child_process';
@@ -11,7 +10,7 @@ refreshDockerfile();
 const options = {
   match: { short: 'm', type: 'string' },
   dry: { type: 'boolean' },
-};
+} as const;
 const { values } = parseArgs({ options });
 
 const { match, dry } = values;
@@ -30,7 +29,6 @@ for (const proposal of proposals) {
   const cmd = `docker build --tag ${name} --target ${target} .`;
   console.log(cmd);
   if (!dry) {
-    // TODO stream the output
-    execSync(cmd);
+    execSync(cmd, { stdio: 'inherit' });
   }
 }
