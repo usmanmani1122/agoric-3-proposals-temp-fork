@@ -36,21 +36,20 @@ export const getContractInfo = async (path, io = {}) => {
   return m.fromCapData({ body, slots });
 };
 
-// not really core-eval related
+/**
+ * Asserts that `haystack` includes `needle` (or when `sense` is false, that it
+ * does not), providing pretty output in the case of failure.
+ *
+ * @param {import('ava').ExecutionContext} t
+ * @param {unknown} needle
+ * @param {unknown[]} haystack
+ * @param {string} label
+ * @param {boolean} [sense] true to assert inclusion; false for exclusion
+ * @returns {void}
+ */
 export const testIncludes = (t, needle, haystack, label, sense = true) => {
-  t.log(needle, sense ? 'in' : 'not in', haystack.length, label, '?');
-  const check = sense ? t.deepEqual : t.notDeepEqual;
-  if (sense) {
-    t.deepEqual(
-      haystack.filter(c => c === needle),
-      [needle],
-    );
-  } else {
-    t.deepEqual(
-      haystack.filter(c => c === needle),
-      [],
-    );
-  }
+  const matches = haystack.filter(c => Object.is(c, needle));
+  t.deepEqual(matches, sense ? [needle] : [], label);
 };
 
 /**
