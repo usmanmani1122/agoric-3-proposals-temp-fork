@@ -21,15 +21,23 @@ import dbOpenAmbient from 'better-sqlite3';
 
 // TODO: factor out ambient authority from these
 // or at least allow caller to supply authority.
-import { agoric, wellKnownIdentities } from '../../upgrade-test-scripts/lib/cliHelper.js';
+import {
+  agoric,
+  wellKnownIdentities,
+} from '../../upgrade-test-scripts/lib/cliHelper.js';
 import {
   provisionSmartWallet,
   voteLatestProposalAndWait,
+  waitForBlock,
 } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
 
 import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
 import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
-import { makeFileRW, makeWebCache, makeWebRd } from '../../upgrade-test-scripts/lib/webAsset.js';
+import {
+  makeFileRW,
+  makeWebCache,
+  makeWebRd,
+} from '../../upgrade-test-scripts/lib/webAsset.js';
 import {
   bundleDetail,
   ensureISTForInstall,
@@ -55,9 +63,9 @@ const test = anyTest;
  * https://agoric.explorers.guru/proposal/53
  */
 const assetInfo = {
-  repo:{
-    release:'https://github.com/Kryha/KREAd/releases/tag/KREAd-rc1',
-    url:'https://github.com/Kryha/KREAd',
+  repo: {
+    release: 'https://github.com/Kryha/KREAd/releases/tag/KREAd-rc1',
+    url: 'https://github.com/Kryha/KREAd',
     name: 'KREAd',
   },
   /** @type {Record<string, ProposalInfo>} */
@@ -100,21 +108,26 @@ const staticConfig = {
   initialCoins: `20000000ubld`, // enough to provision a smartWallet
   accounts: {
     krgov1: {
+      impersonate: 'agoric1hlm7w6pyyqnwz35jdknly8mp0ehvyrl04xjez7',
       address: 'agoric1890064p6j3xhzzdf8daknd6kpvhw766ds8flgw',
       mnemonic:
         'loop clump life tattoo action wish loop garbage room custom tooth lunar increase major draw wage bind vanish order behind bounce unknown cry practice',
     },
     krgov2: {
+      impersonate: 'agoric19rtq0t8rm5ej5eyumgl0qwepzr7t4x50whx9ae',
       address: 'agoric1vqm5x5sj4lxmj2kem7x92tuhaum0k2yzyj6mgu',
       mnemonic:
         'expect wheel safe ankle caution vote reduce sell night pencil suit scrap tumble divorce element become result front hurt begin deputy liberty develop next',
     },
     kRoyalties: {
-      address: 'agoric1yjc8llu3fugm7tgqye4rd5n92l9x2dhe30dazp',
+      // Note: same as the krgov2 account
+      impersonate: 'agoric19rtq0t8rm5ej5eyumgl0qwepzr7t4x50whx9ae',
+      address: 'agoric1vqm5x5sj4lxmj2kem7x92tuhaum0k2yzyj6mgu',
       mnemonic:
-        'talent approve render pool chief inch nuclear minor rhythm laundry praise swift clog neck shoot elder rely junior rule basket energy payment giggle torch',
+        'expect wheel safe ankle caution vote reduce sell night pencil suit scrap tumble divorce element become result front hurt begin deputy liberty develop next',
     },
     kPlatform: {
+      impersonate: 'agoric1plt4252p5yu4x0nndfnkumh0gws7pdeksqq33e',
       address: 'agoric1enwuyn2hzyyvt39x87tk9rhlkpqtyv9haj7mgs',
       mnemonic:
         'magic enrich village office myth depth upper pair april dad visit memory resemble castle lab surface globe debate chair upper army pony moon tone',
@@ -137,14 +150,16 @@ const makeTestContext = async (io = {}) => {
   } = io;
 
   const src = makeWebRd(staticConfig.releaseAssets, { fetch });
-  const td = await new Promise((resolve, reject) =>
-    tmpName({ prefix: 'assets' }, (err, x) => (err ? reject(err) : resolve(x))),
-  );
+  const tmpNameP = prefix =>
+    new Promise((resolve, reject) =>
+      tmpName({ prefix }, (err, x) => (err ? reject(err) : resolve(x))),
+    );
+  const td = await tmpNameP('assets');
   const dest = makeFileRW(td, { fsp, path });
   // FIXME Error: `t.teardown()` is not allowed in hooks
   // t.teardown(() => assets.remove());
   const assets = makeWebCache(src, dest);
-  console.log(`bundleAssets: ${assets}`)
+  console.log(`bundleAssets: ${assets}`);
 
   const config = {
     assets,
@@ -161,7 +176,10 @@ const makeTestContext = async (io = {}) => {
   const dbPath = staticConfig.swingstorePath.replace(/^~/, env.HOME);
   const swingstore = dbTool(dbOpen(dbPath, { readonly: true }));
 
-  return { agd, agoric, swingstore, config };
+  /* @param {string} baseName */
+  const mkTempRW = async baseName =>
+    makeFileRW(await tmpNameP(baseName), { fsp, path });
+  return { agd, agoric, swingstore, config, mkTempRW };
 };
 
 test.before(async t => (t.context = await makeTestContext()));
@@ -207,7 +225,7 @@ test.serial('ensure enough IST to install bundles', async t => {
   const { agd, config } = t.context;
   const { totalSize } = await readBundleSizes(config.assets);
 
- await ensureISTForInstall(agd, config, totalSize, {
+  await ensureISTForInstall(agd, config, totalSize, {
     log: t.log,
   });
   t.pass();
@@ -279,8 +297,23 @@ test.serial('core eval prereqs: provision royalty, gov, ...', async t => {
   t.pass();
 });
 
+/**
+ * @param {string} text
+ * @param {string} fileName
+ */
+const acctSub = (text, fileName) => {
+  let out = text;
+  for (const [name, detail] of Object.entries(staticConfig.accounts)) {
+    if (out.includes(detail.impersonate)) {
+      console.log('impersonating', name, 'in', fileName);
+      out = out.replace(detail.impersonate, detail.address);
+    }
+  }
+  return out;
+};
+
 test.serial('core eval proposal passes', async t => {
-  const { agd, swingstore, config } = t.context;
+  const { agd, swingstore, config, mkTempRW } = t.context;
   const from = agd.lookup(config.proposer);
   const { chainId, deposit, assets, instance } = config;
   const info = { title: instance, description: `start ${instance}` };
@@ -296,14 +329,23 @@ test.serial('core eval proposal passes', async t => {
     }
   }
 
+  /** @param {string} script */
+  const withKnownKeys = async script => {
+    const text = await assets.getText(script);
+    const text2 = acctSub(text, script);
+    const out = await mkTempRW(script);
+    await out.writeText(text2);
+    return out.toString();
+  };
+
   const evalNames = buildInfo
     .map(({ evals }) => evals)
     .flat()
     .map(e => [e.permit, e.script])
     .flat();
-  const evalPaths = await Promise.all(evalNames.map(e => assets.storedPath(e)));
+  const evalPaths = await Promise.all(evalNames.map(withKnownKeys));
   t.log(evalPaths);
-  console.debug('await tx', evalPaths);
+  console.log('await tx', evalPaths);
   const result = await agd.tx(
     [
       'gov',
@@ -318,9 +360,13 @@ test.serial('core eval proposal passes', async t => {
   t.log(txAbbr(result));
   t.is(result.code, 0);
 
-  console.debug('await voteLatestProposalAndWait', evalPaths);
+  console.log('await voteLatestProposalAndWait', evalPaths);
   const detail = await voteLatestProposalAndWait();
   t.log(detail.proposal_id, detail.voting_end_time, detail.status);
+
+  // TODO: how long is long enough? poll?
+  await waitForBlock(5);
+
   t.is(detail.status, 'PROPOSAL_STATUS_PASSED');
 });
 
