@@ -16,4 +16,5 @@ cd /usr/src/upgrade-test-scripts/lib/ && yarn install --frozen-lockfile
 cd -
 
 # XXX using Ava serial to script the core-eval
-yarn ava upgrade-wf.test.js
+yarn ava mn2-start.test.js
+

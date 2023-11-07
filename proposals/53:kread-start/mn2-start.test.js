@@ -1,30 +1,14 @@
 // @ts-check
 
 /**
- * @file mainnet-2 contract start test
+ * @file mainnet-2 contract start test for KREAd
  *
- * Expects several environment variables:
- * If $MN2_PROPOSAL_INFO is not set, no tests are run.
- *
- * $MN2_PROPOSAL_INFO is a directory with the results of
- * running `agoric run xyz-script.js` one or more times.
- * Note: include the trailing / in the $MN_PROPOSAL_INFO.
- *
- * Each time, in addition to any *-permit.json and *.js files,
- * stdout is parsed with `parseProposals.js` to produce
- * a *-info.json file containing...
+ * Proposal info is fetched from a release.
  *
  * @typedef {{
  *   bundles: string[],
  *   evals: { permit: string; script: string }[],
  * }} ProposalInfo
- *
- * Only the last path segment of ProposalInfo.bundles is used.
- * All bundles must be available in $MN2_PROPOSAL_INFO/bundles/ .
- *
- * $MN2_INSTANCE is a key in agoricNames.instance
- * where the mainnet-2 contract instance is expected to be installed.
- * A vstorage node under published by this name is also expected.
  */
 
 import anyTest from 'ava';
@@ -37,18 +21,24 @@ import dbOpenAmbient from 'better-sqlite3';
 
 // TODO: factor out ambient authority from these
 // or at least allow caller to supply authority.
-import { mintIST } from '../lib/econHelpers.js';
-import { agoric, wellKnownIdentities } from '../lib/cliHelper.js';
+import { agoric, wellKnownIdentities } from '../../upgrade-test-scripts/lib/cliHelper.js';
 import {
   provisionSmartWallet,
   voteLatestProposalAndWait,
-} from '../lib/commonUpgradeHelpers.js';
+} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
 
-import { makeAgd } from '../lib/agd-lib.js';
-import { Far, makeMarshal, makeTranslationTable } from '../lib/unmarshal.js';
-import { Fail, NonNullish } from '../lib/assert.js';
-import { dbTool } from '../lib/vat-status.js';
-import { makeFileRW, makeWebCache, makeWebRd } from '../lib/webAsset.js';
+import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
+import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
+import { makeFileRW, makeWebCache, makeWebRd } from '../../upgrade-test-scripts/lib/webAsset.js';
+import {
+  bundleDetail,
+  ensureISTForInstall,
+  flags,
+  getContractInfo,
+  loadedBundleIds,
+  testIncludes,
+  txAbbr,
+} from './core-eval-support.js';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
 /** @type {import('ava').TestFn<TestContext>}} */
@@ -64,8 +54,12 @@ const test = anyTest;
  * voting 2023-09-28 to 2023-10-01
  * https://agoric.explorers.guru/proposal/53
  */
-const releaseInfo = {
-  url: 'https://github.com/Kryha/KREAd/releases/tag/KREAd-rc1',
+const assetInfo = {
+  repo:{
+    release:'https://github.com/Kryha/KREAd/releases/tag/KREAd-rc1',
+    url:'https://github.com/Kryha/KREAd',
+    name: 'KREAd',
+  },
   /** @type {Record<string, ProposalInfo>} */
   buildAssets: {
     'kread-committee-info.json': {
@@ -96,13 +90,13 @@ const dappAPI = {
 };
 
 const staticConfig = {
-  deposit: '10000000ubld', // 10 BLD
-  installer: 'gov1', // as in: agd keys show gov1
+  deposit: '10000000ubld', // 10 BLD. XXX mainnet was 5000 at the time
+  installer: 'user1', // as in: agd keys show gov1
   proposer: 'validator',
   collateralPrice: 6, // conservatively low price. TODO: look up
   swingstorePath: '~/.agoric/data/agoric/swingstore.sqlite',
-  releaseAssets: releaseInfo.url.replace('/tag/', '/download/') + '/',
-  buildInfo: Object.values(releaseInfo.buildAssets),
+  releaseAssets: assetInfo.repo.release.replace('/tag/', '/download/') + '/',
+  buildInfo: Object.values(assetInfo.buildAssets),
   initialCoins: `20000000ubld`, // enough to provision a smartWallet
   accounts: {
     krgov1: {
@@ -147,8 +141,10 @@ const makeTestContext = async (io = {}) => {
     tmpName({ prefix: 'assets' }, (err, x) => (err ? reject(err) : resolve(x))),
   );
   const dest = makeFileRW(td, { fsp, path });
-  td.teardown(() => assets.remove());
+  // FIXME Error: `t.teardown()` is not allowed in hooks
+  // t.teardown(() => assets.remove());
   const assets = makeWebCache(src, dest);
+  console.log(`bundleAssets: ${assets}`)
 
   const config = {
     assets,
@@ -170,125 +166,12 @@ const makeTestContext = async (io = {}) => {
 
 test.before(async t => (t.context = await makeTestContext()));
 
-const testIncludes = (t, needle, haystack, label, sense = true) => {
-  t.log(needle, sense ? 'in' : 'not in', haystack.length, label, '?');
-  const check = sense ? t.deepEqual : t.notDeepEqual;
-  if (sense) {
-    t.deepEqual(
-      haystack.filter(c => c === needle),
-      [needle],
-    );
-  } else {
-    t.deepEqual(
-      haystack.filter(c => c === needle),
-      [],
-    );
-  }
-};
-
 test.serial(`pre-flight: not in agoricNames.instance`, async t => {
   const { config, agoric } = t.context;
   const { instance: target } = config;
   const { instance } = await wellKnownIdentities({ agoric });
   testIncludes(t, target, Object.keys(instance), 'instance keys', false);
 });
-
-const makeBoardUnmarshal = () => {
-  const synthesizeRemotable = (_slot, iface) =>
-    Far(iface.replace(/^Alleged: /, ''), {});
-
-  const { convertValToSlot, convertSlotToVal } = makeTranslationTable(
-    slot => Fail`unknown id: ${slot}`,
-    synthesizeRemotable,
-  );
-
-  return makeMarshal(convertValToSlot, convertSlotToVal);
-};
-
-export const getContractInfo = async (path, io = {}) => {
-  const m = makeBoardUnmarshal();
-  const {
-    agoric: { follow = agoric.follow },
-    prefix = 'published.',
-  } = io;
-  console.log('@@TODO: prevent agoric follow hang', prefix, path);
-  const txt = await follow('-lF', `:${prefix}${path}`, '-o', 'text');
-  const { body, slots } = JSON.parse(txt);
-  return m.fromCapData({ body, slots });
-};
-
-// XXX dead code - worth keeping somewhere?
-const ensureMintLimit = async (targetNum, manager = 0, unit = 1_000_000) => {
-  const io = { agoric };
-  const [{ current }, metrics] = await Promise.all([
-    getContractInfo(`vaultFactory.managers.manager${manager}.governance`, io),
-    getContractInfo(`vaultFactory.managers.manager${manager}.metrics`, io),
-  ]);
-  const { totalDebt } = metrics;
-  const {
-    DebtLimit: { value: limit },
-  } = current;
-  const nums = {
-    total: Number(totalDebt.value) / unit,
-    limit: Number(limit.value) / unit,
-    target: targetNum,
-  };
-  nums.target += nums.total;
-  console.log(
-    nums,
-    nums.limit >= nums.target ? 'limit > target' : 'LIMIT TOO LOW',
-  );
-  if (nums.limit >= nums.target) return;
-  throw Error('raising mint limit not impl');
-};
-
-const myISTBalance = async (agd, addr, denom = 'uist', unit = 1_000_000) => {
-  const coins = await agd.query(['bank', 'balances', addr]);
-  const coin = coins.balances.find(a => a.denom === denom);
-  return Number(coin.amount) / unit;
-};
-
-const importBundleCost = (bytes, price = 0.002) => {
-  return bytes * price;
-};
-
-/**
- * @param {number} myIST
- * @param {number} cost
- * @param {{
- *  unit?: number, padding?: number, minInitialDebt?: number,
- *  collateralPrice: number,
- * }} opts
- * @returns
- */
-const mintCalc = (myIST, cost, opts) => {
-  const {
-    unit = 1_000_000,
-    padding = 1,
-    minInitialDebt = 6,
-    collateralPrice,
-  } = opts;
-  const { round, max } = Math;
-  const wantMinted = max(round(cost - myIST + padding), minInitialDebt);
-  const giveCollateral = round(wantMinted / collateralPrice) + 1;
-  const sendValue = round(giveCollateral * unit);
-  return { wantMinted, giveCollateral, sendValue };
-};
-
-const loadedBundleIds = swingstore => {
-  const ids = swingstore`SELECT bundleID FROM bundles`.map(r => r.bundleID);
-  return ids;
-};
-
-/**
- * @param {string} cacheFn - e.g. /home/me.agoric/cache/b1-DEADBEEF.json
- */
-const bundleDetail = cacheFn => {
-  const fileName = NonNullish(cacheFn.split('/').at(-1));
-  const id = fileName.replace(/\.json$/, '');
-  const hash = id.replace(/^b1-/, '');
-  return { fileName, endoZipBase64Sha512: hash, id };
-};
 
 test.serial('bundles not yet installed', async t => {
   const { swingstore, config } = t.context;
@@ -306,7 +189,7 @@ test.serial('bundles not yet installed', async t => {
 /** @param {number[]} xs */
 const sum = xs => xs.reduce((a, b) => a + b, 0);
 
-/** @param {import('../lib/webAsset.js').WebCache} assets */
+/** @param {import('../../upgrade-test-scripts/lib/webAsset.js').WebCache} assets */
 const readBundleSizes = async assets => {
   const info = staticConfig.buildInfo;
   const bundleSizes = await Promise.all(
@@ -320,38 +203,15 @@ const readBundleSizes = async assets => {
   return { bundleSizes, totalSize };
 };
 
-const ensureISTForInstall = async (agd, config, { log }) => {
-  const { proposalDir, installer } = config;
-  const { bundleSizes, totalSize } = await readBundleSizes(proposalDir);
-  const cost = importBundleCost(sum(bundleSizes));
-  log({ bundleSizes, totalSize, cost });
-
-  const addr = agd.lookup(installer);
-  const istBalance = await myISTBalance(agd, addr);
-
-  if (istBalance > cost) {
-    log('balance sufficient', { istBalance, cost });
-    return;
-  }
-  const { sendValue, wantMinted, giveCollateral } = mintCalc(
-    istBalance,
-    cost,
-    config,
-  );
-  log({ wantMinted });
-  await mintIST(addr, sendValue, wantMinted, giveCollateral);
-};
-
 test.serial('ensure enough IST to install bundles', async t => {
   const { agd, config } = t.context;
-  await ensureISTForInstall(agd, config, { log: t.log });
+  const { totalSize } = await readBundleSizes(config.assets);
+
+ await ensureISTForInstall(agd, config, totalSize, {
+    log: t.log,
+  });
   t.pass();
 });
-
-const txAbbr = tx => {
-  const { txhash, code, height, gas_used } = tx;
-  return { txhash, code, height, gas_used };
-};
 
 test.serial('ensure bundles installed', async t => {
   const { agd, swingstore, agoric, config, io } = t.context;
@@ -391,16 +251,6 @@ test.serial('ensure bundles installed', async t => {
   }
   t.is(todo, done);
 });
-
-/**
- * @param {Record<string, string>} record - e.g. { color: 'blue' }
- * @returns {string[]} - e.g. ['--color', 'blue']
- */
-const flags = record => {
-  return Object.entries(record)
-    .map(([k, v]) => [`--${k}`, v])
-    .flat();
-};
 
 test.serial('core eval prereqs: provision royalty, gov, ...', async t => {
   const { agd, config } = t.context;
