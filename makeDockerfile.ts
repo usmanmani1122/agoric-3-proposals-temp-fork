@@ -96,9 +96,11 @@ COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/s
 # install using global cache
 RUN --mount=type=cache,target=/root/.yarn \
   cd /usr/src/upgrade-test-scripts/lib/ \
+  && corepack enable \
+  && yarn --version \
   && yarn install \
   && cd /usr/src/proposals/${proposalIdentifier}:${proposalName} \
-  && test -n "yarn.lock" && yarn install --frozen-lockfile --production
+  && test -n "yarn.lock" && yarn install --immutable
 
 COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/run_eval.sh
 WORKDIR /usr/src/upgrade-test-scripts
@@ -126,9 +128,11 @@ COPY --link ./upgrade-test-scripts/lib /usr/src/upgrade-test-scripts/lib
 # install using global cache
 RUN --mount=type=cache,target=/root/.yarn \
   cd /usr/src/upgrade-test-scripts/lib/ \
+  && corepack enable \
+  && yarn --version \
   && yarn install \
   && cd /usr/src/proposals/${proposalIdentifier}:${proposalName} \
-  && test -n "yarn.lock" && yarn install --frozen-lockfile --production
+  && test -n "yarn.lock" && yarn install --immutable
 
 COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/run_use.sh
 WORKDIR /usr/src/upgrade-test-scripts
@@ -152,9 +156,11 @@ FROM use-${proposalName} as test-${proposalName}
 # install using global cache
 RUN --mount=type=cache,target=/root/.yarn \
   cd /usr/src/upgrade-test-scripts/lib/ \
+  && corepack enable \
+  && yarn --version \
   && yarn install \
   && cd /usr/src/proposals/${proposalIdentifier}:${proposalName} \
-  && test -n "yarn.lock" && yarn install --frozen-lockfile --production
+  && test -n "yarn.lock" && yarn install --immutable
 
 COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh /usr/src/upgrade-test-scripts/run_test.sh
 WORKDIR /usr/src/upgrade-test-scripts
