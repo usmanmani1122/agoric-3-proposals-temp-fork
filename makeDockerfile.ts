@@ -29,7 +29,7 @@ ENV UPGRADE_TO=${to} THIS_NAME=${agZeroUpgrade}
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
-COPY --link --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_ag0.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0
 RUN /usr/src/upgrade-test-scripts/start_ag0.sh
@@ -51,7 +51,7 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName}
 # base is a fresh sdk image so copy these supports
-COPY --link --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
@@ -70,7 +70,7 @@ FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
 ENV THIS_NAME=${planName}
 
 # base is a fresh sdk image so copy these supports
-COPY --link --chmod=755 ./upgrade-test-scripts/*.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/
 
 COPY --link --from=prepare-${proposalName} /root/.agoric /root/.agoric
 
@@ -94,6 +94,12 @@ FROM use-${lastProposal.proposalName} as eval-${proposalName}
 COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
 WORKDIR /usr/src/upgrade-test-scripts
+
+# install using global cache
+COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
+RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
+
+COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/run_eval.sh
 SHELL ["/bin/bash", "-c"]
 RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -112,12 +118,16 @@ FROM ${previousStage}-${proposalName} as use-${proposalName}
 
 COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 
-# XXX for 'lib' dir for JS modules
-COPY --link --chmod=755 ./upgrade-test-scripts /usr/src/upgrade-test-scripts/
-# TODO remove network dependencies in stages
-RUN cd /usr/src/upgrade-test-scripts/lib/ && yarn install
-
 WORKDIR /usr/src/upgrade-test-scripts
+
+# XXX for 'lib' dir for JS modules
+COPY --link ./upgrade-test-scripts/lib /usr/src/upgrade-test-scripts/lib
+# TODO remove network dependencies in stages
+# install using global cache
+COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
+RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
+
+COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/run_use.sh
 SHELL ["/bin/bash", "-c"]
 RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -136,6 +146,12 @@ RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 FROM use-${proposalName} as test-${proposalName}
 
 WORKDIR /usr/src/upgrade-test-scripts
+
+# install using global cache
+COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
+RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
+
+COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh /usr/src/upgrade-test-scripts/run_test.sh
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -147,6 +163,8 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
     return `
 # DEFAULT
 FROM use-${lastProposal.proposalName}
+
+COPY --link --chmod=755 ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/start_agd.sh
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
