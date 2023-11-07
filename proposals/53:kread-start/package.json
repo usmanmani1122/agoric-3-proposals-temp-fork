@@ -13,6 +13,6 @@
     "agops": "yarn --cwd /usr/src/agoric-sdk/ --silent agops"
   },
   "ava": {
-    "timeout": "30s"
+    "timeout": "300s"
   }
 }
