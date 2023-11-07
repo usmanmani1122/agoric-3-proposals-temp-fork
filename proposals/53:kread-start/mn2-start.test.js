@@ -1,5 +1,8 @@
 // @ts-check
 
+// NOTE: This ava test() style is based on earlier working code.
+// TODO: consider ordinary script style.
+
 /**
  * @file mainnet-2 contract start test for KREAd
  *
