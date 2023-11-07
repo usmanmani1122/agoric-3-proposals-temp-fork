@@ -370,24 +370,53 @@ test.serial('core eval proposal passes', async t => {
   t.is(detail.status, 'PROPOSAL_STATUS_PASSED');
 });
 
-test.serial(`agoricNames.instance is populated`, async t => {
-  const { config, agoric } = t.context;
-  const { instance: target } = config;
-  const { instance, brand } = await wellKnownIdentities({ agoric });
-  const present = Object.keys(instance);
-  testIncludes(t, target, present, 'instance keys');
-});
-
-// needs 2 brand names
-test.todo(`agoricNames.brand is populated`);
-test.todo('boardAux is populated');
-
 test.serial('vstorage published.CHILD is present', async t => {
   const { agd, config } = t.context;
   const { vstorageNode } = config;
   const { children } = await agd.query(['vstorage', 'children', 'published']);
   testIncludes(t, vstorageNode, children, 'published children');
 });
+
+test.serial(`agoricNames.instance is populated`, async t => {
+  const { config, agoric, agd } = t.context;
+  const { instance: target } = config;
+
+  /**
+   * @param {() => Promise<boolean>} check
+   */
+  const poll = async (check, maxTries) => {
+    for (let tries = 0; tries < maxTries; tries += 1) {
+      const ok = await check();
+      if (ok) return;
+      await waitForBlock();
+    }
+    throw Error(`tried ${maxTries} times without success`);
+  };
+
+  const vstorageValueSize = async path => {
+    const { value } = await agd.query(['vstorage', 'data', path]);
+    return value.length;
+  };
+
+  const checkForInstance = async () => {
+    // eye candy while we wait for the contract to start
+    const progress = await vstorageValueSize(`published.kread.item`);
+    console.log('kread.item size', progress);
+
+    const { instance } = await wellKnownIdentities({ agoric });
+    const present = Object.keys(instance);
+    return present.includes(target);
+  };
+
+  // contract initialization took ~10min in mainnet
+  const minute = 60 / 1; // block time is ~1sec
+  poll(checkForInstance, 15 * minute);
+  t.pass();
+});
+
+// needs 2 brand names
+test.todo(`agoricNames.brand is populated`);
+test.todo('boardAux is populated');
 
 // KREAd specific below here
 // TODO refactor this test for re-use across MN2 scripts
