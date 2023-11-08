@@ -57,7 +57,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
         # The .ts scripts depend upon this
-      - run: yarn global add tsx
+      - run: npm install --global tsx
 
       - name: build test images
         run: |
