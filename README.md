@@ -5,7 +5,7 @@ Proposals run or planned for Mainnet (agoric-3)
 This repo serves several functions:
 
 - verify building an image with in which known proposals have executed
-- publishing an image with all passed proposals
+- publishing a multiplatform image with all passed proposals
 - verify that certain tests pass after each proposal
 
 # Design
@@ -82,9 +82,9 @@ To add a proposal, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 This repo publishes an image of the synthetic agoric-3 chain with all proposals that have "passed" (defined in this repo as having a proposal number).
 
-The CI builds on every push to the trunk branch, (`main`), or a PR branch. You can view all versions at https://github.com/agoric/agoric-3-proposals/pkgs/container/agoric-3-proposals/versions
+The CI builds multiplatform images on every push to the trunk branch, (`main`), and for speed, only default worker platform images for PR branches. You can view all versions at https://github.com/agoric/agoric-3-proposals/pkgs/container/agoric-3-proposals/versions
 
-The versions built from the main branch are at: `ghcr.io/agoric/agoric-3-proposals:main`. For each PR, they're at a URL like `ghcr.io/agoric/agoric-3-proposals:pr-11`.
+The multiplatform versions built from the main branch are at: `ghcr.io/agoric/agoric-3-proposals:main`. For each PR, default worker platform images are at a URL like `ghcr.io/agoric/agoric-3-proposals:pr-11`.
 
 If you RUN this image, you'll get a working chain running `agd` until you terminate,
 
