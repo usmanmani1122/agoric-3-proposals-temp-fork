@@ -31,6 +31,7 @@ for (const proposal of proposals) {
   const cmd = `docker buildx build --load --tag ${name} --target ${target} .`;
   console.log(cmd);
   if (!dry) {
-    execSync(cmd, { stdio: 'inherit' });
+    // `time` to output how long each build takes
+    execSync(`time ${cmd}`, { stdio: 'inherit' });
   }
 }
