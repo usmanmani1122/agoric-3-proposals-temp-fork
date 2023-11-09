@@ -20,7 +20,7 @@ jobs:
   test-proposals:
     runs-on: ubuntu-latest
     # UNTIL https://github.com/Agoric/agoric-3-proposals/issues/2
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - name: free up disk space
         run: |
