@@ -3,7 +3,7 @@
 
 import assert from 'node:assert';
 import fs from 'node:fs';
-import { readProposals } from './common';
+import { lastPassedProposal, readProposals } from './common';
 import type {
   ProposalInfo,
   SoftwareUpgradeProposal,
@@ -177,8 +177,9 @@ ENTRYPOINT ./start_agd.sh
 // The upgrade doesn't happen until the next stage begins executing.
 const blocks: string[] = [];
 
+const allProposals = readProposals();
 let previousProposal: ProposalInfo | null = null;
-for (const proposal of readProposals()) {
+for (const proposal of allProposals) {
   //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
   blocks.push(
     `#----------------\n# ${proposal.proposalName}\n#----------------`,
@@ -202,7 +203,7 @@ for (const proposal of readProposals()) {
   blocks.push(stage.TEST(proposal));
   previousProposal = proposal;
 }
-blocks.push(stage.DEFAULT(previousProposal!));
+blocks.push(stage.DEFAULT(lastPassedProposal(allProposals)));
 
 export function refreshDockerfile() {
   const contents = blocks.join('\n');
