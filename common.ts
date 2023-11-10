@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 // @ts-check
 
+import assert from 'node:assert';
 import fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -42,6 +43,13 @@ export function readProposals(): ProposalInfo[] {
     .map(dirent => dirent.name)
     .filter(name => name.includes(':')); // omit node_modules
   return proposalPaths.map(readInfo);
+}
+
+export function lastPassedProposal(proposals: ProposalInfo[]): ProposalInfo {
+  // @ts-expect-error use es2023; findLast is available in Node 18
+  const last = proposals.findLast(p => p.proposalIdentifier.match(/^\d/));
+  assert(last, 'no passed proposals');
+  return last;
 }
 
 export function imageNameForProposalTest(proposal) {
