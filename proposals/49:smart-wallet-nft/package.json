@@ -14,5 +14,5 @@
     "ava": {
         "timeout": "30s"
     },
-    "packageManager": "yarn@4.0.1"
+    "packageManager": "yarn@4.0.2"
 }
