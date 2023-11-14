@@ -9,5 +9,5 @@
     "scripts": {
         "agops": "yarn --cwd /usr/src/agoric-sdk/ --silent agops"
     },
-    "packageManager": "yarn@4.0.1"
+    "packageManager": "yarn@4.0.2"
 }
