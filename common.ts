@@ -52,8 +52,11 @@ export function lastPassedProposal(proposals: ProposalInfo[]): ProposalInfo {
   return last;
 }
 
-export function imageNameForProposalTest(proposal) {
-  const target = `test-${proposal.proposalName}`;
+export function imageNameForProposal(
+  proposal: ProposalCommon,
+  stage: 'test' | 'eval',
+) {
+  const target = `${stage}-${proposal.proposalName}`;
   return {
     name: `${repository}:${target}`,
     target,
