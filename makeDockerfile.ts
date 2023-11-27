@@ -99,7 +99,7 @@ WORKDIR /usr/src/upgrade-test-scripts
 COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
 RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/run_eval.sh
+COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -127,7 +127,7 @@ COPY --link ./upgrade-test-scripts/lib /usr/src/upgrade-test-scripts/lib
 COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
 RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/run_use.sh
+COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -151,7 +151,8 @@ WORKDIR /usr/src/upgrade-test-scripts
 COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
 RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh /usr/src/upgrade-test-scripts/run_test.sh
+# copy run_test for this entrypoint and start_agd for optional debugging
+COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -164,7 +165,7 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
 # DEFAULT
 FROM use-${lastProposal.proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/start_agd.sh
+COPY --link --chmod=755 ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
