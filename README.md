@@ -74,7 +74,15 @@ To run the tests for particular proposals,
 ./runTestImages.ts --match upgrade
 ```
 
-## Contributing
+## Debugging
+
+To get the local files into the container, use a [bind mount](https://docs.docker.com/storage/bind-mounts/). E.g.
+
+```
+docker run -it --entrypoint bash --mount type=bind,src=.,dst=/usr/src/a3p ghcr.io/agoric/agoric-3-proposals:use-upgrade-8
+```
+
+# Contributing
 
 To add a proposal, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
@@ -102,7 +110,6 @@ docker run  ghrc.io/agoric/agoric-3-proposals:dev
 ## Future work
 
 - [ ] include a way to test soft patches that weren't proposals (e.g. PismoB)
-- [ ] documentation and tooling for debugging
 - [ ] separate console output for agd and the scripts (had been with tmux before but trouble, try Docker compose https://github.com/Agoric/agoric-sdk/discussions/8480#discussioncomment-7438329)
 - [ ] way to query capdata in one shot (not resorting to follow jsonlines hackery)
 - [ ] within each proposal, separate dirs for supporting files so images don't invalidate

@@ -45,6 +45,16 @@ export function readProposals(): ProposalInfo[] {
   return proposalPaths.map(readInfo);
 }
 
+export const readOneProposal = (match: string) => {
+  const allProposals = readProposals();
+
+  const proposals = allProposals.filter(p => p.proposalName.includes(match));
+
+  assert(proposals.length > 0, 'no proposals match');
+  assert(proposals.length === 1, 'too many proposals match');
+  return proposals[0];
+};
+
 export function lastPassedProposal(proposals: ProposalInfo[]): ProposalInfo {
   // @ts-expect-error use es2023; findLast is available in Node 18
   const last = proposals.findLast(p => p.proposalIdentifier.match(/^\d/));
