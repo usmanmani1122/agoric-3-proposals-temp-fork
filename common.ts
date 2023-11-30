@@ -26,11 +26,12 @@ export type CoreEvalProposal = ProposalCommon & {
 export type ProposalInfo = SoftwareUpgradeProposal | CoreEvalProposal;
 
 function readInfo(proposalPath: string): ProposalInfo {
-  const configPath = path.join('proposals', proposalPath, 'config.json');
-  const config = fs.readFileSync(configPath, 'utf-8');
+  const packageJsonPath = path.join('proposals', proposalPath, 'package.json');
+  const packageJson = fs.readFileSync(packageJsonPath, 'utf-8');
+  const { agoricProposal } = JSON.parse(packageJson);
   const [proposalIdentifier, proposalName] = proposalPath.split(':');
   return {
-    ...JSON.parse(config),
+    ...agoricProposal,
     proposalIdentifier,
     proposalName,
   };

@@ -1,4 +1,10 @@
 {
+    "agoricProposal": {
+        "releaseNotes": "https://github.com/Agoric/agoric-sdk/releases/tag/agoric-upgrade-12",
+        "sdkImageTag": "38",
+        "planName": "agoric-upgrade-12",
+        "type": "Software Upgrade Proposal"
+    },
     "type": "module",
     "license": "Apache-2.0",
     "dependencies": {
