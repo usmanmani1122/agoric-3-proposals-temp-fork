@@ -2,7 +2,7 @@
 
 import { parseArgs } from 'node:util';
 import { execSync } from 'node:child_process';
-import { imageNameForProposalTest, readProposals } from './common';
+import { imageNameForProposal, readProposals } from './common';
 import { refreshDockerfile } from './makeDockerfile';
 
 refreshDockerfile();
@@ -25,7 +25,7 @@ for (const proposal of proposals) {
   if (!dry) {
     console.log(`\nBuilding test image for proposal ${proposal.proposalName}`);
   }
-  const { name, target } = imageNameForProposalTest(proposal);
+  const { name, target } = imageNameForProposal(proposal, 'test');
   // 'load' to ensure the images are output to the Docker client. Seems to be necessary
   // for the CI docker/build-push-action to re-use the cached stages.
   const cmd = `docker buildx build --load --tag ${name} --target ${target} .`;
