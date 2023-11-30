@@ -79,8 +79,8 @@ export const makeAgd = ({ execFileSync }) => {
           ...keyringArgs,
           ...[`--from`, from],
           'tx',
-          ...txArgs,
           ...['--broadcast-mode', 'block'],
+          ...txArgs,
           ...yesArg,
           ...outJson,
         ];
