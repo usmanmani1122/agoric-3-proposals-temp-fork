@@ -3,7 +3,6 @@ name: Proposal tests
 # run on all PRs
 on:
   pull_request:
-  workflow_dispatch:
   merge_group:
   push:
     branches: [main]
@@ -43,20 +42,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker multiplatform builds
-        run: |
-          DEFAULT_PLATFORM=linux/amd64
-          echo "DEFAULT_PLATFORM=$DEFAULT_PLATFORM" >> $GITHUB_ENV
-          if ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}; then
-            echo PLATFORMS=$DEFAULT_PLATFORM >> $GITHUB_ENV
-          else
-            echo PLATFORMS=linux/amd64,linux/arm64/v8 >> $GITHUB_ENV
-          fi
-
-      - name: Set up QEMU for cross-platform builds
-        uses: docker/setup-qemu-action@v3
-        if: ${{ env.PLATFORMS != env.DEFAULT_PLATFORM }}
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         # see https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
@@ -80,18 +65,24 @@ jobs:
           ./buildTestImages.ts
       - name: run test images
         run: ./runTestImages.ts
-      
-      # XXX this should be instant for the local platform because all the stages
-      # were already built in the steps above but it's re-building the last
-      # stage. This is deemed good enough for now.  see
-      # https://github.com/moby/moby/issues/34715
-      - name: Build and push images
+
+      # XXX this should be instant because all the stages were already built in the steps above
+      # but it's re-building the last stage. This is deemed good enough for now.
+      # see https://github.com/moby/moby/issues/34715
+      - name: Build and push complete image
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: ${{ env.PLATFORMS }}
           # push to registry on every repo push. A PR #2 will push with tag `pr-2` and `main` will have tag `main`.
           # See https://github.com/docker/metadata-action?tab=readme-ov-file#basic.
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: notify on failure
+        if: failure() && github.event_name != 'pull_request'
+        uses: ./.github/actions/notify-status
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          from: ${{ secrets.NOTIFY_EMAIL_FROM }}
+          to: ${{ secrets.NOTIFY_EMAIL_TO }}
+          password: ${{ secrets.NOTIFY_EMAIL_PASSWORD }}
