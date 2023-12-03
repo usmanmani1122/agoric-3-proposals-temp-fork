@@ -18,6 +18,9 @@ env:
 jobs:
   # see https://docs.docker.com/build/ci/github-actions/test-before-push/
   test-proposals:
+    strategy:
+      matrix:
+        platform: [linux/amd64]
     runs-on: ubuntu-latest
     # UNTIL https://github.com/Agoric/agoric-3-proposals/issues/2
     timeout-minutes: 120
