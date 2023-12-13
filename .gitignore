@@ -135,3 +135,4 @@ dist
 
 # build in CI
 Dockerfile
+/upgrade-test-scripts
