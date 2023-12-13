@@ -1,6 +1,9 @@
 #!/bin/bash
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
+test_not_val "$(cat /root/.agoric/psm_metrics.json | wc -l)" "0" "psm metrics shouldnt be empty"
+test_not_val "$(cat /root/.agoric/psm_governance.json | wc -l)" "0" "psm gov params shouldnt be empty"
+
 # provision pool has right balance
 test_val $(agd query bank balances agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346 -o json | jq -r '.balances | first | .amount') "19000000"
 
