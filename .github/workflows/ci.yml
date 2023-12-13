@@ -59,15 +59,18 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-        # The .ts scripts depend upon this
+      # The .ts scripts depend upon this
       - run: npm install --global tsx
+      # Enable corepack for packageManager config
+      - run: corepack enable
+      - run: yarn install
 
       - name: build test images
         run: |
           docker info
-          ./buildTestImages.ts
+          node_modules/.bin/synthetic-chain build
       - name: run test images
-        run: ./runTestImages.ts
+        run: node_modules/.bin/synthetic-chain test
 
       # XXX this should be instant because all the stages were already built in the steps above
       # but it's re-building the last stage. This is deemed good enough for now.

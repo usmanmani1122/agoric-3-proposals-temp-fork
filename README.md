@@ -57,21 +57,21 @@ If the proposal is _pending_ and does not yet have a number, use a letter. The p
 To build the test images,
 
 ```
-./buildTestImages.ts
+node_modules/.bin/synthetic-chain build
 ```
 
 To build the test images for particular proposals,
 
 ```
 # build just upgrades
-./buildTestImages.ts --match upgrade
+node_modules/.bin/synthetic-chain build --match upgrade
 ```
 
 To run the tests for particular proposals,
 
 ```
 # build just upgrades
-./runTestImages.ts --match upgrade
+node_modules/.bin/synthetic-chain test --match upgrade
 ```
 
 ## Debugging
