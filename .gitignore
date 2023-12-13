@@ -68,6 +68,7 @@ web_modules/
 
 # Output of 'npm pack'
 *.tgz
+!agoric-synthetic-chain-*.tgz
 
 # Yarn Integrity file
 .yarn-integrity

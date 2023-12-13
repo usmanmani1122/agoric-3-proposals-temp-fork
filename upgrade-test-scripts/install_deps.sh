@@ -14,10 +14,6 @@ yarn --version
 # Run where this script is
 cd "$(dirname "$(realpath -- "$0")")"
 
-pushd ./lib/
-yarn install
-popd
-
 # TODO consider yarn workspaces to install all in one command
 if [ -n "$PROPOSAL_PATH" ]; then
     cd "../proposals/$PROPOSAL_PATH"

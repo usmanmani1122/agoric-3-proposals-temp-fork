@@ -7,10 +7,10 @@ import {
   VALIDATORADDR,
   USER1ADDR,
   CHAINID,
-} from '../../upgrade-test-scripts/lib/constants.js';
+} from '@agoric/synthetic-chain/src/lib/constants.js';
 
-import { agd } from '../../upgrade-test-scripts/lib/cliHelper.js';
-import { getUser } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+import { agd } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
+import { getUser } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 
 export const printKeys = async () => {
   console.log('========== GOVERNANCE KEYS ==========');

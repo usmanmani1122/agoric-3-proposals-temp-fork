@@ -7,19 +7,19 @@ import {
   agops,
   agopsLocation,
   executeCommand,
-} from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   ATOM_DENOM,
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
-} from '../../upgrade-test-scripts/lib/constants.js';
+} from '@agoric/synthetic-chain/src/lib/constants.js';
 import {
   waitForBlock,
   executeOffer,
   addUser,
   provisionSmartWallet,
-} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 
 const govAccounts = [GOV1ADDR, GOV2ADDR, GOV3ADDR];
 

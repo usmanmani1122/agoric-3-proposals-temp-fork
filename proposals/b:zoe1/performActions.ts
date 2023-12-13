@@ -9,11 +9,11 @@ import { ZipReader } from '@endo/zip';
 import dbOpen from 'better-sqlite3';
 
 import assert from 'assert';
-import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
-import { agoric } from '../../upgrade-test-scripts/lib/cliHelper.js';
-import { voteLatestProposalAndWait } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
-import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
-import { type WebCache } from '../../upgrade-test-scripts/lib/webAsset.js';
+import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
+import { agoric } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
+import { voteLatestProposalAndWait } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
+import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
+import { type WebCache } from '@agoric/synthetic-chain/src/lib/webAsset.js';
 import {
   type ProposalInfo,
   bundleDetail,

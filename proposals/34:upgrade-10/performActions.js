@@ -12,22 +12,22 @@ import {
   agd,
   agoric,
   agops,
-} from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   GOV1ADDR,
   GOV2ADDR,
-} from '../../upgrade-test-scripts/lib/constants.js';
+} from '@agoric/synthetic-chain/src/lib/constants.js';
 import {
   getUser,
   newOfferId,
   waitForBlock,
-} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 import { submitDeliverInbound } from './upgradeHelpers.js';
 import {
   openVault,
   adjustVault,
   closeVault,
-} from '../../upgrade-test-scripts/lib/econHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
 
 const START_FREQUENCY = 600; // StartFrequency: 600s (auction runs every 10m)
 const CLOCK_STEP = 20; // ClockStep: 20s (ensures auction completes in time)

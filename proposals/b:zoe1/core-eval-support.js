@@ -3,16 +3,16 @@ import {
   Far,
   makeMarshal,
   makeTranslationTable,
-} from '../../upgrade-test-scripts/lib/unmarshal.js';
-import { Fail, NonNullish } from '../../upgrade-test-scripts/lib/assert.js';
+} from '@agoric/synthetic-chain/src/lib/unmarshal.js';
+import { Fail, NonNullish } from '@agoric/synthetic-chain/src/lib/assert.js';
 
 // TODO: factor out ambient authority from these
 // or at least allow caller to supply authority.
 import {
   getISTBalance,
   mintIST,
-} from '../../upgrade-test-scripts/lib/econHelpers.js';
-import { agoric } from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
+import { agoric } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 
 // move to unmarshal.js?
 const makeBoardUnmarshal = () => {

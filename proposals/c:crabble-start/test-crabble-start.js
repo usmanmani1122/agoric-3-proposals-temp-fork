@@ -27,19 +27,19 @@ import dbOpenAmbient from 'better-sqlite3';
 import {
   agoric,
   wellKnownIdentities,
-} from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   provisionSmartWallet,
   voteLatestProposalAndWait,
   waitForBlock,
-} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 
-import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
-import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
+import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
+import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
 import {
   makeFileRd,
   makeFileRW,
-} from '../../upgrade-test-scripts/lib/webAsset.js';
+} from '@agoric/synthetic-chain/src/lib/webAsset.js';
 import {
   ensureISTForInstall,
   flags,
@@ -58,13 +58,10 @@ const assetInfo = {
   buildAssets: {
     crabbleCoreEvalInfo: {
       evals: [
-          { permit: 'crabble-permit.json', script: 'crabbleCoreEval.js' },
-          { permit: 'gov-permit.json', script: 'govStarting.js' },
+        { permit: 'crabble-permit.json', script: 'crabbleCoreEval.js' },
+        { permit: 'gov-permit.json', script: 'govStarting.js' },
       ],
-      bundles: [
-        'bundle-contract.json',
-        'bundle-governor.json',
-      ],
+      bundles: ['bundle-contract.json', 'bundle-governor.json'],
     },
   },
 };
@@ -182,7 +179,7 @@ test.before(async t => (t.context = await makeTestContext()));
 test.serial(`pre-flight: not in agoricNames.instance`, async t => {
   const { config, agoric } = t.context;
   const { instance: target } = config;
-  console.log({ config, agoric })
+  console.log({ config, agoric });
   const { instance } = await wellKnownIdentities({ agoric });
   testIncludes(t, target, Object.keys(instance), 'instance keys', false);
 });
@@ -364,7 +361,7 @@ test.serial('core eval proposal passes', async t => {
     ],
     { from, chainId, yes: true },
   );
-  console.log('RESULT', { result })
+  console.log('RESULT', { result });
   t.log(txAbbr(result));
   t.is(result.code, 0);
 
@@ -402,7 +399,6 @@ test.serial(`agoricNames.instance is populated`, async t => {
   };
 
   const checkForInstance = async () => {
-
     const { instance } = await wellKnownIdentities({ agoric });
     const present = Object.keys(instance);
     return present.includes(target);
@@ -432,7 +428,7 @@ test.serial('crabble governance is present', async t => {
     'children',
     'published.crabble',
   ]);
-  console.log({ children })
+  console.log({ children });
   testIncludes(t, 'governance', children, 'crabble committee');
 });
 //

@@ -13,10 +13,10 @@ import {
   makeFileRW,
   makeWebCache,
   makeWebRd,
-} from '../../upgrade-test-scripts/lib/webAsset.js';
-import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
-import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
-import { voteLatestProposalAndWait } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/webAsset.js';
+import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
+import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
+import { voteLatestProposalAndWait } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 import {
   bundleDetail,
   ensureISTForInstall,
@@ -29,7 +29,7 @@ import {
 import {
   agoric,
   wellKnownIdentities,
-} from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
 /** @type {import('ava').TestFn<TestContext>}} */
