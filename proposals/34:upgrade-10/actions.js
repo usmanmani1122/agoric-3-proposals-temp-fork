@@ -9,7 +9,6 @@ import {
   executeCommand,
 } from '../../upgrade-test-scripts/lib/cliHelper.js';
 import {
-  HOME,
   ATOM_DENOM,
   GOV1ADDR,
   GOV2ADDR,
@@ -18,7 +17,7 @@ import {
 import {
   waitForBlock,
   executeOffer,
-  getUser,
+  addUser,
   provisionSmartWallet,
 } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
 
@@ -200,12 +199,8 @@ const paramChangeOfferGeneration = async (
   const capData = { body: `#${JSON.stringify(body)}`, slots };
   return JSON.stringify(capData);
 };
-
 export const provisionWallet = async user => {
-  const userKeyData = await agd.keys('add', user, '--keyring-backend=test');
-  await fs.writeFile(`${HOME}/.agoric/${user}.key`, userKeyData.mnemonic);
-
-  const userAddress = await getUser(user);
+  const userAddress = await addUser(user);
 
   await provisionSmartWallet(
     userAddress,
