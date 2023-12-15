@@ -72,3 +72,9 @@ export const mintIST = async (addr, sendValue, wantMinted, giveCollateral) => {
   );
   await openVault(addr, wantMinted, giveCollateral);
 };
+
+export const getISTBalance = async (addr, denom = 'uist', unit = 1_000_000) => {
+  const coins = await agd.query('bank', 'balances', addr);
+  const coin = coins.balances.find(a => a.denom === denom);
+  return Number(coin.amount) / unit;
+};
