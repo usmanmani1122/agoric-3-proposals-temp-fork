@@ -8,7 +8,10 @@ import { Fail, NonNullish } from '../../upgrade-test-scripts/lib/assert.js';
 
 // TODO: factor out ambient authority from these
 // or at least allow caller to supply authority.
-import { mintIST } from '../../upgrade-test-scripts/lib/econHelpers.js';
+import {
+  getISTBalance,
+  mintIST,
+} from '../../upgrade-test-scripts/lib/econHelpers.js';
 import { agoric } from '../../upgrade-test-scripts/lib/cliHelper.js';
 
 // move to unmarshal.js?
@@ -94,12 +97,6 @@ const importBundleCost = (bytes, price = 0.002) => {
  * }} ProposalInfo
  */
 
-const myISTBalance = async (agd, addr, denom = 'uist', unit = 1_000_000) => {
-  const coins = await agd.query(['bank', 'balances', addr]);
-  const coin = coins.balances.find(a => a.denom === denom);
-  return Number(coin.amount) / unit;
-};
-
 /**
  * @param {number} myIST
  * @param {number} cost
@@ -136,7 +133,7 @@ export const ensureISTForInstall = async (agd, config, bytes, { log }) => {
   log({ totalSize: bytes, cost });
   const { installer } = config;
   const addr = agd.lookup(installer);
-  const istBalance = await myISTBalance(agd, addr);
+  const istBalance = await getISTBalance(addr);
 
   if (istBalance > cost) {
     log('balance sufficient', { istBalance, cost });

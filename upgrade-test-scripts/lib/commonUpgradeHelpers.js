@@ -3,7 +3,7 @@ import { $ } from 'execa';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { agd, agoric, agops } from './cliHelper.js';
-import { CHAINID, VALIDATORADDR } from './constants.js';
+import { CHAINID, HOME, VALIDATORADDR } from './constants.js';
 
 const waitForBootstrap = async () => {
   const endpoint = 'localhost';
@@ -140,6 +140,14 @@ export const executeOffer = async (address, offerPromise) => {
 
 export const getUser = async user => {
   return agd.keys('show', user, '-a', '--keyring-backend=test');
+};
+
+export const addUser = async user => {
+  const userKeyData = await agd.keys('add', user, '--keyring-backend=test');
+  await fs.writeFile(`${HOME}/.agoric/${user}.key`, userKeyData.mnemonic);
+
+  const userAddress = await getUser(user);
+  return userAddress;
 };
 
 export const voteLatestProposalAndWait = async () => {
