@@ -1,5 +1,6 @@
 // @ts-check
-'use strict';
+
+// TODO use actual @endo/marshal
 
 const {
   create,
@@ -23,13 +24,23 @@ const sigilDoc = {
 };
 const sigils = keys(sigilDoc).join('');
 
-/** @type {<V, U>(obj: Record<string, V>, f: (v: V) => U) => Record<string, U>} */
-const objMap = (obj, f) =>
-  fromEntries(entries(obj).map(([p, v]) => [f(p), f(v)]));
-
 const { freeze: harden } = Object; // XXX
 
-const makeMarshal = (_v2s, convertSlotToVal = (s, _i) => s) => {
+/**
+ * @template {Record<string, any>} O
+ * @param {O} original
+ * @template R map result
+ * @param {(value: O[keyof O], key: keyof O) => R} mapFn
+ * @returns {{ [P in keyof O]: R}}
+ */
+export const objectMap = (original, mapFn) => {
+  const ents = entries(original);
+  const mapEnts = ents.map(([k, v]) => [k, mapFn(v, k)]);
+  return harden(fromEntries(mapEnts));
+};
+harden(objectMap);
+
+export const makeMarshal = (_v2s, convertSlotToVal = (s, _i) => s) => {
   const fromCapData = ({ body, slots }) => {
     const recur = v => {
       switch (typeof v) {
@@ -73,7 +84,7 @@ const makeMarshal = (_v2s, convertSlotToVal = (s, _i) => s) => {
           if (isArray(v)) {
             return freeze(v.map(recur));
           }
-          return freeze(objMap(v, recur));
+          return freeze(objectMap(v, recur));
         default:
           throw RangeError(`Unexpected value type ${typeof v}`);
       }
@@ -93,6 +104,7 @@ const makeMarshal = (_v2s, convertSlotToVal = (s, _i) => s) => {
     serialize: toCapData,
   });
 };
+harden(makeMarshal);
 
 const PASS_STYLE = Symbol.for('passStyle');
 export const Far = (iface, methods) => {
@@ -107,13 +119,7 @@ export const Far = (iface, methods) => {
   return methods;
 };
 
-// #region marshal-table
-const makeSlot1 = (val, serial) => {
-  const prefix = Promise.resolve(val) === val ? 'promise' : 'object';
-  return `${prefix}${serial}`;
-};
-
-const makeTranslationTable = (makeSlot, makeVal) => {
+export const makeTranslationTable = (makeSlot, makeVal) => {
   const valToSlot = new Map();
   const slotToVal = new Map();
 
@@ -138,6 +144,4 @@ const makeTranslationTable = (makeSlot, makeVal) => {
 
   return harden({ convertValToSlot, convertSlotToVal });
 };
-// #endregion marshal-table
-
-export { makeMarshal, makeTranslationTable };
+harden(makeTranslationTable);

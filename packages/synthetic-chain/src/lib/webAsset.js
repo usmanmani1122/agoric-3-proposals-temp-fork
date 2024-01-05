@@ -1,5 +1,4 @@
 // @ts-check
-import { tmpName } from 'tmp';
 
 const dbg = label => x => {
   label;
@@ -157,44 +156,3 @@ export const makeWebCache = (src, dest) => {
   };
   return self;
 };
-
-const buildInfo = [
-  {
-    evals: [
-      {
-        permit: 'kread-invite-committee-permit.json',
-        script: 'kread-invite-committee.js',
-      },
-    ],
-    bundles: [
-      'b1-51085a4ad4ac3448ccf039c0b54b41bd11e9367dfbd641deda38e614a7f647d7f1c0d34e55ba354d0331b1bf54c999fca911e6a796c90c30869f7fb8887b3024.json',
-      'b1-a724453e7bfcaae1843be4532e18c1236c3d6d33bf6c44011f2966e155bc7149b904573014e583fdcde2b9cf2913cb8b337fc9daf79c59a38a37c99030fcf7dc.json',
-    ],
-  },
-  {
-    evals: [{ permit: 'start-kread-permit.json', script: 'start-kread.js' }],
-    bundles: [
-      '/Users/wietzes/.agoric/cache/b1-853acd6ba3993f0f19d6c5b0a88c9a722c9b41da17cf7f98ff7705e131860c4737d7faa758ca2120773632dbaf949e4bcce2a2cbf2db224fa09cd165678f64ac.json',
-      '/Users/wietzes/.agoric/cache/b1-0c3363b8737677076e141a84b84c8499012f6ba79c0871fc906c8be1bb6d11312a7d14d5a3356828a1de6baa4bee818a37b7cb1ca2064f6eecbabc0a40d28136.json',
-    ],
-  },
-];
-
-const main = async () => {
-  const td = await new Promise((resolve, reject) =>
-    tmpName({ prefix: 'assets' }, (err, x) => (err ? reject(err) : resolve(x))),
-  );
-  const src = makeWebRd(
-    'https://github.com/Kryha/KREAd/releases/download/KREAd-rc1/',
-    { fetch },
-  );
-  const fsp = await import('fs/promises');
-  const path = await import('path');
-  const dest = makeFileRW(td, { fsp, path });
-  const assets = makeWebCache(src, dest);
-  const segment = buildInfo[0].bundles[0];
-  const info = await assets.size(segment);
-  console.log(`${segment}:`, info);
-};
-
-// main().catch(err => console.error(err));
