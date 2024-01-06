@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /**
  * @file Add support for starting governed contracts to the Agoric bootstrap /
  *   CoreEval "promise space".
@@ -16,14 +15,14 @@ const ParamTypes = /** @type {const} */ ({
 const { fromEntries, entries } = Object;
 
 /** @type { <T extends Record<string, ERef<any>>>(obj: T) => Promise<{ [K in keyof T]: Awaited<T[K]>}> } */
-const allValues = async (obj) => {
+const allValues = async obj => {
   const es = await Promise.all(
     entries(obj).map(async ([k, v]) => [k, await v]),
   );
   return fromEntries(es);
 };
 
-const logger = (message) => {
+const logger = message => {
   console.log('[PRODUCE_UPGRADABLE_STARTER]', message);
 };
 
@@ -76,7 +75,7 @@ const startCrabbleGovernedInstance = async (
     committeeCreatorFacet,
   },
 ) => {
-  const logger = (message) => {
+  const logger = message => {
     console.log('[START_GOVERNED_INSTANCE]', message);
   };
 

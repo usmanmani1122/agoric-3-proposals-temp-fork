@@ -1,13 +1,13 @@
 import test from 'ava';
 
-import { agd, agoric } from '../../upgrade-test-scripts/lib/cliHelper.js';
+import { agd, agoric } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
   USER1ADDR,
-} from '../../upgrade-test-scripts/lib/constants.js';
-import { calculateWalletState } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/constants.js';
+import { calculateWalletState } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 
 test('DeliverInbound from un-provisioned account is discarded', async t => {
   const result = await agd.query('swingset', 'mailbox', USER1ADDR);

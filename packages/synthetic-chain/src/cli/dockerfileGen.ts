@@ -1,16 +1,18 @@
 #!/usr/bin/env tsx
 // @ts-check
 
-import assert from 'node:assert';
 import fs from 'node:fs';
-import { lastPassedProposal, readProposals } from './common';
 import type {
+  CoreEvalProposal,
   ProposalInfo,
   SoftwareUpgradeProposal,
-  CoreEvalProposal,
-} from './common';
+} from './proposals.js';
+import { readProposals } from './proposals.js';
 
 const agZeroUpgrade = 'agoric-upgrade-7-2';
+
+// TODO change the tag to 'main' after multi-platform support https://github.com/Agoric/agoric-3-proposals/pull/32
+const baseImage = 'ghcr.io/agoric/agoric-3-proposals:pr-32-linux_arm64_v8';
 
 /**
  * Templates for Dockerfile stages
@@ -18,6 +20,8 @@ const agZeroUpgrade = 'agoric-upgrade-7-2';
 const stage = {
   /**
    * ag0, start of the chain
+   * @param proposalName
+   * @param to
    */
   START(proposalName: string, to: string) {
     return `
@@ -36,9 +40,26 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 `;
   },
   /**
+   * Resume from latest production state
+   * @param proposalName
+   * @param to
+   */
+  RESUME(proposalName: string, to: string) {
+    return `
+## RESUME
+# on a3p base, with upgrade to ${to}
+FROM ${baseImage} as prepare-${proposalName}
+`;
+  },
+
+  /**
    * Prepare an upgrade handler to run.
    *
    * - Submit the software-upgrade proposal for planName and run until upgradeHeight, leaving the state-dir ready for next agd.
+   * @param root0
+   * @param root0.planName
+   * @param root0.proposalName
+   * @param lastProposal
    */
   PREPARE(
     { planName, proposalName }: SoftwareUpgradeProposal,
@@ -62,6 +83,10 @@ RUN ./start_to_to.sh
    * Execute a prepared upgrade.
    * - Start agd with the SDK that has the upgradeHandler
    * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
+   * @param root0
+   * @param root0.proposalName
+   * @param root0.planName
+   * @param root0.sdkImageTag
    */
   EXECUTE({ proposalName, planName, sdkImageTag }: SoftwareUpgradeProposal) {
     return `
@@ -82,6 +107,10 @@ RUN ./start_to_to.sh
   /**
    * Run a core-eval proposal
    * - Run the core-eval scripts from the proposal. They are only guaranteed to have started, not completed.
+   * @param root0
+   * @param root0.proposalIdentifier
+   * @param root0.proposalName
+   * @param lastProposal
    */
   EVAL(
     { proposalIdentifier, proposalName }: CoreEvalProposal,
@@ -108,6 +137,10 @@ RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
    * Use the proposal
    *
    * - Perform any mutations that should be part of chain history
+   * @param root0
+   * @param root0.proposalName
+   * @param root0.proposalIdentifier
+   * @param root0.type
    */
   USE({ proposalName, proposalIdentifier, type }: ProposalInfo) {
     const previousStage =
@@ -120,8 +153,6 @@ COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/s
 
 WORKDIR /usr/src/upgrade-test-scripts
 
-# XXX for 'lib' dir for JS modules
-COPY --link ./upgrade-test-scripts/lib /usr/src/upgrade-test-scripts/lib
 # TODO remove network dependencies in stages
 # install using global cache
 COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
@@ -139,6 +170,9 @@ RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
    * - Run tests of the proposal
    *
    * Needs to be an image to have access to the SwingSet db. run it with `docker run --rm` to not make the container ephemeral.
+   * @param root0
+   * @param root0.proposalName
+   * @param root0.proposalIdentifier
    */
   TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
     return `
@@ -159,6 +193,7 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
   },
   /**
    * The last target in the file, for untargeted `docker build`
+   * @param lastProposal
    */
   DEFAULT(lastProposal: ProposalInfo) {
     return `
@@ -174,43 +209,38 @@ ENTRYPOINT ./start_agd.sh
   },
 };
 
-// Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
-// The upgrade doesn't happen until the next stage begins executing.
-const blocks: string[] = [];
+export function refreshDockerfile(allProposals: ProposalInfo[]) {
+  // Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
+  // The upgrade doesn't happen until the next stage begins executing.
+  const blocks: string[] = [];
 
-const allProposals = readProposals();
-let previousProposal: ProposalInfo | null = null;
-for (const proposal of allProposals) {
-  //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
-  blocks.push(
-    `#----------------\n# ${proposal.proposalName}\n#----------------`,
-  );
+  let previousProposal: ProposalInfo | null = null;
+  for (const proposal of allProposals) {
+    //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
+    blocks.push(
+      `#----------------\n# ${proposal.proposalName}\n#----------------`,
+    );
 
-  if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
-    blocks.push(stage.EVAL(proposal, previousProposal!));
-  } else if (proposal.type === 'Software Upgrade Proposal') {
-    // handle the first proposal specially
-    if (previousProposal) {
-      blocks.push(stage.PREPARE(proposal, previousProposal));
-    } else {
-      blocks.push(stage.START(proposal.proposalName, proposal.planName));
+    if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
+      blocks.push(stage.EVAL(proposal, previousProposal!));
+    } else if (proposal.type === 'Software Upgrade Proposal') {
+      // handle the first proposal specially
+      if (previousProposal) {
+        blocks.push(stage.PREPARE(proposal, previousProposal));
+      } else {
+        // TODO for external use, provide a way to stack upgrades onto an existing chain
+        // blocks.push(stage.RESUME(proposal.proposalName, proposal.planName));
+        blocks.push(stage.START(proposal.proposalName, proposal.planName));
+      }
+      blocks.push(stage.EXECUTE(proposal));
     }
-    blocks.push(stage.EXECUTE(proposal));
+
+    // The stages must be output in dependency order because if the builder finds a FROM
+    // that it hasn't built yet, it will search for it in the registry. But it won't be there!
+    blocks.push(stage.USE(proposal));
+    blocks.push(stage.TEST(proposal));
+    previousProposal = proposal;
   }
-
-  // The stages must be output in dependency order because if the builder finds a FROM
-  // that it hasn't built yet, it will search for it in the registry. But it won't be there!
-  blocks.push(stage.USE(proposal));
-  blocks.push(stage.TEST(proposal));
-  previousProposal = proposal;
-}
-blocks.push(stage.DEFAULT(lastPassedProposal(allProposals)));
-
-export function refreshDockerfile() {
   const contents = blocks.join('\n');
   fs.writeFileSync('Dockerfile', contents);
-}
-
-if (require.main === module) {
-  refreshDockerfile();
 }

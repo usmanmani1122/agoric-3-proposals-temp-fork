@@ -1,20 +1,20 @@
 import test from 'ava';
 
-import { agd } from '../../upgrade-test-scripts/lib/cliHelper.js';
+import { agd } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   ATOM_DENOM,
   CHAINID,
   GOV1ADDR,
-} from '../../upgrade-test-scripts/lib/constants.js';
+} from '@agoric/synthetic-chain/src/lib/constants.js';
 import {
   mintIST,
   getISTBalance,
   openVault,
-} from '../../upgrade-test-scripts/lib/econHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
 import {
   waitForBlock,
   addUser,
-} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 
 test.before(async t => {
   await mintIST(GOV1ADDR, 12340000000, 10000, 2000);

@@ -1,0 +1,34 @@
+{
+  "name": "@agoric/synthetic-chain",
+  "version": "0.0.1-alpha",
+  "description": "Utilities to build a chain and test proposals atop it",
+  "bin": "./cli.ts",
+  "main": "index.js",
+  "type": "module",
+  "files": [
+    "index.js",
+    "cli.ts",
+    "src",
+    "upgrade-test-scripts"
+  ],
+  "scripts": {
+    "build": "echo No build step",
+    "test": "NODE_OPTIONS='--loader=tsx --no-warnings' ava",
+    "test:xs": "exit 0"
+  },
+  "dependencies": {
+    "tsx": "^3.12.8",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "ava": "^5.3.0"
+  },
+  "ava": {
+    "extensions": {
+      "js": true,
+      "ts": "module"
+    }
+  },
+  "license": "Apache-2.0"
+}

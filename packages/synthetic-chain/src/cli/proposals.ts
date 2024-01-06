@@ -1,6 +1,3 @@
-#!/usr/bin/env tsx
-// @ts-check
-
 import assert from 'node:assert';
 import fs from 'node:fs';
 import * as path from 'node:path';
@@ -21,7 +18,12 @@ export type SoftwareUpgradeProposal = ProposalCommon & {
 
 export type CoreEvalProposal = ProposalCommon & {
   type: '/agoric.swingset.CoreEvalProposal';
-};
+} & (
+    | { source: 'build'; buildScript: string }
+    | {
+        source: 'subdir';
+      }
+  );
 
 export type ProposalInfo = SoftwareUpgradeProposal | CoreEvalProposal;
 
@@ -29,6 +31,8 @@ function readInfo(proposalPath: string): ProposalInfo {
   const packageJsonPath = path.join('proposals', proposalPath, 'package.json');
   const packageJson = fs.readFileSync(packageJsonPath, 'utf-8');
   const { agoricProposal } = JSON.parse(packageJson);
+  // TODO mustMatch a shape
+  assert(agoricProposal, 'missing agoricProposal in package.json');
   const [proposalIdentifier, proposalName] = proposalPath.split(':');
   return {
     ...agoricProposal,
@@ -37,18 +41,20 @@ function readInfo(proposalPath: string): ProposalInfo {
   };
 }
 
-export function readProposals(): ProposalInfo[] {
+export function readProposals(proposalsParent: string): ProposalInfo[] {
+  const proposalsDir = path.join(proposalsParent, 'proposals');
   const proposalPaths = fs
-    .readdirSync('./proposals', { withFileTypes: true })
+    .readdirSync(proposalsDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory()) // omit files
     .map(dirent => dirent.name)
     .filter(name => name.includes(':')); // omit node_modules
   return proposalPaths.map(readInfo);
 }
 
-export const readOneProposal = (match: string) => {
-  const allProposals = readProposals();
-
+export const matchOneProposal = (
+  allProposals: ProposalInfo[],
+  match: string,
+) => {
   const proposals = allProposals.filter(p => p.proposalName.includes(match));
 
   assert(proposals.length > 0, 'no proposals match');
@@ -57,7 +63,6 @@ export const readOneProposal = (match: string) => {
 };
 
 export function lastPassedProposal(proposals: ProposalInfo[]): ProposalInfo {
-  // @ts-expect-error use es2023; findLast is available in Node 18
   const last = proposals.findLast(p => p.proposalIdentifier.match(/^\d/));
   assert(last, 'no passed proposals');
   return last;

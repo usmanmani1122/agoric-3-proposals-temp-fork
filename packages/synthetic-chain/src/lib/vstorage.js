@@ -1,5 +1,4 @@
 // @ts-check
-/* global Buffer */
 import { assert, Fail } from './assert.js';
 
 const { freeze: harden } = Object; // XXX

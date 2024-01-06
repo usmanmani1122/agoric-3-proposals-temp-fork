@@ -27,20 +27,20 @@ import dbOpenAmbient from 'better-sqlite3';
 import {
   agoric,
   wellKnownIdentities,
-} from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   provisionSmartWallet,
   voteLatestProposalAndWait,
   waitForBlock,
-} from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 
-import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
-import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
+import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
+import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
 import {
   makeFileRW,
   makeWebCache,
   makeWebRd,
-} from '../../upgrade-test-scripts/lib/webAsset.js';
+} from '@agoric/synthetic-chain/src/lib/webAsset.js';
 import {
   bundleDetail,
   ensureISTForInstall,
@@ -210,7 +210,7 @@ test.serial('bundles not yet installed', async t => {
 /** @param {number[]} xs */
 const sum = xs => xs.reduce((a, b) => a + b, 0);
 
-/** @param {import('../../upgrade-test-scripts/lib/webAsset.js').WebCache} assets */
+/** @param {import('@agoric/synthetic-chain/src/lib/webAsset.js').WebCache} assets */
 const readBundleSizes = async assets => {
   const info = staticConfig.buildInfo;
   const bundleSizes = await Promise.all(

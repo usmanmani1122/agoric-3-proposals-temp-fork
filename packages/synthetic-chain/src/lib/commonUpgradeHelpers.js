@@ -1,4 +1,4 @@
-/* eslint-disable @jessie.js/safe-await-separator */
+// @ts-expect-error XXX execa typedef
 import { $ } from 'execa';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -7,7 +7,6 @@ import { CHAINID, HOME, VALIDATORADDR } from './constants.js';
 
 const waitForBootstrap = async () => {
   const endpoint = 'localhost';
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const { stdout: json } = await $({
       reject: false,
@@ -29,7 +28,6 @@ const waitForBootstrap = async () => {
       return lastHeight;
     }
 
-    // eslint-disable-next-line no-undef
     await new Promise(r => setTimeout(r, 2000));
   }
 };
@@ -39,7 +37,6 @@ export const waitForBlock = async (times = 1) => {
   let time = 0;
   while (time < times) {
     const block1 = await waitForBootstrap();
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const block2 = await waitForBootstrap();
 
@@ -48,7 +45,6 @@ export const waitForBlock = async (times = 1) => {
         break;
       }
 
-      // eslint-disable-next-line no-undef
       await new Promise(r => setTimeout(r, 1000));
     }
     time += 1;
@@ -88,7 +84,6 @@ export const provisionSmartWallet = async (address, amount) => {
 
 export const newOfferId = async () => {
   const { stdout: date } = await $`date +${'%s%3M'}`;
-  // eslint-disable-next-line no-undef
   await new Promise(r => setTimeout(r, 1000));
 
   return date;

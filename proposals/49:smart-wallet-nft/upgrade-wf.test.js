@@ -13,10 +13,10 @@ import {
   makeFileRW,
   makeWebCache,
   makeWebRd,
-} from '../../upgrade-test-scripts/lib/webAsset.js';
-import { makeAgd } from '../../upgrade-test-scripts/lib/agd-lib.js';
-import { dbTool } from '../../upgrade-test-scripts/lib/vat-status.js';
-import { voteLatestProposalAndWait } from '../../upgrade-test-scripts/lib/commonUpgradeHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/webAsset.js';
+import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
+import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
+import { voteLatestProposalAndWait } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 import {
   bundleDetail,
   ensureISTForInstall,
@@ -29,7 +29,7 @@ import {
 import {
   agoric,
   wellKnownIdentities,
-} from '../../upgrade-test-scripts/lib/cliHelper.js';
+} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
 /** @type {import('ava').TestFn<TestContext>}} */
@@ -50,7 +50,12 @@ const assetInfo = {
   /** @type {Record<string, import('./core-eval-support.js').ProposalInfo>} */
   buildAssets: {
     'upgrade-walletFactory-proposal': {
-      evals: [{ permit: 'upgrade-walletFactory-permit.json', script: 'upgrade-walletFactory.js' }],
+      evals: [
+        {
+          permit: 'upgrade-walletFactory-permit.json',
+          script: 'upgrade-walletFactory.js',
+        },
+      ],
       bundles: [
         // entry: upgrade-walletFactory-proposal.js
         'b1-e229e4bb6c8720016d92116e3dccaebec20a43699d5547a1c815f8710985ba897e825cbe4cd5b80c1d9d674f086bcaf3981b82a0d5546a095542c14174d5f942.json',
@@ -301,5 +306,5 @@ test.serial('core eval proposal passes', async t => {
 });
 
 test.skip('walletFactory installation was not changed', async t => {
-    // upgrading wf should not have updated agoricNames.installation, but it did.
+  // upgrading wf should not have updated agoricNames.installation, but it did.
 });

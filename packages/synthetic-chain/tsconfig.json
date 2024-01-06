@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "allowSyntheticDefaultImports": true,
+        "checkJs": false, // opt in
+        "maxNodeModuleJsDepth": 2,
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
+        "noEmit": true,
+        "target": "ESNext"
+    },
+    "include": [
+        "*.js",
+        "*.ts",
+        "proposals/**/*.js",
+        "proposals/**/*.ts",
+        "src/**/*.js",
+        "test/**/*.js",
+        "test/**/*.ts",
+        "tools/**/*.js",
+    ]
+}

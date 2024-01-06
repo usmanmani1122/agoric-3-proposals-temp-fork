@@ -3,13 +3,13 @@
 // FIXME get TypeScript to resolve these, probably with lib:ES2022
 import assert from 'node:assert/strict';
 
-import { agoric, agops } from '../../upgrade-test-scripts/lib/cliHelper.js';
-import { GOV1ADDR } from '../../upgrade-test-scripts/lib/constants.js';
+import { agoric, agops } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
+import { GOV1ADDR } from '@agoric/synthetic-chain/src/lib/constants.js';
 import {
   openVault,
   adjustVault,
   closeVault,
-} from '../../upgrade-test-scripts/lib/econHelpers.js';
+} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
 
 console.log('Open Vaults');
 
