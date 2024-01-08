@@ -31,9 +31,9 @@ const [cmd] = positionals;
 
 // TODO consider a lib like Commander for auto-gen help
 const usage = `USAGE:
-amend [<tag>]   - build on top of an existing image (defaults to latest from a3p)
+append [<tag>]  - build on top of an existing image (defaults to latest from a3p)
 
-build           - build from the beginning
+rebuild         - build from the beginning
 
 test [--debug]  - run the tests of the proposals
 `;
@@ -48,12 +48,14 @@ const buildImages = () => {
 };
 
 switch (cmd) {
-  case 'amend':
+  case 'amend': // alias for backcompat
+  case 'append':
     const fromTag = positionals[1] || baseImage;
     writeDockerfile(allProposals, fromTag);
     buildImages();
     break;
-  case 'build':
+  case 'build': // alias for backcompat
+  case 'rebuild':
     writeDockerfile(allProposals);
     buildImages();
     break;
