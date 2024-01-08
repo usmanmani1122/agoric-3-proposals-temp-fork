@@ -5,14 +5,15 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@agoric/synthetic-chain@file:./agoric-synthetic-chain-0.0.1-alpha.tgz::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.1-alpha
-  resolution: "@agoric/synthetic-chain@file:./agoric-synthetic-chain-0.0.1-alpha.tgz#./agoric-synthetic-chain-0.0.1-alpha.tgz::hash=1144d8&locator=root-workspace-0b6124%40workspace%3A."
+"@agoric/synthetic-chain@npm:^0.0.1-rc0":
+  version: 0.0.1-rc0
+  resolution: "@agoric/synthetic-chain@npm:0.0.1-rc0"
   dependencies:
     tsx: "npm:^3.12.8"
+    typescript: "npm:^5.3.3"
   bin:
-    synthetic-chain: ./cli.ts
-  checksum: 012b67bb80fc818bdb63a16f05007c7183a63d45d0a99a2ce1477079fe2249eae0961c6325b30cea111f4dd38487011f20a94a1518a8b8badef7c4583992d131
+    synthetic-chain: cli.ts
+  checksum: b038f72b31d176f35e580ef18ba656f14e39494b165232f5b636bd8b493240c04007752f6d971f2ad3e7a5224f3951ff77f244c98f7ee9d406958fbf297a5f1e
   languageName: node
   linkType: hard
 
@@ -2146,7 +2147,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@agoric/synthetic-chain": "file:./agoric-synthetic-chain-0.0.1-alpha.tgz"
+    "@agoric/synthetic-chain": "npm:^0.0.1-rc0"
     "@endo/zip": "npm:^0.2.35"
     ava: "npm:^5.3.1"
     better-sqlite3: "npm:^8.5.1"
@@ -2509,6 +2510,26 @@ __metadata:
   version: 0.13.1
   resolution: "type-fest@npm:0.13.1"
   checksum: 0c0fa07ae53d4e776cf4dac30d25ad799443e9eef9226f9fddbb69242db86b08584084a99885cfa5a9dfe4c063ebdc9aa7b69da348e735baede8d43f1aeae93b
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "typescript@npm:5.3.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e33cef99d82573624fc0f854a2980322714986bc35b9cb4d1ce736ed182aeab78e2cb32b385efa493b2a976ef52c53e20d6c6918312353a91850e2b76f1ea44f
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
+  version: 5.3.3
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
   languageName: node
   linkType: hard
 
