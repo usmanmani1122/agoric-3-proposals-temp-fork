@@ -8,8 +8,8 @@ import { writeDockerfile } from './src/cli/dockerfileGen.js';
 import { matchOneProposal, readProposals } from './src/cli/proposals.js';
 import { debugTestImage, runTestImages } from './src/cli/run.js';
 
-// TODO change the tag to 'main' after multi-platform support https://github.com/Agoric/agoric-3-proposals/pull/32
-const baseImage = 'pr-32-linux_arm64_v8';
+// Tag of the agoric-3 image containing all passed proposals
+const baseTag = 'main';
 
 const { positionals, values } = parseArgs({
   options: {
@@ -50,7 +50,7 @@ const buildImages = () => {
 switch (cmd) {
   case 'amend': // alias for backcompat
   case 'append':
-    const fromTag = positionals[1] || baseImage;
+    const fromTag = positionals[1] || baseTag;
     writeDockerfile(allProposals, fromTag);
     buildImages();
     break;
