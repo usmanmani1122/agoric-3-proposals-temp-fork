@@ -62,10 +62,10 @@ export const matchOneProposal = (
   return proposals[0];
 };
 
-export function lastPassedProposal(proposals: ProposalInfo[]): ProposalInfo {
-  const last = proposals.findLast(p => p.proposalIdentifier.match(/^\d/));
-  assert(last, 'no passed proposals');
-  return last;
+export function lastPassedProposal(
+  proposals: ProposalInfo[],
+): ProposalInfo | undefined {
+  return proposals.findLast(p => p.proposalIdentifier.match(/^\d/));
 }
 
 export function imageNameForProposal(

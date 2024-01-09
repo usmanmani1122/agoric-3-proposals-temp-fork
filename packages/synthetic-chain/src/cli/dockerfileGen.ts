@@ -2,10 +2,11 @@
 // @ts-check
 
 import fs from 'node:fs';
-import type {
-  CoreEvalProposal,
-  ProposalInfo,
-  SoftwareUpgradeProposal,
+import {
+  lastPassedProposal,
+  type CoreEvalProposal,
+  type ProposalInfo,
+  type SoftwareUpgradeProposal,
 } from './proposals.js';
 
 /**
@@ -242,6 +243,12 @@ export function writeDockerfile(
     blocks.push(stage.TEST(proposal));
     previousProposal = proposal;
   }
+  // If one of the proposals is a passed proposal, make the latest one the default entrypoint
+  const lastPassed = lastPassedProposal(allProposals);
+  if (lastPassed) {
+    blocks.push(stage.DEFAULT(lastPassed));
+  }
+
   const contents = blocks.join('\n');
   fs.writeFileSync('Dockerfile', contents);
 }
