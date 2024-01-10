@@ -89,21 +89,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # The .ts scripts depend upon this
-      - run: npm install --global tsx
-      # Enable corepack for packageManager config
-      - run: corepack enable
-      - run: yarn install
-
-      - name: build test images ${{ matrix.platform }} == ${{ env.DEFAULT_PLATFORM }}
-        run: |
-          docker info
-          node_modules/.bin/synthetic-chain build ${{ matrix.platform == env.DEFAULT_PLATFORM && ' ' || '--dry' }}
-      - name: run test images
-        if: ${{ matrix.platform == env.DEFAULT_PLATFORM }}
-        run: node_modules/.bin/synthetic-chain test
-
-      - name: Compute tags
+      - name: Compute Docker tags
         id: docker-tags
         run: |
           sep=
@@ -116,10 +102,24 @@ jobs:
             if test -z "$sep"; then
               # The first tag (suffixed with our architecture) is the one we build.
               sep=,
-              echo "tag=$TAG-$uarch" >> $GITHUB_OUTPUT
+              echo "tag=$TAG-$uarch" | tee -a $GITHUB_OUTPUT
             fi
           done
-          echo "tags=$SUFFIXED" >> $GITHUB_OUTPUT
+          echo "tags=$SUFFIXED" | tee -a $GITHUB_OUTPUT
+
+      # The .ts scripts depend upon this
+      - run: tsx --version || npm install --global tsx
+      # Enable corepack for packageManager config
+      - run: corepack enable || sudo corepack enable
+      - run: yarn install
+
+      - name: build test images ${{ matrix.platform }} == ${{ env.DEFAULT_PLATFORM }}
+        run: |
+          docker info
+          node_modules/.bin/synthetic-chain build ${{ matrix.platform == env.DEFAULT_PLATFORM && ' ' || '--dry' }}
+      - name: run test images
+        if: ${{ matrix.platform == env.DEFAULT_PLATFORM }}
+        run: node_modules/.bin/synthetic-chain test
       
       # XXX this should be instant for the local platform because all the stages
       # were already built in the steps above but it's re-building the last
