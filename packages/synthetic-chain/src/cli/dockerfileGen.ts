@@ -15,8 +15,6 @@ import {
 const stage = {
   /**
    * ag0, start of the chain
-   * @param proposalName
-   * @param to
    */
   START(proposalName: string, to: string) {
     const agZeroUpgrade = 'agoric-upgrade-7-2';
@@ -37,9 +35,6 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
   },
   /**
    * Resume from state of an existing image
-   * @param fromTag
-   * @param proposalName
-   * @param to
    */
   RESUME(fromTag: string, proposalName: string, to: string) {
     return `
@@ -53,10 +48,6 @@ FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as prepare-${proposalName}
    * Prepare an upgrade handler to run.
    *
    * - Submit the software-upgrade proposal for planName and run until upgradeHeight, leaving the state-dir ready for next agd.
-   * @param root0
-   * @param root0.planName
-   * @param root0.proposalName
-   * @param lastProposal
    */
   PREPARE(
     { planName, proposalName }: SoftwareUpgradeProposal,
@@ -80,10 +71,6 @@ RUN ./start_to_to.sh
    * Execute a prepared upgrade.
    * - Start agd with the SDK that has the upgradeHandler
    * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
-   * @param root0
-   * @param root0.proposalName
-   * @param root0.planName
-   * @param root0.sdkImageTag
    */
   EXECUTE({ proposalName, planName, sdkImageTag }: SoftwareUpgradeProposal) {
     return `
@@ -103,10 +90,6 @@ RUN ./start_to_to.sh
   /**
    * Run a core-eval proposal
    * - Run the core-eval scripts from the proposal. They are only guaranteed to have started, not completed.
-   * @param root0
-   * @param root0.proposalIdentifier
-   * @param root0.proposalName
-   * @param lastProposal
    */
   EVAL(
     { proposalIdentifier, proposalName }: CoreEvalProposal,
@@ -133,10 +116,6 @@ RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
    * Use the proposal
    *
    * - Perform any mutations that should be part of chain history
-   * @param root0
-   * @param root0.proposalName
-   * @param root0.proposalIdentifier
-   * @param root0.type
    */
   USE({ proposalName, proposalIdentifier, type }: ProposalInfo) {
     const previousStage =
