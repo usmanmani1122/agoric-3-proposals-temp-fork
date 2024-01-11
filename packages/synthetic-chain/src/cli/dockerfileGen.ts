@@ -34,13 +34,13 @@ RUN /usr/src/upgrade-test-scripts/start_ag0.sh
 `;
   },
   /**
-   * Resume from state of an existing image
+   * Resume from state of an existing image.
+   * Creates a "use" stage upon which a PREPARE or EVAL can stack.
    */
-  RESUME(fromTag: string, proposalName: string, to: string) {
+  RESUME(fromTag: string) {
     return `
 ## RESUME
-# on a3p base, with upgrade to ${to}
-FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as prepare-${proposalName}
+FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as use-${fromTag}
 `;
   },
 
@@ -72,7 +72,7 @@ RUN ./start_to_to.sh
    * - Start agd with the SDK that has the upgradeHandler
    * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
    */
-  EXECUTE({ proposalName, planName, sdkImageTag }: SoftwareUpgradeProposal) {
+  EXECUTE({ proposalName, sdkImageTag }: SoftwareUpgradeProposal) {
     return `
 # EXECUTE ${proposalName}
 FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
@@ -145,9 +145,6 @@ RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
    * - Run tests of the proposal
    *
    * Needs to be an image to have access to the SwingSet db. run it with `docker run --rm` to not make the container ephemeral.
-   * @param root0
-   * @param root0.proposalName
-   * @param root0.proposalIdentifier
    */
   TEST({ proposalName, proposalIdentifier }: ProposalInfo) {
     return `
@@ -168,7 +165,6 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
   },
   /**
    * The last target in the file, for untargeted `docker build`
-   * @param lastProposal
    */
   DEFAULT(lastProposal: ProposalInfo) {
     return `
@@ -193,6 +189,19 @@ export function writeDockerfile(
   const blocks: string[] = [];
 
   let previousProposal: ProposalInfo | null = null;
+
+  // appending to a previous image, so set up the 'use' stage
+  if (fromTag) {
+    blocks.push(stage.RESUME(fromTag));
+    // define a previous proposal that matches what later stages expect
+    previousProposal = {
+      proposalName: fromTag,
+      proposalIdentifier: fromTag,
+      // XXX these are bogus
+      type: '/agoric.swingset.CoreEvalProposal',
+      source: 'subdir',
+    };
+  }
   for (const proposal of allProposals) {
     //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
     blocks.push(
@@ -200,15 +209,11 @@ export function writeDockerfile(
     );
 
     if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
-      blocks.push(stage.EVAL(proposal, previousProposal!));
+      blocks.push(stage.EVAL(proposal, previousProposal));
     } else if (proposal.type === 'Software Upgrade Proposal') {
       // handle the first proposal specially
       if (previousProposal) {
         blocks.push(stage.PREPARE(proposal, previousProposal));
-      } else if (fromTag) {
-        blocks.push(
-          stage.RESUME(fromTag, proposal.proposalName, proposal.planName),
-        );
       } else {
         blocks.push(stage.START(proposal.proposalName, proposal.planName));
       }
