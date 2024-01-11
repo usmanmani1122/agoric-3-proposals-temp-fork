@@ -24,7 +24,7 @@ const stage = {
 ## START
 # on ${agZeroUpgrade}, with upgrade to ${to}
 FROM ghcr.io/agoric/ag0:${agZeroUpgrade} as prepare-${proposalName}
-ENV UPGRADE_TO=${to} THIS_NAME=${agZeroUpgrade}
+ENV UPGRADE_TO=${to}
 
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
@@ -89,7 +89,6 @@ RUN ./start_to_to.sh
     return `
 # EXECUTE ${proposalName}
 FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
-ENV THIS_NAME=${planName}
 
 # base is a fresh sdk image so copy these supports
 COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/
