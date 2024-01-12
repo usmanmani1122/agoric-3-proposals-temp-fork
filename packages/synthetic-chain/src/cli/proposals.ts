@@ -21,6 +21,7 @@ export type CoreEvalProposal = ProposalCommon & {
 } & (
     | { source: 'build'; buildScript: string }
     | {
+        // default behavior
         source: 'subdir';
       }
   );
