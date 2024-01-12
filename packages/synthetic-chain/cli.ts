@@ -11,6 +11,7 @@ import {
 import { writeDockerfile } from './src/cli/dockerfileGen.js';
 import { matchOneProposal, readProposals } from './src/cli/proposals.js';
 import { debugTestImage, runTestImages } from './src/cli/run.js';
+import { runDoctor } from './src/cli/doctor.js';
 
 const { positionals, values } = parseArgs({
   options: {
@@ -36,7 +37,9 @@ const [cmd] = positionals;
 const usage = `USAGE:
 build           - build the synthetic-chain
 
-test [--debug]  - run the tests of the proposals
+test [--debug]  - run each proposal's test image
+
+doctor          - diagnostics and quick fixes
 `;
 
 const buildImages = () => {
@@ -61,6 +64,9 @@ switch (cmd) {
     } else {
       runTestImages(proposals);
     }
+    break;
+  case 'doctor':
+    runDoctor(allProposals);
     break;
   default:
     console.log(usage);
