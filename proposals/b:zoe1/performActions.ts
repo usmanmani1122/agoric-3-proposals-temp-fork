@@ -23,6 +23,7 @@ import {
   loadedBundleIds,
   txAbbr,
 } from '@agoric/synthetic-chain/src/lib/core-eval-support.js';
+import { step } from '@agoric/synthetic-chain/src/lib/logging.js';
 
 // TODO move into core-eval-support
 const readSubmissions = async () => {
@@ -114,11 +115,6 @@ const makeTestContext = async () => {
 
 // XXX vestige of Ava
 const context = await makeTestContext();
-
-const step = async (name: string, fn: Function) => {
-  console.log(name);
-  await fn();
-};
 
 await step('bundles not yet installed', async () => {
   const loaded = loadedBundleIds(context.swingstore);
