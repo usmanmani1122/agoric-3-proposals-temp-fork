@@ -15,7 +15,7 @@ import { voteLatestProposalAndWait } from '@agoric/synthetic-chain/src/lib/commo
 import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
 import { type WebCache } from '@agoric/synthetic-chain/src/lib/webAsset.js';
 import {
-  type ProposalInfo,
+  type BundleInfo,
   bundleDetail,
   ensureISTForInstall,
   flags,
@@ -29,7 +29,7 @@ import { step } from '@agoric/synthetic-chain/src/lib/logging.js';
 const readSubmissions = async () => {
   const files = await fsp.readdir('submission');
   const names = files.filter(f => f.endsWith('.js')).map(f => f.slice(0, -3));
-  const buildAssets = {} as Record<string, ProposalInfo>;
+  const buildAssets = {} as Record<string, BundleInfo>;
   for (const name of names) {
     const evals = [{ permit: `${name}-permit.json`, script: `${name}.js` }];
     const content = await fsp.readFile(`submission/${name}.js`, 'utf8');
