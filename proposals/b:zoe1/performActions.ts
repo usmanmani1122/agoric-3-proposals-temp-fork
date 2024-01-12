@@ -22,7 +22,7 @@ import {
   getContractInfo,
   loadedBundleIds,
   txAbbr,
-} from './core-eval-support.js';
+} from '@agoric/synthetic-chain/src/lib/core-eval-support.js';
 
 // TODO move into core-eval-support
 const readSubmissions = async () => {
