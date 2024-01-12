@@ -182,7 +182,7 @@ ENTRYPOINT ./start_agd.sh
 
 export function writeDockerfile(
   allProposals: ProposalInfo[],
-  fromTag?: string,
+  fromTag?: string | null,
 ) {
   // Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
   // The upgrade doesn't happen until the next stage begins executing.
@@ -209,7 +209,7 @@ export function writeDockerfile(
     );
 
     if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
-      blocks.push(stage.EVAL(proposal, previousProposal));
+      blocks.push(stage.EVAL(proposal, previousProposal!));
     } else if (proposal.type === 'Software Upgrade Proposal') {
       // handle the first proposal specially
       if (previousProposal) {

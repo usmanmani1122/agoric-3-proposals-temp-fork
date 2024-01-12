@@ -10,6 +10,9 @@
     "dependencies": {
         "@agoric/synthetic-chain": "workspace:*"
     },
+    "agoricSyntheticChain": {
+        "fromTag": null
+    },
     "license": "Apache-2.0",
     "packageManager": "yarn@4.0.2"
 }

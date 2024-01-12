@@ -1,7 +1,6 @@
 {
   "name": "@agoric/synthetic-chain",
-  "version": "0.0.2-0",
-  "stableVersion": "0.0.1",
+  "version": "0.0.2",
   "description": "Utilities to build a chain and test proposals atop it",
   "bin": "./cli.ts",
   "main": "index.js",
