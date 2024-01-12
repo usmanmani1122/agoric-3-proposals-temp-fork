@@ -1,7 +1,7 @@
 // @ts-check
 // XMPORT: { E } from '@endo/far';
 
-const fail = (msg) => {
+const fail = msg => {
   throw Error(msg);
 };
 
@@ -15,7 +15,7 @@ const zip = (xs, ys) => harden(xs.map((x, i) => [x, ys[+i]]));
  *   obj: T,
  * ) => Promise<{ [K in keyof T]: Awaited<T[K]> }>}
  */
-const allValues = async (obj) => {
+const allValues = async obj => {
   const resolved = await Promise.all(values(obj));
   // @ts-expect-error cast
   return harden(fromEntries(zip(keys(obj), resolved)));
@@ -65,11 +65,15 @@ const startCommittee = async (
   crabbleNode,
 ) => {
   const committeeSize = 3;
-  const committeeName = "CrabbleCommittee";
-  const members = ["agoric1ag5a8lhn00h4u9h2shpfpjpaq6v4kku54zk69m","agoric140y0mqnq7ng5vvxxwpfe67988e5vqar9whg309","agoric1wqfu6hu5q2qtey9jtjapaae4df9zd492z4448k"];
+  const committeeName = 'CrabbleCommittee';
+  const members = [
+    'agoric1ag5a8lhn00h4u9h2shpfpjpaq6v4kku54zk69m',
+    'agoric140y0mqnq7ng5vvxxwpfe67988e5vqar9whg309',
+    'agoric1wqfu6hu5q2qtey9jtjapaae4df9zd492z4448k',
+  ];
 
   logger('Getting nameHubs, depositFacets...');
-  const getDepositFacet = async (address) => {
+  const getDepositFacet = async address => {
     const hub = E(E(namesByAddressAdmin).lookupAdmin(address)).readonly();
     return E(hub).lookup('depositFacet');
   };
@@ -130,8 +134,10 @@ const startCommittee = async (
  * }>} committeeInfoP
  */
 const startCrabble = async (powers, config, crabbleNode, committeeInfoP) => {
-  const contractBundleID = "b1-3af8183538129ce433d368dc0bdb6082733fc0fa6449c18d5f212f104f971d8ea8b033074067b807bffd5eb2f17821c5e2e9b26ba312795368ae8e7446606b85";
-  const governorBundleID = "b1-0bfb8a189cda652bc43c488e079e6362870e49039a247156f9430f4f0dfa054970f01c108b79c476baddc8b814546ad88578358452fe2919d11fdcc224bbe4b3";
+  const contractBundleID =
+    'b1-3af8183538129ce433d368dc0bdb6082733fc0fa6449c18d5f212f104f971d8ea8b033074067b807bffd5eb2f17821c5e2e9b26ba312795368ae8e7446606b85';
+  const governorBundleID =
+    'b1-0bfb8a189cda652bc43c488e079e6362870e49039a247156f9430f4f0dfa054970f01c108b79c476baddc8b814546ad88578358452fe2919d11fdcc224bbe4b3';
 
   const {
     consume: {
@@ -223,7 +229,7 @@ const startCrabble = async (powers, config, crabbleNode, committeeInfoP) => {
 
   logger('Sending member invitations...');
   await Promise.all(
-    memberDeposits.map(async (df) => {
+    memberDeposits.map(async df => {
       const inv = await E(
         kit.governorCreatorFacet,
       ).makeCommitteeMemberInvitation();
