@@ -17,6 +17,7 @@ sed -i.bak "s/^enable-unsafe-cors =.*/enable-unsafe-cors = true/" "$HOME/.agoric
 sed -i.bak "s/127.0.0.1:26657/0.0.0.0:26657/" "$HOME/.agoric/config/config.toml"
 sed -i.bak "s/cors_allowed_origins = \[\]/cors_allowed_origins = \[\"*\"\]/" "$HOME/.agoric/config/config.toml"
 sed -i.bak '/^\[api]/,/^\[/{s/^enable[[:space:]]*=.*/enable = true/}' "$HOME/.agoric/config/app.toml"
+sed -i.bak "s/^pruning =.*/pruning = \"nothing\"/" "$HOME/.agoric/config/app.toml"
 
 contents="$(jq ".app_state.crisis.constant_fee.denom = \"ubld\"" "$HOME/.agoric/config/genesis.json")" && echo -E "${contents}" >"$HOME/.agoric/config/genesis.json"
 contents="$(jq ".app_state.mint.params.mint_denom = \"ubld\"" "$HOME/.agoric/config/genesis.json")" && echo -E "${contents}" >"$HOME/.agoric/config/genesis.json"
