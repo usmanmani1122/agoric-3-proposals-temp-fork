@@ -209,7 +209,7 @@ export function writeDockerfile(
     );
 
     if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
-      blocks.push(stage.EVAL(proposal, previousProposal));
+      blocks.push(stage.EVAL(proposal, previousProposal!));
     } else if (proposal.type === 'Software Upgrade Proposal') {
       // handle the first proposal specially
       if (previousProposal) {
