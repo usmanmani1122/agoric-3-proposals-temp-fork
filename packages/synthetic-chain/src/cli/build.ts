@@ -3,6 +3,30 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ProposalInfo, imageNameForProposal } from './proposals.js';
 
+export type AgoricSyntheticChainConfig = {
+  /**
+   * The agoric-3-proposals tag to build the agoric synthetic chain from.
+   * If `null`, the chain is built from an ag0 genesis.
+   * Defaults to `main`, which containing all passed proposals
+   */
+  fromTag: string | null;
+};
+
+const defaultConfig: AgoricSyntheticChainConfig = {
+  // Tag of the agoric-3 image containing all passed proposals
+  fromTag: 'main',
+};
+
+export function readBuildConfig(root: string): AgoricSyntheticChainConfig {
+  const packageJsonPath = path.join(root, 'package.json');
+  const packageJson = fs.readFileSync(packageJsonPath, 'utf-8');
+  const { agoricSyntheticChain } = JSON.parse(packageJson);
+
+  const config = { ...defaultConfig, ...agoricSyntheticChain };
+  // TODO mustMatch a shape
+  return config;
+}
+
 export const buildProposalSubmissions = (proposals: ProposalInfo[]) => {
   for (const proposal of proposals) {
     if (!('source' in proposal && proposal.source === 'build')) continue;
