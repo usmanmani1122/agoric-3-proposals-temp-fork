@@ -12,6 +12,7 @@ type ProposalCommon = {
 export type SoftwareUpgradeProposal = ProposalCommon & {
   sdkImageTag: string;
   planName: string;
+  upgradeInfo?: unknown;
   releaseNodes: string;
   type: 'Software Upgrade Proposal';
 };
@@ -40,6 +41,10 @@ function readInfo(proposalPath: string): ProposalInfo {
     proposalIdentifier,
     proposalName,
   };
+}
+
+export function encodeUpgradeInfo(upgradeInfo: unknown): string {
+  return upgradeInfo != null ? JSON.stringify(upgradeInfo) : '';
 }
 
 export function readProposals(proposalsParent: string): ProposalInfo[] {

@@ -7,6 +7,7 @@ import {
   type CoreEvalProposal,
   type ProposalInfo,
   type SoftwareUpgradeProposal,
+  encodeUpgradeInfo,
 } from './proposals.js';
 
 /**
@@ -50,7 +51,7 @@ FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as use-${fromTag}
    * - Submit the software-upgrade proposal for planName and run until upgradeHeight, leaving the state-dir ready for next agd.
    */
   PREPARE(
-    { planName, proposalName }: SoftwareUpgradeProposal,
+    { planName, proposalName, upgradeInfo }: SoftwareUpgradeProposal,
     lastProposal: ProposalInfo,
   ) {
     return `
@@ -58,7 +59,9 @@ FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as use-${fromTag}
 
 # upgrading to ${planName}
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
-ENV UPGRADE_TO=${planName}
+ENV UPGRADE_TO=${planName} UPGRADE_INFO=${JSON.stringify(
+      encodeUpgradeInfo(upgradeInfo),
+    )}
 # base is a fresh sdk image so copy these supports
 COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/
 
