@@ -15,6 +15,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  DEFAULT_PLATFORM: linux/amd64
 
 jobs:
   platforms:
@@ -113,10 +114,10 @@ jobs:
       - run: corepack enable || sudo corepack enable
       - run: yarn install
 
-      - name: build proposal images ${{ matrix.platform }} == ${{ env.DEFAULT_PLATFORM }}
+      - name: build proposal images
         run: |
           docker info
-          node_modules/.bin/synthetic-chain build ${{ matrix.platform == env.DEFAULT_PLATFORM && ' ' || '--dry' }}
+          node_modules/.bin/synthetic-chain build
       - name: run proposal tests
         if: ${{ matrix.platform == env.DEFAULT_PLATFORM }}
         run: node_modules/.bin/synthetic-chain test
