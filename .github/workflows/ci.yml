@@ -113,11 +113,11 @@ jobs:
       - run: corepack enable || sudo corepack enable
       - run: yarn install
 
-      - name: build test images ${{ matrix.platform }} == ${{ env.DEFAULT_PLATFORM }}
+      - name: build proposal images ${{ matrix.platform }} == ${{ env.DEFAULT_PLATFORM }}
         run: |
           docker info
           node_modules/.bin/synthetic-chain build ${{ matrix.platform == env.DEFAULT_PLATFORM && ' ' || '--dry' }}
-      - name: run test images
+      - name: run proposal tests
         if: ${{ matrix.platform == env.DEFAULT_PLATFORM }}
         run: node_modules/.bin/synthetic-chain test
 

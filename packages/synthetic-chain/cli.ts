@@ -35,32 +35,33 @@ const [cmd] = positionals;
 
 // TODO consider a lib like Commander for auto-gen help
 const usage = `USAGE:
-build           - build the synthetic-chain
+build           - build the synthetic-chain "use" images
 
-test [--debug]  - run each proposal's test image
+test [--debug]  - build the "test" images and run them
 
 doctor          - diagnostics and quick fixes
 `;
 
-const buildImages = () => {
+const buildUseImages = () => {
   execSync(
     // XXX very brittle
     'cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .',
   );
   buildProposalSubmissions(proposals);
-  // the 'test' images need the 'use' images
   buildProposalImages(proposals, 'use', values.dry);
-  buildProposalImages(proposals, 'test', values.dry);
 };
 
 switch (cmd) {
   case 'build': {
     const { fromTag } = buildConfig;
     writeDockerfile(allProposals, fromTag);
-    buildImages();
+    buildUseImages();
     break;
   }
   case 'test':
+    // always rebuild all test images. Keeps it simple and these are fast
+    // as long as the "use" stages are cached because they don't execute anything themselves.
+    buildProposalImages(proposals, 'test', values.dry);
     if (values.debug) {
       debugTestImage(matchOneProposal(proposals, match!));
     } else {
