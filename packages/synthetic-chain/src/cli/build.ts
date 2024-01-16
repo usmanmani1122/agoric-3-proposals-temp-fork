@@ -62,14 +62,18 @@ export const buildProposalSubmissions = (proposals: ProposalInfo[]) => {
   }
 };
 
-export const buildTestImages = (proposals: ProposalInfo[], dry = false) => {
+export const buildProposalImages = (
+  proposals: ProposalInfo[],
+  stage: 'test' | 'use',
+  dry = false,
+) => {
   for (const proposal of proposals) {
     if (!dry) {
       console.log(
         `\nBuilding test image for proposal ${proposal.proposalName}`,
       );
     }
-    const { name, target } = imageNameForProposal(proposal, 'test');
+    const { name, target } = imageNameForProposal(proposal, stage);
     // 'load' to ensure the images are output to the Docker client. Seems to be necessary
     // for the CI docker/build-push-action to re-use the cached stages.
     const cmd = `docker buildx build --load --tag ${name} --target ${target} .`;

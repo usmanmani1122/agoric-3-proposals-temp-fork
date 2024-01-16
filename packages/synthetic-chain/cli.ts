@@ -5,7 +5,7 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 import {
   buildProposalSubmissions,
-  buildTestImages,
+  buildProposalImages,
   readBuildConfig,
 } from './src/cli/build.js';
 import { writeDockerfile } from './src/cli/dockerfileGen.js';
@@ -48,7 +48,7 @@ const buildImages = () => {
     'cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .',
   );
   buildProposalSubmissions(proposals);
-  buildTestImages(proposals, values.dry);
+  buildProposalImages(proposals, 'test', values.dry);
 };
 
 switch (cmd) {

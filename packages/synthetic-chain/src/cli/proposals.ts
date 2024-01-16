@@ -76,7 +76,7 @@ export function lastPassedProposal(
 
 export function imageNameForProposal(
   proposal: ProposalCommon,
-  stage: 'test' | 'eval',
+  stage: 'test' | 'use',
 ) {
   const target = `${stage}-${proposal.proposalName}`;
   return {
