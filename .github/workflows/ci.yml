@@ -15,25 +15,24 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  DEFAULT_PLATFORM: linux/amd64
+  # Name these so they look less similar than AMD/ARM; omit 64 as uninformative.
+  X86_PLATFORM: linux/amd64
+  ARM_PLATFORM: linux/arm64/v8
 
 jobs:
   platforms:
     runs-on: ubuntu-latest
     outputs:
-      default: '${{ steps.platforms.outputs.default }}'
       platforms: '${{ steps.platforms.outputs.platforms }}'
     steps:
       - name: Compute Docker platforms
         id: platforms
         run: |
-          DEFAULT_PLATFORM=linux/amd64
-          echo "default=$DEFAULT_PLATFORM" >> $GITHUB_OUTPUT
           if ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}; then
             # JSON-encoded list consisting only of the default platform.
-            platforms='["'"$DEFAULT_PLATFORM"'"]'
+            platforms='["'"$X86_PLATFORM"'"]'
           else
-            platforms='["linux/amd64","linux/arm64/v8"]'
+            platforms='["$X86_PLATFORM","$ARM_PLATFORM"]'
           fi
           echo "platforms=$platforms" >> $GITHUB_OUTPUT
 
@@ -62,10 +61,6 @@ jobs:
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           echo "=== After cleanup:"
           df -h
-
-      - name: Set environment
-        run: |
-          echo "DEFAULT_PLATFORM=${{ needs.platforms.outputs.default }}" >> $GITHUB_ENV
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -119,7 +114,7 @@ jobs:
           docker info
           node_modules/.bin/synthetic-chain build
       - name: run proposal tests
-        if: ${{ matrix.platform == env.DEFAULT_PLATFORM }}
+        if: ${{ matrix.platform == env.X86_PLATFORM }}
         run: node_modules/.bin/synthetic-chain test
 
       # XXX this should be instant for the local platform because all the stages
