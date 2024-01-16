@@ -26,6 +26,10 @@ All proposals then have two additional stages:
 
 The `TEST` stage does not RUN as part of the build. It only defines the ENTRYPOINT and CI runs them all.
 
+The `USE` stage is built into images that are pushed to the image repository. These can be used by release branches to source a particular state of the synthetic chain.
+
+Finally there is a `DEFAULT` target which take the last `USE` image and sets its entrypoing to `./start_agd.sh` which runs the chain indefinitely. This makes it easy to source that image as a way to _run_ the synthetic chain with all passed proposals.
+
 ## Proposals
 
 ### Types

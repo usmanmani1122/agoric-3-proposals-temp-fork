@@ -48,6 +48,8 @@ const buildImages = () => {
     'cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .',
   );
   buildProposalSubmissions(proposals);
+  // the 'test' images need the 'use' images
+  buildProposalImages(proposals, 'use', values.dry);
   buildProposalImages(proposals, 'test', values.dry);
 };
 
