@@ -174,8 +174,6 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
 # DEFAULT
 FROM use-${lastProposal.proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/
-
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ./start_agd.sh
