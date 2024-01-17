@@ -66,8 +66,8 @@ switch (cmd) {
     break;
   }
   case 'test':
-    // always rebuild all test images. Keeps it simple and these are fast
-    // as long as the "use" stages are cached because they don't execute anything themselves.
+    // Always rebuild all test images to keep it simple. With the "use" stages
+    // cached, these are pretty fast building doesn't run agd.
     prepareDockerBuild();
     bakeImages('test', values.dry);
     if (values.debug) {

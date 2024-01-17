@@ -108,14 +108,29 @@ jobs:
       # Enable corepack for packageManager config
       - run: corepack enable || sudo corepack enable
       - run: yarn install
+      # Set up docker-bake files used by docker/bake-action
+      - run: node_modules/.bin/synthetic-chain prepare-ci
 
-      - name: build proposal images
-        run: |
-          docker info
-          node_modules/.bin/synthetic-chain build
-      - name: run proposal tests
+      # Test before pushing the images.
+      - name: Build and run proposal tests
         if: ${{ matrix.platform == env.X86_PLATFORM }}
         run: node_modules/.bin/synthetic-chain test
+
+      # Build a "use" image for each proposal. This uses Docker Bake's
+      # matrix feature. We could have each "use" image built in a different runner
+      # by including https://github.com/docker/bake-action?tab=readme-ov-file#list-targets
+      # in the GHA matrix, but that wouldn't be able to resolve the DAG of what to build first.
+      - name: Push proposal "use" images
+        uses: docker/bake-action@v4
+        # If we pushed from PRs, each one would overwrite main's (e.g. use-upgrade-8)
+        # To push PR "use" images we'll need to qualify the tag (e.g. use-upgrade-8-pr-2).
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          files: |
+            ./docker-bake.json
+            ./docker-bake.hcl
+            ${{ steps.meta.outputs.bake-file }}
+          targets: use
 
       # XXX this should be instant for the local platform because all the stages
       # were already built in the steps above but it's re-building the last
