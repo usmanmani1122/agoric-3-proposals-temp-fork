@@ -135,4 +135,5 @@ dist
 
 # build in CI
 Dockerfile
+docker-bake.json
 /upgrade-test-scripts

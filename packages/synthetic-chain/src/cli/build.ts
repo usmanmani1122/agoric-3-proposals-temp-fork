@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ProposalInfo, imageNameForProposal } from './proposals.js';
+import { ProposalInfo } from './proposals.js';
 
 export type AgoricSyntheticChainConfig = {
   /**
@@ -62,25 +62,15 @@ export const buildProposalSubmissions = (proposals: ProposalInfo[]) => {
   }
 };
 
-export const buildProposalImages = (
-  proposals: ProposalInfo[],
-  stage: 'test' | 'use',
-  dry = false,
-) => {
-  for (const proposal of proposals) {
-    if (!dry) {
-      console.log(
-        `\nBuilding test image for proposal ${proposal.proposalName}`,
-      );
-    }
-    const { name, target } = imageNameForProposal(proposal, stage);
-    // 'load' to ensure the images are output to the Docker client. Seems to be necessary
-    // for the CI docker/build-push-action to re-use the cached stages.
-    const cmd = `docker buildx build --load --tag ${name} --target ${target} .`;
-    console.log(cmd);
-    if (!dry) {
-      // `time` to output how long each build takes
-      execSync(`time ${cmd}`, { stdio: 'inherit' });
-    }
-  }
+/**
+ * Bake images using the docker buildx bake command.
+ *
+ * @param matrix - The group target
+ * @param [dry] - Whether to skip building and just print the build config.
+ */
+export const bakeImages = (matrix: 'test' | 'use', dry = false) => {
+  // https://docs.docker.com/engine/reference/commandline/buildx_build/#load
+  const cmd = `docker buildx bake --load ${matrix} ${dry ? '--print' : ''}`;
+  console.log(cmd);
+  execSync(cmd, { stdio: 'inherit' });
 };

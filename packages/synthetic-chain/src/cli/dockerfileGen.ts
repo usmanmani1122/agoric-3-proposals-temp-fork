@@ -181,6 +181,17 @@ ENTRYPOINT ./start_agd.sh
   },
 };
 
+export function writeBakefileProposals(allProposals: ProposalInfo[]) {
+  const json = {
+    variable: {
+      PROPOSALS: {
+        default: allProposals.map(p => p.proposalName),
+      },
+    },
+  };
+  fs.writeFileSync('docker-bake.json', JSON.stringify(json, null, 2));
+}
+
 export function writeDockerfile(
   allProposals: ProposalInfo[],
   fromTag?: string | null,

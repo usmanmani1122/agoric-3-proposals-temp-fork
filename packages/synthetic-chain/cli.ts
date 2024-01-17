@@ -5,10 +5,13 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 import {
   buildProposalSubmissions,
-  buildProposalImages,
+  bakeImages,
   readBuildConfig,
 } from './src/cli/build.js';
-import { writeDockerfile } from './src/cli/dockerfileGen.js';
+import {
+  writeBakefileProposals,
+  writeDockerfile,
+} from './src/cli/dockerfileGen.js';
 import { matchOneProposal, readProposals } from './src/cli/proposals.js';
 import { debugTestImage, runTestImages } from './src/cli/run.js';
 import { runDoctor } from './src/cli/doctor.js';
@@ -42,26 +45,30 @@ test [--debug]  - build the "test" images and run them
 doctor          - diagnostics and quick fixes
 `;
 
-const buildUseImages = () => {
+/**
+ * Put into places files that building depends upon.
+ */
+const prepareDockerBuild = () => {
   execSync(
     // XXX very brittle
     'cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .',
   );
+  writeDockerfile(allProposals, buildConfig.fromTag);
+  writeBakefileProposals(allProposals);
   buildProposalSubmissions(proposals);
-  buildProposalImages(proposals, 'use', values.dry);
 };
 
 switch (cmd) {
   case 'build': {
-    const { fromTag } = buildConfig;
-    writeDockerfile(allProposals, fromTag);
-    buildUseImages();
+    prepareDockerBuild();
+    bakeImages('use', values.dry);
     break;
   }
   case 'test':
     // always rebuild all test images. Keeps it simple and these are fast
     // as long as the "use" stages are cached because they don't execute anything themselves.
-    buildProposalImages(proposals, 'test', values.dry);
+    prepareDockerBuild();
+    bakeImages('test', values.dry);
     if (values.debug) {
       debugTestImage(matchOneProposal(proposals, match!));
     } else {
