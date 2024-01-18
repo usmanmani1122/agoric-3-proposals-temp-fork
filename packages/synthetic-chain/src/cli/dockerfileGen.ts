@@ -8,6 +8,7 @@ import {
   type ProposalInfo,
   type SoftwareUpgradeProposal,
   encodeUpgradeInfo,
+  imageNameForProposal,
 } from './proposals.js';
 
 /**
@@ -170,9 +171,14 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
    * The last target in the file, for untargeted `docker build`
    */
   DEFAULT(lastProposal: ProposalInfo) {
+    // Assumes the 'use' image is built and tagged.
+    // This isn't necessary for a multi-stage build, but without it CI
+    // rebuilds the last "use" image during the "default" image step
+    // Some background: https://github.com/moby/moby/issues/34715
+    const useImage = imageNameForProposal(lastProposal, 'use').name;
     return `
 # DEFAULT
-FROM use-${lastProposal.proposalName}
+FROM ${useImage}
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]

@@ -132,10 +132,6 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           targets: use
 
-      # XXX this should be instant for the local platform because all the stages
-      # were already built in the steps above but it's re-building the last
-      # stage. This is deemed good enough for now.  see
-      # https://github.com/moby/moby/issues/34715
       - name: Build and push default image
         uses: docker/build-push-action@v5
         with:
