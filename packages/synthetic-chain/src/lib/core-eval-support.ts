@@ -144,13 +144,13 @@ export const ensureISTForInstall = async (
   await mintIST(addr, sendValue, wantMinted, giveCollateral);
 };
 
-export const readSubmissions = async () => {
-  const files = await fsp.readdir('submission');
+export const readBundles = async (dir: string) => {
+  const files = await fsp.readdir(dir);
   const names = files.filter(f => f.endsWith('.js')).map(f => f.slice(0, -3));
   const buildAssets = {} as Record<string, BundleInfo>;
   for (const name of names) {
     const evals = [{ permit: `${name}-permit.json`, script: `${name}.js` }];
-    const content = await fsp.readFile(`submission/${name}.js`, 'utf8');
+    const content = await fsp.readFile(`${dir}/${name}.js`, 'utf8');
     const bundleIds = content.matchAll(/b1-[a-z0-9]+/g);
     const bundles = Array.from(bundleIds).map(id => `${id}.json`);
     buildAssets[name] = { evals, bundles };

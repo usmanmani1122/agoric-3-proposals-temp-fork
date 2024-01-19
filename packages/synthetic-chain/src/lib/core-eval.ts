@@ -13,14 +13,24 @@ import { voteLatestProposalAndWait } from '@agoric/synthetic-chain/src/lib/commo
 import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
 import { type WebCache } from '@agoric/synthetic-chain/src/lib/webAsset.js';
 import {
+  BundleInfo,
   bundleDetail,
   ensureISTForInstall,
   flags,
   getContractInfo,
   loadedBundleIds,
+  readBundles,
   txAbbr,
 } from '@agoric/synthetic-chain/src/lib/core-eval-support.js';
 import { step } from '@agoric/synthetic-chain/src/lib/logging.js';
+
+export const staticConfig = {
+  deposit: '10000000ubld', // 10 BLD
+  installer: 'gov1', // as in: agd keys show gov1
+  proposer: 'validator',
+  collateralPrice: 6, // conservatively low price. TODO: look up
+  swingstorePath: '~/.agoric/data/agoric/swingstore.sqlite',
+};
 
 const makeFakeWebCache = (base: string): WebCache => {
   return {
@@ -73,15 +83,22 @@ const makeTestContext = async staticConfig => {
   return { agd, agoric, swingstore, config, before, fetch };
 };
 
-export const passCoreEvalProposal = async staticConfig => {
+export const passCoreEvalProposal = async (
+  bundleMap: Record<string, BundleInfo>,
+) => {
   // XXX vestige of Ava
-  const context = await makeTestContext(staticConfig);
+  const config = {
+    ...staticConfig,
+    bundleInfos: bundleMap,
+  };
+  const context = await makeTestContext(config);
+  const bundleInfos = Object.values(bundleMap);
 
   await step('bundles not yet installed', async () => {
     const loaded = loadedBundleIds(context.swingstore);
-    const info = staticConfig.buildInfo;
-    for (const { bundles, evals } of info) {
+    for (const [name, { bundles, evals }] of Object.entries(bundleMap)) {
       console.log(
+        name,
         evals[0].script,
         evals.length,
         'eval',
@@ -121,8 +138,7 @@ export const passCoreEvalProposal = async staticConfig => {
 
   await step('bundle names: compartmentMap.entry', async () => {
     const { bundleAssets } = context.config;
-    const info = staticConfig.buildInfo;
-    for (const { bundles, evals } of info) {
+    for (const { bundles, evals } of bundleInfos) {
       for (const bundleRef of bundles) {
         const { fileName } = bundleDetail(bundleRef);
         const bundle = JSON.parse(await bundleAssets.getText(fileName));
@@ -137,9 +153,8 @@ export const passCoreEvalProposal = async staticConfig => {
   const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 
   const readBundleSizes = async (assets: WebCache) => {
-    const info = staticConfig.buildInfo;
     const bundleSizes = await Promise.all(
-      info
+      bundleInfos
         .map(({ bundles }) =>
           bundles.map(b => assets.size(bundleDetail(b).fileName)),
         )
@@ -166,7 +181,7 @@ export const passCoreEvalProposal = async staticConfig => {
 
     let todo = 0;
     let done = 0;
-    for (const { bundles } of staticConfig.buildInfo) {
+    for (const { bundles } of bundleInfos) {
       todo += bundles.length;
       for (const bundle of bundles) {
         const { id, fileName, endoZipBase64Sha512 } = bundleDetail(bundle);
@@ -206,8 +221,7 @@ export const passCoreEvalProposal = async staticConfig => {
 
     // double-check that bundles are loaded
     const loaded = loadedBundleIds(swingstore);
-    const { buildInfo } = staticConfig;
-    for (const { bundles } of buildInfo) {
+    for (const { bundles } of bundleInfos) {
       for (const bundle of bundles) {
         const { id } = bundleDetail(bundle);
         if (!loaded.includes(id)) {
@@ -216,7 +230,7 @@ export const passCoreEvalProposal = async staticConfig => {
       }
     }
 
-    const evalNames = buildInfo
+    const evalNames = bundleInfos
       .map(({ evals }) => evals)
       .flat()
       .map(e => [e.permit, e.script])
@@ -242,4 +256,10 @@ export const passCoreEvalProposal = async staticConfig => {
     console.log(detail.proposal_id, detail.voting_end_time, detail.status);
     assert.equal(detail.status, 'PROPOSAL_STATUS_PASSED');
   });
+};
+
+export const evalBundles = async (dir: string) => {
+  const bundleMap = await readBundles(dir);
+
+  await passCoreEvalProposal(bundleMap);
 };
