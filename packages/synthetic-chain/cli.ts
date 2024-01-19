@@ -41,6 +41,7 @@ const usage = `USAGE:
 build           - build the synthetic-chain "use" images
 
 test [--debug]  - build the "test" images and run them
+test -m <name>  - target a particular proposal by substring match
 
 doctor          - diagnostics and quick fixes
 `;

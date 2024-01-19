@@ -58,6 +58,8 @@ If the proposal is _pending_ and does not yet have a number, use a letter. The p
 
 ## Development
 
+A known issue is that `yarn synthetic-chain` files with `Unknown file extension ".ts"`. To work around it, run from the bin dir as below.
+
 To build the test images,
 
 ```
