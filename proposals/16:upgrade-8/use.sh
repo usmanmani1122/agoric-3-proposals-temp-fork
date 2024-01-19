@@ -91,10 +91,6 @@ for i in "${govaccounts[@]}"; do
   agops perf satisfaction --from $i --executeOffer $VOTE_OFFER --keyring-backend=test
 done
 
-## wait for the election to be resolved (1m default in commands/psm.js)
-echo "waiting 1 minute for election to be resolved"
-sleep 65
-
 echo DEBUG print mint limit
 agops psm info --pair ${PSM_PAIR}
 

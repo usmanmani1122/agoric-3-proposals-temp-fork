@@ -2,12 +2,15 @@
 
 Utilities to build a synthetic chain and test running proposals atop it. The chain approximates agoric-3 (Mainnet) using the state from https://github.com/Agoric/agoric-3-proposals (It could trivially support other Agoric chains, if we scale horizontally.)
 
-```sh
-node_modules/.bin/synthetic-chain build
+## Usage
 
-node_modules/.bin/synthetic-chain test
+```
+build           - build the synthetic-chain "use" images
 
-node_modules/.bin/synthetic-chain test --debug -m <substring of proposal name>
+test [--debug]  - build the "test" images and run them
+test -m <name>  - target a particular proposal by substring match
+
+doctor          - diagnostics and quick fixes
 ```
 
 ## Design

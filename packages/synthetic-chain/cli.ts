@@ -5,10 +5,13 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 import {
   buildProposalSubmissions,
-  buildTestImages,
+  bakeImages,
   readBuildConfig,
 } from './src/cli/build.js';
-import { writeDockerfile } from './src/cli/dockerfileGen.js';
+import {
+  writeBakefileProposals,
+  writeDockerfile,
+} from './src/cli/dockerfileGen.js';
 import { matchOneProposal, readProposals } from './src/cli/proposals.js';
 import { debugTestImage, runTestImages } from './src/cli/run.js';
 import { runDoctor } from './src/cli/doctor.js';
@@ -35,30 +38,38 @@ const [cmd] = positionals;
 
 // TODO consider a lib like Commander for auto-gen help
 const usage = `USAGE:
-build           - build the synthetic-chain
+build           - build the synthetic-chain "use" images
 
-test [--debug]  - run each proposal's test image
+test [--debug]  - build the "test" images and run them
+test -m <name>  - target a particular proposal by substring match
 
 doctor          - diagnostics and quick fixes
 `;
 
-const buildImages = () => {
+/**
+ * Put into places files that building depends upon.
+ */
+const prepareDockerBuild = () => {
   execSync(
     // XXX very brittle
     'cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .',
   );
+  writeDockerfile(allProposals, buildConfig.fromTag);
+  writeBakefileProposals(allProposals);
   buildProposalSubmissions(proposals);
-  buildTestImages(proposals, values.dry);
 };
 
 switch (cmd) {
   case 'build': {
-    const { fromTag } = buildConfig;
-    writeDockerfile(allProposals, fromTag);
-    buildImages();
+    prepareDockerBuild();
+    bakeImages('use', values.dry);
     break;
   }
   case 'test':
+    // Always rebuild all test images to keep it simple. With the "use" stages
+    // cached, these are pretty fast building doesn't run agd.
+    prepareDockerBuild();
+    bakeImages('test', values.dry);
     if (values.debug) {
       debugTestImage(matchOneProposal(proposals, match!));
     } else {

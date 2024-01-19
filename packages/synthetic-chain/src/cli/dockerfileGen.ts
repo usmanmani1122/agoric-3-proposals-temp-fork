@@ -8,6 +8,7 @@ import {
   type ProposalInfo,
   type SoftwareUpgradeProposal,
   encodeUpgradeInfo,
+  imageNameForProposal,
 } from './proposals.js';
 
 /**
@@ -170,11 +171,14 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
    * The last target in the file, for untargeted `docker build`
    */
   DEFAULT(lastProposal: ProposalInfo) {
+    // Assumes the 'use' image is built and tagged.
+    // This isn't necessary for a multi-stage build, but without it CI
+    // rebuilds the last "use" image during the "default" image step
+    // Some background: https://github.com/moby/moby/issues/34715
+    const useImage = imageNameForProposal(lastProposal, 'use').name;
     return `
 # DEFAULT
-FROM use-${lastProposal.proposalName}
-
-COPY --link --chmod=755 ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/
+FROM ${useImage}
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
@@ -182,6 +186,17 @@ ENTRYPOINT ./start_agd.sh
 `;
   },
 };
+
+export function writeBakefileProposals(allProposals: ProposalInfo[]) {
+  const json = {
+    variable: {
+      PROPOSALS: {
+        default: allProposals.map(p => p.proposalName),
+      },
+    },
+  };
+  fs.writeFileSync('docker-bake.json', JSON.stringify(json, null, 2));
+}
 
 export function writeDockerfile(
   allProposals: ProposalInfo[],
