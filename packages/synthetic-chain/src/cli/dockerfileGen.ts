@@ -6,6 +6,7 @@ import {
   encodeUpgradeInfo,
   imageNameForProposal,
   isPassed,
+  ParameterChangeProposal,
 } from './proposals.js';
 import { Platform } from './build.js';
 
@@ -96,7 +97,10 @@ RUN ./run_execute.sh
    * Run a core-eval proposal
    * - Run the core-eval scripts from the proposal. They are only guaranteed to have started, not completed.
    */
-  EVAL({ path, proposalName }: CoreEvalProposal, lastProposal: ProposalInfo) {
+  EVAL(
+    { path, proposalName }: CoreEvalProposal | ParameterChangeProposal,
+    lastProposal: ProposalInfo,
+  ) {
     return `
 # EVAL ${proposalName}
 FROM use-${lastProposal.proposalName} as eval-${proposalName}
@@ -218,6 +222,7 @@ export function writeDockerfile(
 
     switch (proposal.type) {
       case '/agoric.swingset.CoreEvalProposal':
+      case '/cosmos.params.v1beta1.ParameterChangeProposal':
         blocks.push(stage.EVAL(proposal, previousProposal!));
         break;
       case 'Software Upgrade Proposal':
