@@ -8,6 +8,7 @@
   "files": [
     "index.js",
     "cli.ts",
+    "docker-bake.hcl",
     "src",
     "upgrade-test-scripts"
   ],
