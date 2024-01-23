@@ -221,16 +221,22 @@ export function writeDockerfile(
       `#----------------\n# ${proposal.proposalName}\n#----------------`,
     );
 
-    if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
-      blocks.push(stage.EVAL(proposal, previousProposal!));
-    } else if (proposal.type === 'Software Upgrade Proposal') {
-      // handle the first proposal specially
-      if (previousProposal) {
-        blocks.push(stage.PREPARE(proposal, previousProposal));
-      } else {
-        blocks.push(stage.START(proposal.proposalName, proposal.planName));
-      }
-      blocks.push(stage.EXECUTE(proposal));
+    switch (proposal.type) {
+      case '/agoric.swingset.CoreEvalProposal':
+        blocks.push(stage.EVAL(proposal, previousProposal!));
+        break;
+      case 'Software Upgrade Proposal':
+        // handle the first proposal specially
+        if (previousProposal) {
+          blocks.push(stage.PREPARE(proposal, previousProposal));
+        } else {
+          blocks.push(stage.START(proposal.proposalName, proposal.planName));
+        }
+        blocks.push(stage.EXECUTE(proposal));
+        break;
+      default:
+        // @ts-expect-error exhaustive switch narrowed type to `never`
+        throw new Error(`unsupported proposal type ${proposal.type}`);
     }
 
     // The stages must be output in dependency order because if the builder finds a FROM
