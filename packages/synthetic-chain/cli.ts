@@ -50,10 +50,9 @@ doctor          - diagnostics and quick fixes
  * Put into places files that building depends upon.
  */
 const prepareDockerBuild = () => {
-  execSync(
-    // XXX very brittle
-    'cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .',
-  );
+  // XXX file copy very brittle
+  execSync('cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .');
+  execSync('cp -r node_modules/@agoric/synthetic-chain/docker-bake.hcl .');
   writeDockerfile(allProposals, buildConfig.fromTag);
   writeBakefileProposals(allProposals);
   buildProposalSubmissions(proposals);
