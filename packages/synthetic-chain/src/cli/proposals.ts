@@ -33,7 +33,7 @@ function readInfo(proposalPath: string): ProposalInfo {
   const packageJsonPath = path.join('proposals', proposalPath, 'package.json');
   const packageJson = fs.readFileSync(packageJsonPath, 'utf-8');
   const { agoricProposal } = JSON.parse(packageJson);
-  // TODO mustMatch a shape
+  // UNTIL https://github.com/Agoric/agoric-3-proposals/issues/77
   assert(agoricProposal, 'missing agoricProposal in package.json');
   const [proposalIdentifier, proposalName] = proposalPath.split(':');
   return {

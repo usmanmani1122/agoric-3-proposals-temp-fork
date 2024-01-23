@@ -216,7 +216,7 @@ export function writeDockerfile(
     };
   }
   for (const proposal of allProposals) {
-    //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
+    // UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
     blocks.push(
       `#----------------\n# ${proposal.proposalName}\n#----------------`,
     );
@@ -235,6 +235,7 @@ export function writeDockerfile(
         blocks.push(stage.EXECUTE(proposal));
         break;
       default:
+        // UNTIL https://github.com/Agoric/agoric-3-proposals/issues/77
         // @ts-expect-error exhaustive switch narrowed type to `never`
         throw new Error(`unsupported proposal type ${proposal.type}`);
     }
