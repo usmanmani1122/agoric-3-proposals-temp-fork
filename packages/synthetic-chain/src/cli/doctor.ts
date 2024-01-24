@@ -27,6 +27,9 @@ const fixupProposal = (proposal: ProposalInfo) => {
       }
 
       // default to node-modules linker
+      // (The pnpm linker has little benefit because hard links can't cross
+      // volumes so each Docker layer will have copies of the deps anyway. The
+      // pnp linker might work but requires other changes.)
       const yarnRc = path.join(proposalPath, '.yarnrc.yml');
       if (!fs.existsSync(yarnRc)) {
         console.log(`creating ${yarnRc} with node-modules linker`);
@@ -34,6 +37,7 @@ const fixupProposal = (proposal: ProposalInfo) => {
       }
 
       // refresh install
+      execSync('rm -rf node_modules', { cwd: proposalPath });
       execSync('yarn install', { cwd: proposalPath });
     }
   }

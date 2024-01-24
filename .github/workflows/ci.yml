@@ -108,8 +108,6 @@ jobs:
       # Enable corepack for packageManager config
       - run: corepack enable || sudo corepack enable
       - run: yarn install
-      # Set up docker-bake files used by docker/bake-action
-      - run: node_modules/.bin/synthetic-chain prepare-ci
 
       # Test before pushing the images.
       - name: Build and run proposal tests
