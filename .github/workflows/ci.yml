@@ -112,7 +112,7 @@ jobs:
       # Test before pushing the images.
       - name: Build and run proposal tests
         if: ${{ matrix.platform == env.X86_PLATFORM }}
-        run: node_modules/.bin/synthetic-chain test
+        run: yarn test
 
       # Build a "use" image for each proposal. This uses Docker Bake's
       # matrix feature. We could have each "use" image built in a different runner

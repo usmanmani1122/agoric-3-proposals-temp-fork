@@ -4,8 +4,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "echo Use synthetic-chain to build proposal images",
-    "test": "echo Use synthetic-chain to test proposal images",
+    "build": "tsx packages/synthetic-chain build",
+    "test": "tsx packages/synthetic-chain test",
     "format": "prettier --write ."
   },
   "dependencies": {

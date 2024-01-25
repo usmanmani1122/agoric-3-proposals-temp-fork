@@ -63,21 +63,21 @@ A known issue is that `yarn synthetic-chain` files with `Unknown file extension 
 To build the test images,
 
 ```
-node_modules/.bin/synthetic-chain build
+tsx packages/synthetic-chain build
 ```
 
 To build the test images for particular proposals,
 
 ```
 # build just upgrades
-node_modules/.bin/synthetic-chain build --match upgrade
+tsx packages/synthetic-chain build --match upgrade
 ```
 
 To run the tests for particular proposals,
 
 ```
 # build just upgrades
-node_modules/.bin/synthetic-chain test --match upgrade
+tsx packages/synthetic-chain test --match upgrade
 ```
 
 ## Debugging
