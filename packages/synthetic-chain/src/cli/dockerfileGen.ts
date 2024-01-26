@@ -63,8 +63,6 @@ FROM use-${lastProposal.proposalName} as prepare-${proposalName}
 ENV UPGRADE_TO=${planName} UPGRADE_INFO=${JSON.stringify(
       encodeUpgradeInfo(upgradeInfo),
     )}
-# base is a fresh sdk image so copy these supports
-COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/
 
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
@@ -76,17 +74,25 @@ RUN ./start_to_to.sh
    * - Start agd with the SDK that has the upgradeHandler
    * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
    */
-  EXECUTE({ proposalName, sdkImageTag }: SoftwareUpgradeProposal) {
+  EXECUTE({
+    proposalIdentifier,
+    proposalName,
+    sdkImageTag,
+  }: SoftwareUpgradeProposal) {
     return `
 # EXECUTE ${proposalName}
 FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
 
-# base is a fresh sdk image so copy these supports
-COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/
+WORKDIR /usr/src/upgrade-test-scripts
+
+# base is a fresh sdk image so set up the proposal and its dependencies
+COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
+# XXX this hits the network each time because the fresh base lacks the global Yarn cache from the previous proposal's build
+RUN ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
 COPY --link --from=prepare-${proposalName} /root/.agoric /root/.agoric
 
-WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
 RUN ./start_to_to.sh
 `;
@@ -107,7 +113,7 @@ COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/s
 
 WORKDIR /usr/src/upgrade-test-scripts
 
-# install using global cache
+# First stage of this proposal so install its deps.
 COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
 RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
@@ -128,14 +134,7 @@ RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 # USE ${proposalName}
 FROM ${previousStage}-${proposalName} as use-${proposalName}
 
-COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
-
 WORKDIR /usr/src/upgrade-test-scripts
-
-# TODO remove network dependencies in stages
-# install using global cache
-COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
-RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
 COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
@@ -156,10 +155,6 @@ RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
 FROM use-${proposalName} as test-${proposalName}
 
 WORKDIR /usr/src/upgrade-test-scripts
-
-# install using global cache
-COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
-RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
 # copy run_test for this entrypoint and start_agd for optional debugging
 COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/

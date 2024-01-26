@@ -1,20 +1,20 @@
 #!/usr/bin/env tsx
 
-import { parseArgs } from 'node:util';
-import path from 'node:path';
 import { execSync } from 'node:child_process';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
 import {
+  bakeTarget,
   buildProposalSubmissions,
-  bakeImages,
   readBuildConfig,
 } from './src/cli/build.js';
 import {
   writeBakefileProposals,
   writeDockerfile,
 } from './src/cli/dockerfileGen.js';
-import { matchOneProposal, readProposals } from './src/cli/proposals.js';
-import { debugTestImage, runTestImages } from './src/cli/run.js';
 import { runDoctor } from './src/cli/doctor.js';
+import { imageNameForProposal, matchOneProposal, readProposals } from './src/cli/proposals.js';
+import { debugTestImage, runTestImage } from './src/cli/run.js';
 
 const { positionals, values } = parseArgs({
   options: {
@@ -62,18 +62,31 @@ const prepareDockerBuild = () => {
 switch (cmd) {
   case 'build': {
     prepareDockerBuild();
-    bakeImages('use', values.dry);
+    bakeTarget('use', values.dry);
     break;
   }
   case 'test':
     // Always rebuild all test images to keep it simple. With the "use" stages
     // cached, these are pretty fast building doesn't run agd.
     prepareDockerBuild();
-    bakeImages('test', values.dry);
+
     if (values.debug) {
-      debugTestImage(matchOneProposal(proposals, match!));
+      const proposal = matchOneProposal(proposals, match!);
+      bakeTarget(imageNameForProposal(proposal, 'test').target, values.dry);
+      debugTestImage(proposal);
+      // don't bother to delete the test image because there's just one
+      // and the user probably wants to run it again.
     } else {
-      runTestImages(proposals);
+      for (const proposal of proposals) {
+        const image = imageNameForProposal(proposal, 'test');
+        bakeTarget(image.target, values.dry);
+        runTestImage(proposal);
+        // delete the image to reclaim disk space. The next build
+        // will use the build cache.
+        execSync('docker system df', { stdio: 'inherit' });
+        execSync(`docker rmi ${image.name}`, { stdio: 'inherit' });
+        execSync('docker system df', { stdio: 'inherit' });
+      }
     }
     break;
   case 'doctor':

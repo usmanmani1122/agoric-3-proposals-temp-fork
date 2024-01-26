@@ -108,13 +108,19 @@ jobs:
       # Enable corepack for packageManager config
       - run: corepack enable || sudo corepack enable
       - run: yarn install
-      # Set up docker-bake files used by docker/bake-action
-      - run: node_modules/.bin/synthetic-chain prepare-ci
+
+      - run: docker system df
+      - run: docker buildx du --verbose
+      - run: df -h
 
       # Test before pushing the images.
       - name: Build and run proposal tests
         if: ${{ matrix.platform == env.X86_PLATFORM }}
-        run: node_modules/.bin/synthetic-chain test
+        run: yarn test
+
+      - run: docker system df
+      - run: docker buildx du --verbose
+      - run: df -h
 
       # Build a "use" image for each proposal. This uses Docker Bake's
       # matrix feature. We could have each "use" image built in a different runner
@@ -132,6 +138,10 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           targets: use
 
+      - run: docker system df
+      - run: docker buildx du --verbose
+      - run: df -h
+
       - name: Build and push default image
         uses: docker/build-push-action@v5
         with:
@@ -142,6 +152,10 @@ jobs:
           push: true
           tags: ${{ steps.docker-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - run: docker system df
+      - run: docker buildx du --verbose
+      - run: df -h
 
   # Merge the default image from each platform into one multi-arch image,
   # then publish that multiarch image.
