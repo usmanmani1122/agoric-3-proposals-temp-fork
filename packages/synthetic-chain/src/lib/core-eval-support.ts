@@ -1,4 +1,5 @@
-// @ts-check
+import * as fsp from 'node:fs/promises';
+
 import {
   Far,
   makeMarshal,
@@ -27,7 +28,7 @@ const makeBoardUnmarshal = () => {
   return makeMarshal(convertValToSlot, convertSlotToVal);
 };
 
-export const getContractInfo = async (path, io = {}) => {
+export const getContractInfo = async (path, io = {} as any) => {
   const m = makeBoardUnmarshal();
   const {
     agoric: { follow = agoric.follow },
@@ -57,10 +58,10 @@ export const testIncludes = (t, needle, haystack, label, sense = true) => {
 };
 
 /**
- * @param {Record<string, string>} record - e.g. { color: 'blue' }
- * @returns {string[]} - e.g. ['--color', 'blue']
+ * @param record - e.g. { color: 'blue' }
+ * @returns e.g. ['--color', 'blue']
  */
-export const flags = record => {
+export const flags = (record: Record<string, string>): string[] => {
   return Object.entries(record)
     .map(([k, v]) => [`--${k}`, v])
     .flat();
@@ -77,9 +78,9 @@ export const loadedBundleIds = swingstore => {
 };
 
 /**
- * @param {string} cacheFn - e.g. /home/me.agoric/cache/b1-DEADBEEF.json
+ * @param cacheFn - e.g. /home/me.agoric/cache/b1-DEADBEEF.json
  */
-export const bundleDetail = cacheFn => {
+export const bundleDetail = (cacheFn: string) => {
   const fileName = NonNullish(cacheFn.split('/').at(-1));
   const id = fileName.replace(/\.json$/, '');
   const hash = id.replace(/^b1-/, '');
@@ -90,23 +91,21 @@ const importBundleCost = (bytes, price = 0.002) => {
   return bytes * price;
 };
 
-/**
- * @typedef {{
- *   bundles: string[],
- *   evals: { permit: string; script: string }[],
- * }} ProposalInfo
- */
+export type BundleInfo = {
+  bundles: string[];
+  evals: { permit: string; script: string }[];
+};
 
-/**
- * @param {number} myIST
- * @param {number} cost
- * @param {{
- *  unit?: number, padding?: number, minInitialDebt?: number,
- *  collateralPrice: number,
- * }} opts
- * @returns
- */
-const mintCalc = (myIST, cost, opts) => {
+const mintCalc = (
+  myIST: number,
+  cost: number,
+  opts: {
+    unit?: number;
+    padding?: number;
+    minInitialDebt?: number;
+    collateralPrice: number;
+  },
+) => {
   const {
     unit = 1_000_000,
     padding = 1,
@@ -120,15 +119,12 @@ const mintCalc = (myIST, cost, opts) => {
   return { wantMinted, giveCollateral, sendValue };
 };
 
-/**
- *
- * @param {ReturnType<typeof import('../lib/agd-lib.js').makeAgd>} agd
- * @param {*} config
- * @param {number} bytes total bytes
- * @param {{ log: (...args: any[]) => void }} io
- * @returns
- */
-export const ensureISTForInstall = async (agd, config, bytes, { log }) => {
+export const ensureISTForInstall = async (
+  agd: ReturnType<typeof import('../lib/agd-lib.js').makeAgd>,
+  config,
+  bytes: number,
+  { log }: { log: (...args: any[]) => void },
+) => {
   const cost = importBundleCost(bytes);
   log({ totalSize: bytes, cost });
   const { installer } = config;
@@ -146,4 +142,18 @@ export const ensureISTForInstall = async (agd, config, bytes, { log }) => {
   );
   log({ wantMinted });
   await mintIST(addr, sendValue, wantMinted, giveCollateral);
+};
+
+export const readBundles = async (dir: string) => {
+  const files = await fsp.readdir(dir);
+  const names = files.filter(f => f.endsWith('.js')).map(f => f.slice(0, -3));
+  const buildAssets = {} as Record<string, BundleInfo>;
+  for (const name of names) {
+    const evals = [{ permit: `${name}-permit.json`, script: `${name}.js` }];
+    const content = await fsp.readFile(`${dir}/${name}.js`, 'utf8');
+    const bundleIds = content.matchAll(/b1-[a-z0-9]+/g);
+    const bundles = Array.from(bundleIds).map(id => `${id}.json`);
+    buildAssets[name] = { evals, bundles };
+  }
+  return buildAssets;
 };

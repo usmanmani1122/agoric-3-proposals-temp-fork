@@ -117,7 +117,7 @@ WORKDIR /usr/src/upgrade-test-scripts
 COPY --link ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
 RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_eval.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/*eval* /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 RUN ./run_eval.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -216,21 +216,28 @@ export function writeDockerfile(
     };
   }
   for (const proposal of allProposals) {
-    //   UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
+    // UNTIL region support https://github.com/microsoft/vscode-docker/issues/230
     blocks.push(
       `#----------------\n# ${proposal.proposalName}\n#----------------`,
     );
 
-    if (proposal.type === '/agoric.swingset.CoreEvalProposal') {
-      blocks.push(stage.EVAL(proposal, previousProposal!));
-    } else if (proposal.type === 'Software Upgrade Proposal') {
-      // handle the first proposal specially
-      if (previousProposal) {
-        blocks.push(stage.PREPARE(proposal, previousProposal));
-      } else {
-        blocks.push(stage.START(proposal.proposalName, proposal.planName));
-      }
-      blocks.push(stage.EXECUTE(proposal));
+    switch (proposal.type) {
+      case '/agoric.swingset.CoreEvalProposal':
+        blocks.push(stage.EVAL(proposal, previousProposal!));
+        break;
+      case 'Software Upgrade Proposal':
+        // handle the first proposal specially
+        if (previousProposal) {
+          blocks.push(stage.PREPARE(proposal, previousProposal));
+        } else {
+          blocks.push(stage.START(proposal.proposalName, proposal.planName));
+        }
+        blocks.push(stage.EXECUTE(proposal));
+        break;
+      default:
+        // UNTIL https://github.com/Agoric/agoric-3-proposals/issues/77
+        // @ts-expect-error exhaustive switch narrowed type to `never`
+        throw new Error(`unsupported proposal type ${proposal.type}`);
     }
 
     // The stages must be output in dependency order because if the builder finds a FROM

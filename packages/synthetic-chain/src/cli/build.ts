@@ -23,7 +23,7 @@ export function readBuildConfig(root: string): AgoricSyntheticChainConfig {
   const { agoricSyntheticChain } = JSON.parse(packageJson);
 
   const config = { ...defaultConfig, ...agoricSyntheticChain };
-  // TODO mustMatch a shape
+  // UNTIL https://github.com/Agoric/agoric-3-proposals/issues/77
   return config;
 }
 

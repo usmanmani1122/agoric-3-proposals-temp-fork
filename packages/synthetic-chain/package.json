@@ -1,6 +1,6 @@
 {
   "name": "@agoric/synthetic-chain",
-  "version": "0.0.3",
+  "version": "0.0.4-2",
   "description": "Utilities to build a chain and test proposals atop it",
   "bin": "./cli.ts",
   "main": "cli.ts",
@@ -8,6 +8,7 @@
   "files": [
     "index.js",
     "cli.ts",
+    "docker-bake.hcl",
     "src",
     "upgrade-test-scripts"
   ],
@@ -17,7 +18,9 @@
     "test:xs": "exit 0"
   },
   "dependencies": {
+    "@endo/zip": "^1.0.0",
     "better-sqlite3": "^9.2.2",
+    "execa": "^8.0.1",
     "tsx": "^3.12.8",
     "typescript": "^5.3.3"
   },

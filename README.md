@@ -80,6 +80,24 @@ To run the tests for particular proposals,
 tsx packages/synthetic-chain test --match upgrade
 ```
 
+To use a local build of synthetic-chain,
+
+```sh
+cd packages/synthetic-chain
+npm pack
+cd -
+
+for p in $(ls proposals); do
+    cp -f packages/synthetic-chain/agoric-synthetic-chain-*.tgz proposals/$p/agoric-synthetic-chain.tgz
+    cd proposals/$p
+    yarn install
+    cd -
+done
+rm -f packages/synthetic-chain/agoric-synthetic-chain-*.tgz
+```
+
+Then find-replace the "@agoric/synthetic-chain" version in package.json with ""file:agoric-synthetic-chain.tgz".
+
 ## Debugging
 
 To get the local files into the container, use a [bind mount](https://docs.docker.com/storage/bind-mounts/). E.g.
