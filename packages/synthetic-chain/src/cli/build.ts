@@ -64,13 +64,16 @@ export const buildProposalSubmissions = (proposals: ProposalInfo[]) => {
 
 /**
  * Bake images using the docker buildx bake command.
+ * 
+ * Note this uses `--load` which pushes the completed images to the builder,
+ * consuming 2-3 GB per image.
+ * @see {@link https://docs.docker.com/engine/reference/commandline/buildx_build/#load}
  *
- * @param matrix - The group target
+ * @param target - The image or group target
  * @param [dry] - Whether to skip building and just print the build config.
  */
-export const bakeImages = (matrix: 'test' | 'use', dry = false) => {
-  // https://docs.docker.com/engine/reference/commandline/buildx_build/#load
-  const cmd = `docker buildx bake --load ${matrix} ${dry ? '--print' : ''}`;
+export const bakeTarget = (target: string, dry = false) => {
+  const cmd = `docker buildx bake --load ${target} ${dry ? '--print' : ''}`;
   console.log(cmd);
   execSync(cmd, { stdio: 'inherit' });
 };
