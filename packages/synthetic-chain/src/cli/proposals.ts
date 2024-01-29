@@ -51,9 +51,19 @@ export function readProposals(proposalsParent: string): ProposalInfo[] {
   const proposalsDir = path.join(proposalsParent, 'proposals');
   const proposalPaths = fs
     .readdirSync(proposalsDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory()) // omit files
-    .map(dirent => dirent.name)
-    .filter(name => name.includes(':')); // omit node_modules
+    .filter(dirent => {
+      const hasPackageJson = fs.existsSync(
+        path.join(dirent.path, dirent.name, 'package.json'),
+      );
+      if (!hasPackageJson) {
+        console.warn(
+          'WARN ignoring non-package in proposal directory:',
+          dirent.name,
+        );
+      }
+      return hasPackageJson;
+    })
+    .map(dirent => dirent.name);
   return proposalPaths.map(readInfo);
 }
 
