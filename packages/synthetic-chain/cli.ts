@@ -13,7 +13,11 @@ import {
   writeDockerfile,
 } from './src/cli/dockerfileGen.js';
 import { runDoctor } from './src/cli/doctor.js';
-import { imageNameForProposal, matchOneProposal, readProposals } from './src/cli/proposals.js';
+import {
+  imageNameForProposal,
+  matchOneProposal,
+  readProposals,
+} from './src/cli/proposals.js';
 import { debugTestImage, runTestImage } from './src/cli/run.js';
 
 const { positionals, values } = parseArgs({
@@ -50,9 +54,9 @@ doctor          - diagnostics and quick fixes
  * Put into places files that building depends upon.
  */
 const prepareDockerBuild = () => {
-  // XXX file copy very brittle
-  execSync('cp -r node_modules/@agoric/synthetic-chain/upgrade-test-scripts .');
-  execSync('cp -r node_modules/@agoric/synthetic-chain/docker-bake.hcl .');
+  const cliPath = new URL(import.meta.url).pathname;
+  execSync(`cp -r ${path.resolve(cliPath, '..', 'upgrade-test-scripts')} .`);
+  execSync(`cp -r ${path.resolve(cliPath, '..', 'docker-bake.hcl')} .`);
   writeDockerfile(allProposals, buildConfig.fromTag);
   writeBakefileProposals(allProposals);
   buildProposalSubmissions(proposals);
