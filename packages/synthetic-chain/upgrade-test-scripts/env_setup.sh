@@ -59,6 +59,7 @@ if [[ "$binary" == "agd" ]]; then
 fi
 
 startAgd() {
+  echo "Starting agd in background"
   agd start --log_level warn "$@" &
   AGD_PID=$!
   echo $AGD_PID >$HOME/.agoric/agd.pid
@@ -195,7 +196,7 @@ printKeys() {
   echo "========== GOVERNANCE KEYS =========="
   for i in ~/.agoric/*.key; do
     name=$(basename $i .key)
-    echo "$name:"$'\t'$(agd keys add $name --dry-run --recover --keyring-backend=test --output=json < $i | jq -r .address) || true
+    echo "$name:"$'\t'$(agd keys add $name --dry-run --recover --keyring-backend=test --output=json <$i | jq -r .address) || true
     echo $'\t'$(cat $i)
   done
   echo "========== GOVERNANCE KEYS =========="
