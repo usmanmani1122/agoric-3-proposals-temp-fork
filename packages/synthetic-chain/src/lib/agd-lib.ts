@@ -1,5 +1,7 @@
 import { ExecFileSyncOptionsWithStringEncoding } from 'child_process';
 
+import assert from 'node:assert';
+
 const { freeze } = Object;
 
 const agdBinary = 'agd';
@@ -20,7 +22,13 @@ export const makeAgd = ({
       ...(home ? ['--home', home] : []),
       ...(keyringBackend ? [`--keyring-backend`, keyringBackend] : []),
     ];
-    // XXX: rpcAddrs after [0] are ignored
+    if (rpcAddrs) {
+      assert.equal(
+        rpcAddrs.length,
+        1,
+        'XXX rpcAddrs must contain only one entry',
+      );
+    }
     const nodeArgs = [...(rpcAddrs ? [`--node`, rpcAddrs[0]] : [])];
 
     const exec = (
@@ -38,7 +46,7 @@ export const makeAgd = ({
           | [kind: 'tx', txhash: string]
           | [mod: 'vstorage', kind: 'data' | 'children', path: string],
       ) => {
-        const out = await exec(['query', ...qArgs, ...nodeArgs, ...outJson], {
+        const out = exec(['query', ...qArgs, ...nodeArgs, ...outJson], {
           encoding: 'utf-8',
           stdio: ['ignore', 'pipe', 'ignore'],
         });
