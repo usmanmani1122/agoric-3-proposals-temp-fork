@@ -77,7 +77,8 @@ export const makeAgd = ({
     });
     const rw = freeze({
       /**
-       * TODO: gas
+       * @param {string[]} txArgs
+       * @param {{ chainId: string, from: string, yes?: boolean }} opts
        */
       tx: async (
         txArgs: string[],
@@ -95,6 +96,8 @@ export const makeAgd = ({
           ...[`--from`, from],
           'tx',
           ...['--broadcast-mode', 'block'],
+          ...['--gas', 'auto'],
+          ...['--gas-adjustment', '1.3'],
           ...txArgs,
           ...yesArg,
           ...outJson,

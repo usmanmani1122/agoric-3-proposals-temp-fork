@@ -194,7 +194,7 @@ export const passCoreEvalProposal = async (
 
         const bundleRd = await bundleAssets.storedPath(fileName);
         const result = await agd.tx(
-          ['swingset', 'install-bundle', `@${bundleRd}`, '--gas', 'auto'],
+          ['swingset', 'install-bundle', `@${bundleRd}`],
           { from, chainId, yes: true },
         );
         console.log(txAbbr(result));
@@ -248,7 +248,6 @@ export const passCoreEvalProposal = async (
         'swingset-core-eval',
         ...evalPaths,
         ...flags({ ...info, deposit }),
-        ...flags({ gas: 'auto', 'gas-adjustment': '1.2' }),
       ],
       { from, chainId, yes: true },
     );
