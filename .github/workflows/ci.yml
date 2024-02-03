@@ -120,11 +120,13 @@ jobs:
           done
           echo "tags=$SUFFIXED" | tee -a $GITHUB_OUTPUT
 
-      # The .ts scripts depend upon this
-      - run: tsx --version || npm install --global tsx
-      # Enable corepack for packageManager config
-      - run: corepack enable || sudo corepack enable
-      - run: yarn install
+      - name: Setup synthetic-chain
+        run: |
+          # The .ts scripts depend upon this
+          tsx --version || npm install --global tsx
+          # Enable corepack for packageManager config
+          corepack enable || sudo corepack enable
+          yarn install
 
       - run: docker system df
       - run: docker buildx du --verbose
