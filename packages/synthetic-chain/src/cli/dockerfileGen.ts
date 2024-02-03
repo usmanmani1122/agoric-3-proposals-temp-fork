@@ -3,7 +3,6 @@
 
 import fs from 'node:fs';
 import {
-  lastPassedProposal,
   type CoreEvalProposal,
   type ProposalInfo,
   type SoftwareUpgradeProposal,
@@ -11,6 +10,7 @@ import {
   imageNameForProposal,
   isPassed,
 } from './proposals.js';
+import { Platform } from './build.ts';
 
 /**
  * Templates for Dockerfile stages
@@ -183,9 +183,15 @@ ENTRYPOINT ./start_agd.sh
   },
 };
 
-export function writeBakefileProposals(allProposals: ProposalInfo[]) {
+export function writeBakefileProposals(
+  allProposals: ProposalInfo[],
+  platforms?: Platform[],
+) {
   const json = {
     variable: {
+      PLATFORMS: {
+        default: platforms || null,
+      },
       PROPOSALS: {
         default: allProposals.map(p => p.proposalName),
       },

@@ -14,9 +14,11 @@ group "default" {
   ]
 }
 
+// Images to use the result of all local proposals, optionally built multi-platform
 target "use" {
   inherits = ["docker-metadata-action"]
   name = "use-${proposal}"
+  platforms = PLATFORMS
   matrix = {
     proposal = PROPOSALS
   }
@@ -29,6 +31,7 @@ target "use" {
   target = "use-${proposal}"
 }
 
+// Image to test the result of a proposal, always current platform
 target "test" {
   name = "test-${proposal}"
   matrix = {

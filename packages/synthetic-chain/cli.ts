@@ -41,13 +41,24 @@ const proposals = match
 const [cmd] = positionals;
 
 // TODO consider a lib like Commander for auto-gen help
-const usage = `USAGE:
+const USAGE = `USAGE:
+prepare-build   - generate Docker build configs
+
 build           - build the synthetic-chain "use" images
 
 test [--debug]  - build the "test" images and run them
 test -m <name>  - target a particular proposal by substring match
 
 doctor          - diagnostics and quick fixes
+`;
+
+const EXPLAIN_MULTIPLATFORM = `
+ERROR: docker exporter does not currently support exporting manifest lists
+
+Multiple platforms are configured but Docker does not support multiplatform in one builder.
+Until https://github.com/docker/roadmap/issues/371, attempting it will error as above.
+
+Instead use a builder that supports multiplatform such as depot.dev.
 `;
 
 /**
@@ -58,7 +69,7 @@ const prepareDockerBuild = () => {
   // copy and generate files of the build context that aren't in the build contents
   execSync(`cp -r ${path.resolve(cliPath, '..', 'docker-bake.hcl')} .`);
   writeDockerfile(allProposals, buildConfig.fromTag);
-  writeBakefileProposals(allProposals);
+  writeBakefileProposals(allProposals, buildConfig.platforms);
   // copy and generate files to include in the build
   execSync(`cp -r ${path.resolve(cliPath, '..', 'upgrade-test-scripts')} .`);
   buildProposalSubmissions(proposals);
@@ -70,8 +81,16 @@ const prepareDockerBuild = () => {
 };
 
 switch (cmd) {
+  case 'prepare-build':
+    prepareDockerBuild();
+    break;
   case 'build': {
     prepareDockerBuild();
+    // do not encapsulate running Depot. It's a special case which the user should understand.
+    if (buildConfig.platforms) {
+      console.error(EXPLAIN_MULTIPLATFORM);
+      process.exit(1);
+    }
     bakeTarget('use', values.dry);
     break;
   }
@@ -103,5 +122,5 @@ switch (cmd) {
     runDoctor(allProposals);
     break;
   default:
-    console.log(usage);
+    console.log(USAGE);
 }
