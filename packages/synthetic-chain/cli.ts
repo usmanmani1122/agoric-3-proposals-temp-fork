@@ -55,11 +55,18 @@ doctor          - diagnostics and quick fixes
  */
 const prepareDockerBuild = () => {
   const cliPath = new URL(import.meta.url).pathname;
-  execSync(`cp -r ${path.resolve(cliPath, '..', 'upgrade-test-scripts')} .`);
+  // copy and generate files of the build context that aren't in the build contents
   execSync(`cp -r ${path.resolve(cliPath, '..', 'docker-bake.hcl')} .`);
   writeDockerfile(allProposals, buildConfig.fromTag);
   writeBakefileProposals(allProposals);
+  // copy and generate files to include in the build
+  execSync(`cp -r ${path.resolve(cliPath, '..', 'upgrade-test-scripts')} .`);
   buildProposalSubmissions(proposals);
+  // set timestamp of build content to zero to avoid invalidating the build cache
+  // (change in contents will still invalidate)
+  execSync(
+    'find upgrade-test-scripts -type f -exec touch -t 197001010000 {} +',
+  );
 };
 
 switch (cmd) {
