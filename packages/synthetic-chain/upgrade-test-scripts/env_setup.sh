@@ -25,7 +25,9 @@ export USER1ADDR=$($binary keys show user1 -a --keyring-backend="test")
 
 if [[ "$binary" == "agd" ]]; then
   configdir=/usr/src/agoric-sdk/packages/vm-config
-  test -d "$configdir" || configdir=/usr/src/agoric-sdk/packages/vats
+  # Check specifically for package.json because the directory may persist in the file system
+  # across branch changes due to gitignored node_modules
+  test -f "$configdir/package.json" || configdir=/usr/src/agoric-sdk/packages/vats
   # Support testnet addresses
   sed -i "s/agoric1ldmtatp24qlllgxmrsjzcpe20fvlkp448zcuce/$GOV1ADDR/g" "$configdir"/*.json
   sed -i "s/agoric140dmkrz2e42ergjj7gyvejhzmjzurvqeq82ang/$GOV2ADDR/g" "$configdir"/*.json
