@@ -14,8 +14,6 @@ fi
 
 echo "[$PROPOSAL] Starting agd"
 
-echo "[$PROPOSAL_PATH] Starting agd"
-
 startAgd
 
 echo "[$PROPOSAL] Running test.sh."
