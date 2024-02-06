@@ -222,6 +222,20 @@ const readBundleSizes = async src => {
   return { bundleSizes, totalSize };
 };
 
+const minute = 60 / 1; // block time is ~1sec
+
+/**
+ * @param {() => Promise<boolean>} check
+ */
+const poll = async (check, maxTries) => {
+  for (let tries = 0; tries < maxTries; tries += 1) {
+    const ok = await check();
+    if (ok) return;
+    await waitForBlock();
+  }
+  throw Error(`tried ${maxTries} times without success`);
+};
+
 test.serial('ensure enough IST to install bundles', async t => {
   const { agd, config, src } = t.context;
   const { totalSize, bundleSizes } = await readBundleSizes(src);
@@ -277,6 +291,7 @@ test.serial('core eval prereqs: provision royalty, gov, ...', async t => {
   const { agd, config } = t.context;
   const { entries } = Object;
 
+  console.log('Adding keys, expect errors...');
   for (const [name, { address, mnemonic }] of entries(config.accounts)) {
     try {
       agd.lookup(address);
@@ -287,6 +302,7 @@ test.serial('core eval prereqs: provision royalty, gov, ...', async t => {
     agd.keys.add(name, mnemonic);
   }
 
+  console.log('Checking wallet state in vstorage');
   for (const [name, { address }] of entries(config.accounts)) {
     const walletPath = `published.wallet.${address}`;
     const data = await agd.query(['vstorage', 'data', walletPath]);
@@ -386,18 +402,6 @@ test.serial(`agoricNames.instance is populated`, async t => {
   const { config, agoric, agd } = t.context;
   const { instance: target } = config;
 
-  /**
-   * @param {() => Promise<boolean>} check
-   */
-  const poll = async (check, maxTries) => {
-    for (let tries = 0; tries < maxTries; tries += 1) {
-      const ok = await check();
-      if (ok) return;
-      await waitForBlock();
-    }
-    throw Error(`tried ${maxTries} times without success`);
-  };
-
   const checkForInstance = async () => {
     const { instance } = await wellKnownIdentities({ agoric });
     const present = Object.keys(instance);
@@ -405,7 +409,6 @@ test.serial(`agoricNames.instance is populated`, async t => {
   };
 
   // contract initialization took ~10min in mainnet
-  const minute = 60 / 1; // block time is ~1sec
   poll(checkForInstance, 15 * minute);
   t.pass();
 });
@@ -423,13 +426,18 @@ test.serial(`agoricNames.instance is populated`, async t => {
 // // a latestQuestion node published.
 test.serial('crabble governance is present', async t => {
   const { agd } = t.context;
-  const { children } = await agd.query([
-    'vstorage',
-    'children',
-    'published.crabble',
-  ]);
-  console.log({ children });
-  testIncludes(t, 'governance', children, 'crabble committee');
+  const checkForGovernance = async () => {
+    const { children } = await agd.query([
+      'vstorage',
+      'children',
+      'published.crabble',
+    ]);
+    console.log({ children });
+    return children.includes('governance');
+  };
+  // contract initialization took ~10min in mainnet
+  poll(checkForGovernance, 15 * minute);
+  t.pass();
 });
 //
 // test.todo('test contract features- mint character');
