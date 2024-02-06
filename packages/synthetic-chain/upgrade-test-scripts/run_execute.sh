@@ -7,4 +7,4 @@ startAgd
 
 echo "Run several blocks for the upgrade to settle, then exit"
 waitForBlock 5
-exit 0
+killAgd

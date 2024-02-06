@@ -17,9 +17,9 @@ import {
  */
 const stage = {
   /**
-   * ag0, start of the chain
+   * Prepare an upgrade from ag0, start of the chain
    */
-  START(proposalName: string, to: string) {
+  PREPARE_ZERO(proposalName: string, to: string) {
     const agZeroUpgrade = 'agoric-upgrade-7-2';
     return `
 ## START
@@ -30,10 +30,10 @@ ENV UPGRADE_TO=${to}
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
-COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_ag0.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare_zero.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0
-RUN /usr/src/upgrade-test-scripts/start_ag0.sh
+RUN /usr/src/upgrade-test-scripts/run_prepare_zero.sh
 `;
   },
   /**
@@ -65,9 +65,10 @@ ENV UPGRADE_TO=${planName} UPGRADE_INFO=${JSON.stringify(
       encodeUpgradeInfo(upgradeInfo),
     )}
 
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare.sh /usr/src/upgrade-test-scripts/
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
-RUN ./start_to_to.sh
+RUN ./run_prepare.sh
 `;
   },
   /**
@@ -230,7 +231,9 @@ export function writeDockerfile(
         if (previousProposal) {
           blocks.push(stage.PREPARE(proposal, previousProposal));
         } else {
-          blocks.push(stage.START(proposal.proposalName, proposal.planName));
+          blocks.push(
+            stage.PREPARE_ZERO(proposal.proposalName, proposal.planName),
+          );
         }
         blocks.push(stage.EXECUTE(proposal));
         break;

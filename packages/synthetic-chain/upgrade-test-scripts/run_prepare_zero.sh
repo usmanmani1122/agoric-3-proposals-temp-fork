@@ -1,4 +1,5 @@
 #!/bin/bash
+# Prepare an upgrade from ag0
 
 # The name of the binary is an implementation detail.
 agd() {
