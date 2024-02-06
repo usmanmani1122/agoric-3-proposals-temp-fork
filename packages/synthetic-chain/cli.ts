@@ -3,6 +3,7 @@
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import chalk from 'chalk';
 import {
   bakeTarget,
   buildProposalSubmissions,
@@ -101,12 +102,14 @@ switch (cmd) {
 
     if (values.debug) {
       const proposal = matchOneProposal(proposals, match!);
+      console.log(chalk.yellow.bold(`Debugging ${proposal.proposalName}`));
       bakeTarget(imageNameForProposal(proposal, 'test').target, values.dry);
       debugTestImage(proposal);
       // don't bother to delete the test image because there's just one
       // and the user probably wants to run it again.
     } else {
       for (const proposal of proposals) {
+        console.log(chalk.cyan.bold(`Testing ${proposal.proposalName}`));
         const image = imageNameForProposal(proposal, 'test');
         bakeTarget(image.target, values.dry);
         runTestImage(proposal);
