@@ -4,10 +4,11 @@ import { promises as fs } from 'fs';
 
 import {
   agd,
-  agoric,
   agops,
+  agoric,
 } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 
+import { getUser } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 import {
   GOV1ADDR,
   GOV2ADDR,
@@ -15,16 +16,6 @@ import {
   PSM_PAIR,
 } from '@agoric/synthetic-chain/src/lib/constants.js';
 import { openVault } from '@agoric/synthetic-chain/src/lib/econHelpers.js';
-import {
-  getUser,
-  waitForBlock,
-} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
-
-test.before(async () => {
-  console.log('Wait for upgrade to settle');
-
-  await waitForBlock(20);
-});
 
 test(`Ensure there's only uist`, async t => {
   const result = await agd.query(
