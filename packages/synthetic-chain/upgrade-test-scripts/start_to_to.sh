@@ -1,5 +1,5 @@
 #!/bin/bash
-# Prepare or execute an upgrade
+# Prepare an upgrade
 
 grep -qF 'env_setup.sh' /root/.bashrc || echo "source /usr/src/upgrade-test-scripts/env_setup.sh" >>/root/.bashrc
 grep -qF 'printKeys' /root/.bashrc || echo "printKeys" >>/root/.bashrc
@@ -9,9 +9,8 @@ source ./env_setup.sh
 startAgd
 
 if [[ -z "${UPGRADE_TO}" ]]; then
-  echo "no upgrade set.  running for a few blocks and exiting"
-  waitForBlock 5
-  exit 0
+  echo "Requires UPGRADE_TO to be set"
+  exit 1
 fi
 
 voting_period_s=10
