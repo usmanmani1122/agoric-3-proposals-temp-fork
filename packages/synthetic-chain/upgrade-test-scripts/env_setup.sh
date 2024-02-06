@@ -15,6 +15,8 @@ fi
 
 export binary=ag0
 if [ -x "$(command -v "agd")" ]; then
+  # Skip the agoric-sdk/bin/agd wrapper script to prevent it rebuilding sdk
+  ln -fs /usr/src/agoric-sdk/golang/cosmos/build/agd /usr/local/bin/agd
   export binary=agd
 fi
 export GOV1ADDR=$($binary keys show gov1 -a --keyring-backend="test")
