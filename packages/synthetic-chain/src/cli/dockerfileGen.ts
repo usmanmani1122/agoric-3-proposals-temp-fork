@@ -89,8 +89,7 @@ WORKDIR /usr/src/upgrade-test-scripts
 # base is a fresh sdk image so set up the proposal and its dependencies
 COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
 COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
-# XXX this hits the network each time because the fresh base lacks the global Yarn cache from the previous proposal's build
-RUN ./install_deps.sh ${proposalIdentifier}:${proposalName}
+RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
 COPY --link --from=prepare-${proposalName} /root/.agoric /root/.agoric
 
