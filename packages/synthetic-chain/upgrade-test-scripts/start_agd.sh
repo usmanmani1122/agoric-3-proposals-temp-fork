@@ -10,4 +10,5 @@ source ./env_setup.sh
 export SLOGFILE=slog.slog
 
 # don't use startAgd() because that backgrounds
+echo "Starting agd in foreground"
 agd start --log_level warn "$@"

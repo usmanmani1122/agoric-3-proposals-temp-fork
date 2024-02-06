@@ -6,12 +6,20 @@ set -e
 
 source ./env_setup.sh
 
-PROPOSAL_PATH=$1
+PROPOSAL=$1
+if [ -z "$PROPOSAL" ]; then
+    echo "Must specify what proposal to use"
+    exit 1
+fi
+
+echo "[$PROPOSAL] Starting agd"
+
+echo "[$PROPOSAL_PATH] Starting agd"
 
 startAgd
 
-echo "Agd started. Running test.sh."
-cd /usr/src/proposals/"$PROPOSAL_PATH/" || exit
+echo "[$PROPOSAL] Running test.sh."
+cd /usr/src/proposals/"$PROPOSAL/" || exit
 ./test.sh
 
-echo "Testing completed."
+echo "[$PROPOSAL] Testing completed."

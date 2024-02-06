@@ -15,6 +15,8 @@ fi
 
 export binary=ag0
 if [ -x "$(command -v "agd")" ]; then
+  # Skip the agoric-sdk/bin/agd wrapper script to prevent it rebuilding sdk
+  ln -fs /usr/src/agoric-sdk/golang/cosmos/build/agd /usr/local/bin/agd
   export binary=agd
 fi
 export GOV1ADDR=$($binary keys show gov1 -a --keyring-backend="test")
@@ -25,7 +27,9 @@ export USER1ADDR=$($binary keys show user1 -a --keyring-backend="test")
 
 if [[ "$binary" == "agd" ]]; then
   configdir=/usr/src/agoric-sdk/packages/vm-config
-  test -d "$configdir" || configdir=/usr/src/agoric-sdk/packages/vats
+  # Check specifically for package.json because the directory may persist in the file system
+  # across branch changes due to gitignored node_modules
+  test -f "$configdir/package.json" || configdir=/usr/src/agoric-sdk/packages/vats
   # Support testnet addresses
   sed -i "s/agoric1ldmtatp24qlllgxmrsjzcpe20fvlkp448zcuce/$GOV1ADDR/g" "$configdir"/*.json
   sed -i "s/agoric140dmkrz2e42ergjj7gyvejhzmjzurvqeq82ang/$GOV2ADDR/g" "$configdir"/*.json
@@ -57,6 +61,7 @@ if [[ "$binary" == "agd" ]]; then
 fi
 
 startAgd() {
+  echo "Starting agd in background"
   agd start --log_level warn "$@" &
   AGD_PID=$!
   echo $AGD_PID >$HOME/.agoric/agd.pid
@@ -193,7 +198,7 @@ printKeys() {
   echo "========== GOVERNANCE KEYS =========="
   for i in ~/.agoric/*.key; do
     name=$(basename $i .key)
-    echo "$name:"$'\t'$(agd keys add $name --dry-run --recover --keyring-backend=test --output=json < $i | jq -r .address) || true
+    echo "$name:"$'\t'$(agd keys add $name --dry-run --recover --keyring-backend=test --output=json <$i | jq -r .address) || true
     echo $'\t'$(cat $i)
   done
   echo "========== GOVERNANCE KEYS =========="

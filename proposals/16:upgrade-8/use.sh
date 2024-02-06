@@ -5,11 +5,13 @@ set -e
 
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
+# XXX fix bug in this SDK's verison of agops
 sed -i "s/--econCommAcceptOfferId /--previousOfferId /g" "/usr/src/agoric-sdk/packages/agoric-cli/src/commands/psm.js"
 
 #region precheck
 # ensure there's nothing in the provision pool
-test_val "$(agd q bank balances agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346 -o json | jq -r '.balances | length')" "0" "ensure nothing is in provisionpool"
+BALANCE="$(agd q bank balances agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346 -o json)"
+test_val "$(echo $BALANCE | jq -r '.balances | length')" "0" "provisionpool balance should be empty but was $BALANCE"
 
 # Test no smart wallet for
 test_val "$(agd q vstorage data published.wallet.$GOV1ADDR -o json | jq -r .value)" "" "ensure gov1 not provisioned"

@@ -58,6 +58,8 @@ export const buildProposalSubmissions = (proposals: ProposalInfo[]) => {
     for (const { fileName } of plan.bundles) {
       // Copy the bundle into the submission path.
       execSync(`cp ${fileName} ${submissionPath}`);
+      // Set timestamp to zero to avoid invalidating the build cache
+      execSync(`touch -t 197001010000 ${submissionPath}/${fileName}`);
     }
   }
 };
