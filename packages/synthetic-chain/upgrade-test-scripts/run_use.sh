@@ -21,6 +21,17 @@ if [ ! -f "$PROPOSAL_DIR/use.sh" ]; then
     exit 0
 fi
 
+# figlet -f cyberlarge Use proposal
+echo '
+ _     _ _______ _______
+ |     | |______ |______
+ |_____| ______| |______
+
+  _____   ______  _____   _____   _____  _______ _______
+ |_____] |_____/ |     | |_____] |     | |______ |_____| |
+ |       |    \_ |_____| |       |_____| ______| |     | |_____
+'
+
 source ./env_setup.sh
 
 echo "[$PROPOSAL] Starting agd in the background."

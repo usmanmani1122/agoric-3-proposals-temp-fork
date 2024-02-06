@@ -1,17 +1,29 @@
 #!/bin/bash
 # Prepare an upgrade
 
+if [[ -z "${UPGRADE_TO}" ]]; then
+  echo "Requires UPGRADE_TO to be set"
+  exit 1
+fi
+
+# figlet -f cyberlarge Prepare upgrade
+echo -e '
+  _____   ______ _______  _____  _______  ______ _______
+ |_____] |_____/ |______ |_____] |_____| |_____/ |______
+ |       |    \_ |______ |       |     | |    \_ |______
+
+ _     _  _____   ______  ______ _______ ______  _______
+ |     | |_____] |  ____ |_____/ |_____| |     \ |______
+ |_____| |       |_____| |    \_ |     | |_____/ |______
+'
+echo "Preparing an upgrade to $UPGRADE_TO"
+
 grep -qF 'env_setup.sh' /root/.bashrc || echo "source /usr/src/upgrade-test-scripts/env_setup.sh" >>/root/.bashrc
 grep -qF 'printKeys' /root/.bashrc || echo "printKeys" >>/root/.bashrc
 
 source ./env_setup.sh
 
 startAgd
-
-if [[ -z "${UPGRADE_TO}" ]]; then
-  echo "Requires UPGRADE_TO to be set"
-  exit 1
-fi
 
 voting_period_s=10
 latest_height=$(agd status | jq -r .SyncInfo.latest_block_height)
