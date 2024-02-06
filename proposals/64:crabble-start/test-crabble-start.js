@@ -369,8 +369,8 @@ test.serial('core eval proposal passes', async t => {
   const detail = await voteLatestProposalAndWait();
   t.log(detail.proposal_id, detail.voting_end_time, detail.status);
 
-  // TODO: how long is long enough? poll?
-  await waitForBlock(5);
+  // XXX https://github.com/Agoric/agoric-3-proposals/issues/91
+  await waitForBlock(15);
 
   t.is(detail.status, 'PROPOSAL_STATUS_PASSED');
 });
