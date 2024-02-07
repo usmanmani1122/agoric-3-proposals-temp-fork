@@ -61,7 +61,8 @@ if [[ "$binary" == "agd" ]]; then
 fi
 
 startAgd() {
-  echo "Starting agd in background"
+  echo "startAgd()"
+
   agd start --log_level warn "$@" &
   AGD_PID=$!
   echo $AGD_PID >$HOME/.agoric/agd.pid
@@ -70,15 +71,11 @@ startAgd() {
 }
 
 killAgd() {
+  echo "killAgd()"
   AGD_PID=$(cat $HOME/.agoric/agd.pid)
   kill $AGD_PID
   rm $HOME/.agoric/agd.pid
   wait $AGD_PID || true
-}
-
-waitAgd() {
-  wait $(cat $HOME/.agoric/agd.pid)
-  rm $HOME/.agoric/agd.pid
 }
 
 provisionSmartWallet() {

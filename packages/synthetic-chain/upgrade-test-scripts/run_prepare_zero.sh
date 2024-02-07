@@ -1,7 +1,8 @@
 #!/bin/bash
+# Prepare an upgrade from ag0
 
 # The name of the binary is an implementation detail.
-agd () {
+agd() {
   ag0 ${1+"$@"}
 }
 
@@ -56,10 +57,7 @@ agd add-genesis-account "$GENACCT" "$coins"
 
 agd gentx validator 5000000000ubld --keyring-backend="test" --chain-id "$CHAINID"
 agd collect-gentxs
-agd start --log_level warn &
-agd_PID=$!
-wait_for_bootstrap
-waitForBlock 2
+startAgd
 
 voting_period_s=10
 latest_height=$(agd status | jq -r .SyncInfo.latest_block_height)
@@ -94,5 +92,5 @@ while true; do
   sleep 1
 done
 
-kill $agd_PID
+killAgd
 echo "state directory $HOME/.agoric ready for upgrade to $UPGRADE_TO"

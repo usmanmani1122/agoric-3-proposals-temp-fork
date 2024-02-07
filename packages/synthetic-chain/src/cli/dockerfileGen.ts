@@ -3,7 +3,6 @@
 
 import fs from 'node:fs';
 import {
-  lastPassedProposal,
   type CoreEvalProposal,
   type ProposalInfo,
   type SoftwareUpgradeProposal,
@@ -11,15 +10,16 @@ import {
   imageNameForProposal,
   isPassed,
 } from './proposals.js';
+import { Platform } from './build.ts';
 
 /**
  * Templates for Dockerfile stages
  */
 const stage = {
   /**
-   * ag0, start of the chain
+   * Prepare an upgrade from ag0, start of the chain
    */
-  START(proposalName: string, to: string) {
+  PREPARE_ZERO(proposalName: string, to: string) {
     const agZeroUpgrade = 'agoric-upgrade-7-2';
     return `
 ## START
@@ -30,10 +30,10 @@ ENV UPGRADE_TO=${to}
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
-COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_ag0.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare_zero.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0
-RUN /usr/src/upgrade-test-scripts/start_ag0.sh
+RUN /usr/src/upgrade-test-scripts/run_prepare_zero.sh
 `;
   },
   /**
@@ -65,9 +65,10 @@ ENV UPGRADE_TO=${planName} UPGRADE_INFO=${JSON.stringify(
       encodeUpgradeInfo(upgradeInfo),
     )}
 
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare.sh /usr/src/upgrade-test-scripts/
 WORKDIR /usr/src/upgrade-test-scripts
 SHELL ["/bin/bash", "-c"]
-RUN ./start_to_to.sh
+RUN ./run_prepare.sh
 `;
   },
   /**
@@ -88,14 +89,13 @@ WORKDIR /usr/src/upgrade-test-scripts
 
 # base is a fresh sdk image so set up the proposal and its dependencies
 COPY --link --chmod=755 ./proposals/${proposalIdentifier}:${proposalName} /usr/src/proposals/${proposalIdentifier}:${proposalName}
-COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/start_to_to.sh ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
-# XXX this hits the network each time because the fresh base lacks the global Yarn cache from the previous proposal's build
-RUN ./install_deps.sh ${proposalIdentifier}:${proposalName}
+COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_execute.sh ./upgrade-test-scripts/install_deps.sh /usr/src/upgrade-test-scripts/
+RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${proposalIdentifier}:${proposalName}
 
 COPY --link --from=prepare-${proposalName} /root/.agoric /root/.agoric
 
 SHELL ["/bin/bash", "-c"]
-RUN ./start_to_to.sh
+RUN ./run_execute.sh
 `;
   },
   /**
@@ -183,9 +183,15 @@ ENTRYPOINT ./start_agd.sh
   },
 };
 
-export function writeBakefileProposals(allProposals: ProposalInfo[]) {
+export function writeBakefileProposals(
+  allProposals: ProposalInfo[],
+  platforms?: Platform[],
+) {
   const json = {
     variable: {
+      PLATFORMS: {
+        default: platforms || null,
+      },
       PROPOSALS: {
         default: allProposals.map(p => p.proposalName),
       },
@@ -231,7 +237,9 @@ export function writeDockerfile(
         if (previousProposal) {
           blocks.push(stage.PREPARE(proposal, previousProposal));
         } else {
-          blocks.push(stage.START(proposal.proposalName, proposal.planName));
+          blocks.push(
+            stage.PREPARE_ZERO(proposal.proposalName, proposal.planName),
+          );
         }
         blocks.push(stage.EXECUTE(proposal));
         break;

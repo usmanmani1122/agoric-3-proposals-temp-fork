@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ProposalInfo } from './proposals.js';
 
+export type Platform = 'linux/amd64' | 'linux/arm64';
+
 export type AgoricSyntheticChainConfig = {
   /**
    * The agoric-3-proposals tag to build the agoric synthetic chain from.
@@ -10,6 +12,7 @@ export type AgoricSyntheticChainConfig = {
    * Defaults to `main`, which containing all passed proposals
    */
   fromTag: string | null;
+  platforms?: Platform[];
 };
 
 const defaultConfig: AgoricSyntheticChainConfig = {
@@ -66,7 +69,7 @@ export const buildProposalSubmissions = (proposals: ProposalInfo[]) => {
 
 /**
  * Bake images using the docker buildx bake command.
- * 
+ *
  * Note this uses `--load` which pushes the completed images to the builder,
  * consuming 2-3 GB per image.
  * @see {@link https://docs.docker.com/engine/reference/commandline/buildx_build/#load}
