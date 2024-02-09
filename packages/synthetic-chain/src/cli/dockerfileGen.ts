@@ -137,9 +137,10 @@ FROM ${previousStage}-${proposalName} as use-${proposalName}
 
 WORKDIR /usr/src/upgrade-test-scripts
 
-COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/run_use.sh ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 RUN ./run_use.sh ${proposalIdentifier}:${proposalName}
+ENTRYPOINT ./start_agd.sh
 `;
   },
   /**
@@ -157,8 +158,7 @@ FROM use-${proposalName} as test-${proposalName}
 
 WORKDIR /usr/src/upgrade-test-scripts
 
-# copy run_test for this entrypoint and start_agd for optional debugging
-COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh ./upgrade-test-scripts/start_agd.sh /usr/src/upgrade-test-scripts/
+COPY --link --chmod=755 ./upgrade-test-scripts/run_test.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
 `;
@@ -166,19 +166,15 @@ ENTRYPOINT ./run_test.sh ${proposalIdentifier}:${proposalName}
   /**
    * The last target in the file, for untargeted `docker build`
    */
-  DEFAULT(lastProposal: ProposalInfo) {
+  LAST(lastProposal: ProposalInfo) {
     // Assumes the 'use' image is built and tagged.
     // This isn't necessary for a multi-stage build, but without it CI
     // rebuilds the last "use" image during the "default" image step
     // Some background: https://github.com/moby/moby/issues/34715
     const useImage = imageNameForProposal(lastProposal, 'use').name;
     return `
-# DEFAULT
-FROM ${useImage}
-
-WORKDIR /usr/src/upgrade-test-scripts
-SHELL ["/bin/bash", "-c"]
-ENTRYPOINT ./start_agd.sh
+# LAST
+FROM ${useImage} as latest
 `;
   },
 };
@@ -259,7 +255,7 @@ export function writeDockerfile(
   // If one of the proposals is a passed proposal, make the latest one the default entrypoint
   const lastPassed = allProposals.findLast(isPassed);
   if (lastPassed) {
-    blocks.push(stage.DEFAULT(lastPassed));
+    blocks.push(stage.LAST(lastPassed));
   }
 
   const contents = blocks.join('\n');
