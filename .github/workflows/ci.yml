@@ -40,7 +40,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup
+      - uses: actions/setup-node@v4
+        with:
+          # 18.19 causes this problem running tsx:
+          # The --loader flag was deprecated in Node v20.6.0
+          node-version: 18.18
+
+      - name: Install deps
         run: |
           # Enable corepack for packageManager config
           corepack enable || sudo corepack enable
@@ -51,6 +57,10 @@ jobs:
 
       - name: Typecheck
         run: yarn tsc
+        working-directory: packages/synthetic-chain
+
+      - name: Test
+        run: yarn test
         working-directory: packages/synthetic-chain
 
   # see https://docs.docker.com/build/ci/github-actions/test-before-push/
@@ -102,16 +112,15 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build @agoric/synthetic-chain
+      - name: Install deps
         run: |
           # Enable corepack for packageManager config
           corepack enable || sudo corepack enable
           yarn install
-          yarn build
-        working-directory: packages/synthetic-chain
 
       - name: Prepare Docker config
         run: |
+          yarn build-cli
           # prepare files for bake-action
           yarn synthetic-chain prepare-build
 
