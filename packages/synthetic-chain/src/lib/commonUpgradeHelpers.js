@@ -260,7 +260,7 @@ export const proposalBuilder = async fileName => {
   const evalsWithLocation = evals.map(e => {
     return {
       permit: path.join('/tmp', e.permit),
-      script: path.join('/tmp', e.permit),
+      script: path.join('/tmp', e.script),
     };
   });
 
