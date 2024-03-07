@@ -2,7 +2,8 @@
 # Starts agd in the background and runs test.sh against it in the foreground
 # Note that STDOUT mixes the two. TODO separate them cleanly with log output.
 
-set -e
+set -eo pipefail
+
 PROPOSAL=$1
 if [ -z "$PROPOSAL" ]; then
   fail "Must specify what proposal to use"

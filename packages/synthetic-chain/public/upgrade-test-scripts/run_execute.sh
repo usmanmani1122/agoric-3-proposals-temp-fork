@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # figlet -f cyberlarge Execute upgrade
 echo -e '
  _______ _     _ _______ _______ _     _ _______ _______

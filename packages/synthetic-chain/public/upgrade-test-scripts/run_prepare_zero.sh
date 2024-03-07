@@ -1,6 +1,8 @@
 #!/bin/bash
 # Prepare an upgrade from ag0
 
+set -eo pipefail
+
 # The name of the binary is an implementation detail.
 agd() {
   ag0 ${1+"$@"}
