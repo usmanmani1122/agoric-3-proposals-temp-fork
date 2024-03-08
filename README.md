@@ -130,12 +130,14 @@ This repo publishes an image of the synthetic agoric-3 chain with all proposals 
 
 The CI builds on every push to the trunk branch, (`main`), or a PR branch. You can view all versions at https://github.com/agoric/agoric-3-proposals/pkgs/container/agoric-3-proposals/versions
 
-The versions built from the main branch are at: `ghcr.io/agoric/agoric-3-proposals:main`. For each PR, they're at a URL like `ghcr.io/agoric/agoric-3-proposals:pr-11`.
+PR builds don't push images.
+
+The trunk build pushes "use" images for each proposal and a "latest" which points to the highest passed proposal: `ghcr.io/agoric/agoric-3-proposals:latest`.
 
 If you RUN this image, you'll get a working chain running `agd` until you terminate,
 
 ```sh
-docker run ghcr.io/agoric/agoric-3-proposals:main
+docker run ghcr.io/agoric/agoric-3-proposals:latest
 ```
 
 Or locally,
