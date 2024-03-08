@@ -75,7 +75,12 @@ RUN ./run_prepare.sh ${path}
    * - Start agd with the SDK that has the upgradeHandler
    * - Run any core-evals associated with the proposal (either the ones specified in prepare, or straight from the proposal)
    */
-  EXECUTE({ path, proposalName, sdkImageTag }: SoftwareUpgradeProposal) {
+  EXECUTE({
+    path,
+    planName,
+    proposalName,
+    sdkImageTag,
+  }: SoftwareUpgradeProposal) {
     return `
 # EXECUTE ${proposalName}
 FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
@@ -90,7 +95,7 @@ RUN --mount=type=cache,target=/root/.yarn ./install_deps.sh ${path}
 COPY --link --from=prepare-${proposalName} /root/.agoric /root/.agoric
 
 SHELL ["/bin/bash", "-c"]
-RUN ./run_execute.sh
+RUN ./run_execute.sh ${planName}
 `;
   },
   /**
