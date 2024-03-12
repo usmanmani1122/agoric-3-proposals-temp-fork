@@ -142,17 +142,33 @@ jobs:
 
       # Push the images if the tests pass and this is not a PR
       - name: Push proposal "use" images
-        uses: depot/bake-action@v1
         # If we pushed from PRs, each one would overwrite main's (e.g. use-upgrade-8)
         # To push PR "use" images we'll need to qualify the tag (e.g. use-upgrade-8-pr-2).
         if: ${{ github.event_name != 'pull_request' }}
+        uses: depot/bake-action@v1
         with:
           files: |
             ./docker-bake.json
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
-          # Include "latest" which is latest "use" image
-          targets: use, latest
+          targets: use
+          push: true
+
+      # Just like the "use" image above but has to begin after that ends
+      # because the "build" here is merely to retag the latest "use" image.
+      # We could do this with imagetools but this lets use keep the tagging logic
+      # in Bake instead of mixed into CI. This step should do hardly any building
+      # because its FROM image was just built above.
+      - name: Push "latest" image
+        # Same reason as for "use" images
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: depot/bake-action@v1
+        with:
+          files: |
+            ./docker-bake.json
+            ./docker-bake.hcl
+            ${{ steps.meta.outputs.bake-file }}
+          targets: latest
           push: true
 
       - name: notify on failure
