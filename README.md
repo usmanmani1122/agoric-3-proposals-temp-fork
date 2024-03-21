@@ -104,6 +104,12 @@ docker run -it --entrypoint bash --mount type=bind,src=.,dst=/usr/src/a3p ghcr.i
 
 ### Common errors
 
+#### JS exception
+
+If running `yarn synthetic-chain` throws an exception, it may because the Node version is too old. The `@agoric/synthetic-chain` package declares its "engines" range, but Yarn ignores it when running the bin in this repo. Be sure your Node version is compatible with the range.
+
+The easiest way to do that is to use a Node version manager that honors the `.node-version` file at the top level of the repo. [nodenv](https://github.com/nodenv/nodenv) does. If you prefer nvm, you may need [avn](https://github.com/wbyoung/avn).
+
 #### Consensus failure
 
 This one reports as failure, but it's actually the mechanism for triggering a chain-halting upgrade:
