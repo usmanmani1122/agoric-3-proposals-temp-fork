@@ -28,8 +28,6 @@ ENV UPGRADE_TO=${to}
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
-COPY --link ./.agoric/* /root/.agoric/
-
 COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare_zero.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0
