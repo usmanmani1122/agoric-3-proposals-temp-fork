@@ -38,7 +38,7 @@ export const printKeys = async () => {
   const user2Address = await getUser('user2');
 
   console.log(`user2: ${user2Address}`);
-  const user2Key = await $`cat /root/.agoric/user1.key`;
+  const user2Key = await $`cat /root/.agoric/user2.key`;
   console.log(user2Key.stdout);
 };
 
