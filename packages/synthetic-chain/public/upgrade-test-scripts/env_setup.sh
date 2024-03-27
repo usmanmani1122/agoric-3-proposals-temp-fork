@@ -201,7 +201,7 @@ voteLatestProposalAndWait() {
 
 printKeys() {
   echo "========== GOVERNANCE KEYS =========="
-  for i in ~/.agoric/*.key; do
+  for i in /usr/src/upgrade-test-scripts/keys_for_test_only/*.key; do
     name=$(basename $i .key)
     echo "$name:"$'\t'$(agd keys add $name --dry-run --recover --keyring-backend=test --output=json <$i | jq -r .address) || true
     echo $'\t'$(cat $i)
