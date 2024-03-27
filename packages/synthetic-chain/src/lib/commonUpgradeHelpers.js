@@ -138,7 +138,7 @@ export const getUser = async user => {
 
 export const addUser = async user => {
   const userKeyData = await agd.keys('add', user, '--keyring-backend=test');
-  await fsp.writeFile(`${HOME}/.agoric/${user}.key`, userKeyData.mnemonic);
+  await fsp.writeFile(`/usr/src/upgrade-test-scripts-keys_for_test_only/${user}.key`, userKeyData.mnemonic);
 
   const userAddress = await getUser(user);
   return userAddress;

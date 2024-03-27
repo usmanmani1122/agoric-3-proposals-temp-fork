@@ -28,6 +28,9 @@ ENV UPGRADE_TO=${to}
 # put env functions into shell environment
 RUN echo '. /usr/src/upgrade-test-scripts/env_setup.sh' >> ~/.bashrc
 
+# provide files with keys for testing
+COPY --link ./upgrade-test-scripts/keys_for_test_only /usr/src/upgrade-test-scripts/keys_for_test_only
+# copy scripts
 COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare_zero.sh /usr/src/upgrade-test-scripts/
 SHELL ["/bin/bash", "-c"]
 # this is the only layer that starts ag0

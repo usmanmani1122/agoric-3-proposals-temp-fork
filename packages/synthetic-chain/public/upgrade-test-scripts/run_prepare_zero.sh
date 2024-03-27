@@ -12,17 +12,8 @@ export CHAINID=agoriclocal
 agd init localnet --chain-id "$CHAINID"
 
 allaccounts=("gov1" "gov2" "gov3" "user1" "validator")
-# WARNING: these mnemonics are purely for testing purposes, do not implement
-# features that depend on them in any way.
-allkeys=(
-  "such field health riot cost kitten silly tube flash wrap festival portion imitate this make question host bitter puppy wait area glide soldier knee"
-  "physical immune cargo feel crawl style fox require inhale law local glory cheese bring swear royal spy buyer diesel field when task spin alley"
-  "spike siege world rather ordinary upper napkin voice brush oppose junior route trim crush expire angry seminar anchor panther piano image pepper chest alone"
-  "tackle hen gap lady bike explain erode midnight marriage wide upset culture model select dial trial swim wood step scan intact what card symptom"
-  "soap hub stick bomb dish index wing shield cruel board siren force glory assault rotate busy area topple resource okay clown wedding hint unhappy"
-)
-for i in "${!allaccounts[@]}"; do
-  echo "${allkeys[$i]}" | agd keys add ${allaccounts[$i]} --keyring-backend=test 2>&1
+for i in "${allaccounts[@]}"; do
+  cat "/usr/src/upgrade-test-scripts/keys_for_test_only/$i.key" | agd keys add $i --keyring-backend=test 2>&1
 done
 
 source /usr/src/upgrade-test-scripts/env_setup.sh
