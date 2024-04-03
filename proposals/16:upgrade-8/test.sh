@@ -4,6 +4,8 @@ set -e
 
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
+YARN_IGNORE_NODE=1 yarn ava addresses.test.js
+
 # ensure there's only uist
 test_val "$(agd q bank balances agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346 -o json | jq -r '.balances | length')" "1"
 test_val "$(agd q bank balances agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346 -o json | jq -r '.balances[0].denom')" "uist"
