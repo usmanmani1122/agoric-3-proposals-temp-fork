@@ -14,6 +14,7 @@ agd init localnet --chain-id "$CHAINID"
 allaccounts=("gov1" "gov2" "gov3" "user1" "validator")
 # WARNING: these mnemonics are purely for testing purposes, do not implement
 # features that depend on them in any way.
+# The mnemonics below corresponds to elements in `allaccounts` with matching indices
 allkeys=(
   "such field health riot cost kitten silly tube flash wrap festival portion imitate this make question host bitter puppy wait area glide soldier knee"
   "physical immune cargo feel crawl style fox require inhale law local glory cheese bring swear royal spy buyer diesel field when task spin alley"
