@@ -6,7 +6,7 @@
     },
     "type": "module",
     "devDependencies": {
-        "@agoric/synthetic-chain": "file:agoric-synthetic-chain-0.0.7-alpha.tgz",
+        "@agoric/synthetic-chain": "^0.0.8",
         "ava": "^5.3.1"
     },
     "scripts": {
