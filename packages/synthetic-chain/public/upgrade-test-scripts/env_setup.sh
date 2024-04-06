@@ -205,7 +205,7 @@ printKeys() {
   for i in "${allaccounts[@]}"; do
     echo "---------- $i -----------"
     agd keys show --address --keyring-backend=test $i
-    agd keys export --unsafe --unarmored-hex --keyring-backend=test $i
+    yes | agd keys export --unsafe --unarmored-hex --keyring-backend=test $i
     echo "---------- $i -----------"
   done
   echo "========== GOVERNANCE KEYS =========="
