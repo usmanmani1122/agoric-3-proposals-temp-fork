@@ -1,20 +1,16 @@
 import test from 'ava';
 
-import { agd } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
 import {
   ATOM_DENOM,
   CHAINID,
   GOV1ADDR,
-} from '@agoric/synthetic-chain/src/lib/constants.js';
-import {
-  mintIST,
-  getISTBalance,
-  openVault,
-} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
-import {
-  waitForBlock,
   addUser,
-} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
+  agd,
+  getISTBalance,
+  mintIST,
+  openVault,
+  waitForBlock,
+} from '@agoric/synthetic-chain';
 
 test.before(async t => {
   await mintIST(GOV1ADDR, 12340000000, 10000, 2000);
