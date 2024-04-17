@@ -203,7 +203,7 @@ export function writeDockerfile(
 ) {
   // Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
   // The upgrade doesn't happen until the next stage begins executing.
-  const blocks: string[] = [];
+  const blocks: string[] = ['# syntax=docker/dockerfile:1.4'];
 
   let previousProposal: ProposalInfo | null = null;
 
