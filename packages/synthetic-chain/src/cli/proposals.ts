@@ -14,7 +14,11 @@ export type SoftwareUpgradeProposal = ProposalCommon & {
   sdkImageTag: string;
   planName: string;
   upgradeInfo?: unknown;
-  releaseNodes: string;
+  /**
+   * The URL for the notes of the release.
+   * `false` for unreleased upgrades for which `upgradeInfo` cannot be validated
+   */
+  releaseNotes: string | false;
   type: 'Software Upgrade Proposal';
 };
 

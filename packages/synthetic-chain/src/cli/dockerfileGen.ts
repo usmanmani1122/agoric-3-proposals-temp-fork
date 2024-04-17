@@ -52,17 +52,25 @@ FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as use-${fromTag}
    * - Submit the software-upgrade proposal for planName and run until upgradeHeight, leaving the state-dir ready for next agd.
    */
   PREPARE(
-    { path, planName, proposalName, upgradeInfo }: SoftwareUpgradeProposal,
+    {
+      path,
+      planName,
+      proposalName,
+      upgradeInfo,
+      releaseNotes,
+    }: SoftwareUpgradeProposal,
     lastProposal: ProposalInfo,
   ) {
+    const skipProposalValidation = !releaseNotes;
     return `
 # PREPARE ${proposalName}
 
 # upgrading to ${planName}
 FROM use-${lastProposal.proposalName} as prepare-${proposalName}
-ENV UPGRADE_TO=${planName} UPGRADE_INFO=${JSON.stringify(
-      encodeUpgradeInfo(upgradeInfo),
-    )}
+ENV \
+    UPGRADE_TO=${planName} \
+    UPGRADE_INFO=${JSON.stringify(encodeUpgradeInfo(upgradeInfo))} \
+    SKIP_PROPOSAL_VALIDATION=${skipProposalValidation}
 
 COPY --link --chmod=755 ./proposals/${path} /usr/src/proposals/${path}
 COPY --link --chmod=755 ./upgrade-test-scripts/env_setup.sh ./upgrade-test-scripts/run_prepare.sh ./upgrade-test-scripts/start_to_to.sh /usr/src/upgrade-test-scripts/

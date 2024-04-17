@@ -54,9 +54,13 @@ else
   echo "Upgrade info is not valid JSON: $info"
   exit $status
 fi
+validate_flag=""
+if [ "$SKIP_PROPOSAL_VALIDATION" = "true" ]; then
+  validate_flag="--no-validate"
+fi
 # shellcheck disable=SC2086
 agd tx gov submit-proposal software-upgrade "$UPGRADE_TO" \
-  --upgrade-height="$height" --upgrade-info="$info" \
+  --upgrade-height="$height" --upgrade-info="$info" $validate_flag \
   --title="Upgrade to ${UPGRADE_TO}" --description="upgrades" \
   ${SIGN_BROADCAST_OPTS="--missing-env-setup"}
 waitForBlock
