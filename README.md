@@ -8,7 +8,7 @@ This repo serves several functions:
 - publishing an image with all passed proposals
 - verify that certain tests pass after each proposal
 
-# Design
+## Design
 
 ## Stages
 
@@ -54,8 +54,6 @@ If the proposal is _pending_ and does not yet have a number, use a letter. The p
 - `use.sh` is the script that will be run in the USE stage of the build
 - `test.sh` is the script that will be _included_ in the TEST stage of the build, and run in CI
 
-# Usage
-
 ## Development
 
 ### Top-level commands
@@ -74,7 +72,7 @@ yarn test --match upgrade
 yarn test --debug --match upgrade-13
 ```
 
-### Proposals
+## synthetic-chain package
 
 To use a local build of synthetic-chain,
 
@@ -98,7 +96,7 @@ Then find-replace the "@agoric/synthetic-chain" version in package.json with ""f
 
 To get the local files into the container, use a [bind mount](https://docs.docker.com/storage/bind-mounts/). E.g.
 
-```
+```sh
 docker run -it --entrypoint bash --mount type=bind,src=.,dst=/usr/src/a3p ghcr.io/agoric/agoric-3-proposals:use-upgrade-8
 ```
 
@@ -114,19 +112,19 @@ The easiest way to do that is to use a Node version manager that honors the `.no
 
 This one reports as failure, but it's actually the mechanism for triggering a chain-halting upgrade:
 
-```
+```text
 CONSENSUS FAILURE!!! err="UPGRADE \"agoric-upgrade-8\" NEEDED at height: 33: {}" module=consensus
 ```
 
 But this one is a problem:
 
-```
+```text
 ERR CONSENSUS FAILURE!!! err="runtime error: invalid memory address or nil pointer dereference" module=consensus
 ```
 
 The most likely cause is a problem voting in the the proposal to upgrade.
 
-# Contributing
+## Contributing
 
 To add a proposal, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
@@ -148,7 +146,7 @@ docker run ghcr.io/agoric/agoric-3-proposals:latest
 
 Or locally,
 
-```
+```sh
 docker build -t ghrc.io/agoric/agoric-3-proposals:dev .
 docker run  ghrc.io/agoric/agoric-3-proposals:dev
 ```
