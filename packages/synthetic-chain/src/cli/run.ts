@@ -26,7 +26,7 @@ export const debugTestImage = (proposal: ProposalInfo) => {
   `,
   );
 
-  // start the chain, with the repo mounted at /usr/src
-  const cmd = `docker run --mount type=bind,src=./proposals,dst=/usr/src/proposals -it --entrypoint /usr/src/upgrade-test-scripts/start_agd.sh ${name}`;
+  // start the chain, with ports mapped and the repo mounted at /usr/src
+  const cmd = `docker run --publish 26657:26657 --publish 1317:1317 --publish 9090:9090 --mount type=bind,src=./proposals,dst=/usr/src/proposals --interactive --tty --entrypoint /usr/src/upgrade-test-scripts/start_agd.sh ${name}`;
   execSync(cmd, { stdio: 'inherit' });
 };
