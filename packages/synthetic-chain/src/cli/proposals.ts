@@ -10,7 +10,7 @@ type ProposalCommon = {
   proposalIdentifier: string;
 };
 
-export type SoftwareUpgradeProposal = ProposalCommon & {
+export type SoftwareUpgradePackage = ProposalCommon & {
   sdkImageTag: string;
   planName: string;
   upgradeInfo?: unknown;
@@ -22,7 +22,7 @@ export type SoftwareUpgradeProposal = ProposalCommon & {
   type: 'Software Upgrade Proposal';
 };
 
-export type CoreEvalProposal = ProposalCommon & {
+export type CoreEvalPackage = ProposalCommon & {
   type: '/agoric.swingset.CoreEvalProposal';
 } & (
     | { source: 'build'; buildScript: string }
@@ -32,14 +32,14 @@ export type CoreEvalProposal = ProposalCommon & {
       }
   );
 
-export type ParameterChangeProposal = ProposalCommon & {
+export type ParameterChangePackage = ProposalCommon & {
   type: '/cosmos.params.v1beta1.ParameterChangeProposal';
 };
 
 export type ProposalInfo =
-  | SoftwareUpgradeProposal
-  | CoreEvalProposal
-  | ParameterChangeProposal;
+  | SoftwareUpgradePackage
+  | CoreEvalPackage
+  | ParameterChangePackage;
 
 function readInfo(proposalPath: string): ProposalInfo {
   assert(

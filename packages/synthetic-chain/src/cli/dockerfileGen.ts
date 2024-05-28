@@ -1,14 +1,14 @@
 import fs from 'node:fs';
+import { Platform } from './build.js';
 import {
-  type CoreEvalProposal,
-  type ProposalInfo,
-  type SoftwareUpgradeProposal,
   encodeUpgradeInfo,
   imageNameForProposal,
   isPassed,
-  ParameterChangeProposal,
+  type CoreEvalPackage,
+  type ParameterChangePackage,
+  type ProposalInfo,
+  type SoftwareUpgradePackage,
 } from './proposals.js';
-import { Platform } from './build.js';
 
 /**
  * Templates for Dockerfile stages
@@ -58,7 +58,7 @@ FROM ghcr.io/agoric/agoric-3-proposals:${fromTag} as use-${fromTag}
       proposalName,
       upgradeInfo,
       releaseNotes,
-    }: SoftwareUpgradeProposal,
+    }: SoftwareUpgradePackage,
     lastProposal: ProposalInfo,
   ) {
     const skipProposalValidation = !releaseNotes;
@@ -89,7 +89,7 @@ RUN ./run_prepare.sh ${path}
     planName,
     proposalName,
     sdkImageTag,
-  }: SoftwareUpgradeProposal) {
+  }: SoftwareUpgradePackage) {
     return `
 # EXECUTE ${proposalName}
 FROM ghcr.io/agoric/agoric-sdk:${sdkImageTag} as execute-${proposalName}
@@ -112,7 +112,7 @@ RUN ./run_execute.sh ${planName}
    * - Run the core-eval scripts from the proposal. They are only guaranteed to have started, not completed.
    */
   EVAL(
-    { path, proposalName }: CoreEvalProposal | ParameterChangeProposal,
+    { path, proposalName }: CoreEvalPackage | ParameterChangePackage,
     lastProposal: ProposalInfo,
   ) {
     return `
