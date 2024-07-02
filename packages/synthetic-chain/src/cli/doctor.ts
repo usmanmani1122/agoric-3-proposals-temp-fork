@@ -40,16 +40,12 @@ const fixupProposal = (proposal: ProposalInfo) => {
   }
 };
 
-export const runDoctor = (proposals: ProposalInfo[]) => {
-  console.log('Running doctor...');
-
-  console.log('enabling corepack');
-  execSync('corepack enable', { stdio: 'inherit' });
-
-  // path to yarn
+const checkYarn = () => {
   const yarnpath = execSync('which yarn', {
     encoding: 'utf-8',
   });
+  console.log(yarnpath);
+
   if (yarnpath.includes('homebrew')) {
     // Homebrew's yarn install overrides Node's corepack install
     console.error(
@@ -58,7 +54,32 @@ export const runDoctor = (proposals: ProposalInfo[]) => {
     console.error('  brew uninstall yarn');
     process.exit(1);
   }
-  console.log(yarnpath);
+
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join('package.json'), 'utf-8'),
+  );
+  const expectedYarnVersion =
+    packageJson.packageManager.match(/yarn@(\d+\.\d+\.\d+)/)[1];
+  const actualYarnVersion = execSync('yarn --version', {
+    encoding: 'utf-8',
+  }).trim();
+  if (actualYarnVersion !== expectedYarnVersion) {
+    console.log({ actualYarnVersion, expectedYarnVersion });
+    console.error(
+      `Corepack specifies yarn version ${expectedYarnVersion} but the path has ${actualYarnVersion}`,
+    );
+    console.error('Find a way to remove the global yarn before proceeding.');
+    process.exit(1);
+  }
+};
+
+export const runDoctor = (proposals: ProposalInfo[]) => {
+  console.log('Running doctor...');
+
+  console.log('enabling corepack');
+  execSync('corepack enable', { stdio: 'inherit' });
+
+  checkYarn();
 
   console.log('Verifying the CLI runs and create the Dockerfiles');
   execSync('yarn synthetic-chain prepare-build', { stdio: 'inherit' });
