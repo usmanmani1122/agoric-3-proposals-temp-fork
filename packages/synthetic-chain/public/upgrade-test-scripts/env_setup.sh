@@ -100,7 +100,8 @@ killAgd() {
   AGD_PID=$(cat $HOME/.agoric/agd.pid)
   kill $AGD_PID
   rm $HOME/.agoric/agd.pid
-  wait $AGD_PID || true
+  # cf. https://stackoverflow.com/a/41613532
+  tail --pid=$AGD_PID -f /dev/null || true
 }
 
 provisionSmartWallet() {
