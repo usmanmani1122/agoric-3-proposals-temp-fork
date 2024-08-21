@@ -1,4 +1,5 @@
 import { assert, Fail } from './assert.js';
+import { agd } from './cliHelper.js';
 
 const { freeze: harden } = Object; // XXX
 
@@ -12,7 +13,7 @@ const isStreamCell = cell =>
 harden(isStreamCell);
 
 /**
- * Extract one value from a the vstorage stream cell in a QueryDataResponse
+ * Extract one value from the vstorage stream cell in a QueryDataResponse
  *
  * @param {import('@agoric/cosmic-proto/dist/codegen/agoric/vstorage/query.js').QueryDataResponse} data
  * @param {number} [index] index of the desired value in a deserialized stream cell
@@ -35,3 +36,15 @@ export const extractStreamCellValue = (data, index = -1) => {
   return value;
 };
 harden(extractStreamCellValue);
+
+export const queryVstorage = path =>
+  agd.query('vstorage', 'data', '--output', 'json', path);
+
+// XXX use endo/marshal?
+export const getQuoteBody = async path => {
+  const queryOut = await queryVstorage(path);
+
+  const body = JSON.parse(JSON.parse(queryOut.value).values[0]);
+  return JSON.parse(body.body.substring(1));
+};
+
