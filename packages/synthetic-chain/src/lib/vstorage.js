@@ -48,3 +48,24 @@ export const getQuoteBody = async path => {
   return JSON.parse(body.body.substring(1));
 };
 
+/**
+ *
+ * @param {string} instanceName
+ * @returns {string | null} boardId of the named instance in agoricNames
+ */
+export const getInstanceBoardId = async instanceName => {
+  const instanceRec = await queryVstorage(`published.agoricNames.instance`);
+
+  const value = JSON.parse(instanceRec.value);
+  const body = JSON.parse(value.values.at(-1));
+
+  const instances = JSON.parse(body.body.substring(1));
+
+  const key = Object.keys(instances).find(
+    k => instances[k][0] === instanceName,
+  );
+  if (key) {
+    return body.slots[key];
+  }
+  return null;
+};

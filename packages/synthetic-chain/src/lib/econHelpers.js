@@ -2,7 +2,7 @@ import { executeOffer, waitForBlock } from './commonUpgradeHelpers.js';
 import { ATOM_DENOM, CHAINID, VALIDATORADDR } from './constants.js';
 import { agd, agops, executeCommand, agopsLocation } from './cliHelper.js';
 import { GOV1ADDR, GOV2ADDR, GOV3ADDR } from './constants.js';
-import { queryVstorage, getQuoteBody } from './vstorage.js';
+import { queryVstorage, getQuoteBody, getInstanceBoardId } from './vstorage.js';
 
 const ORACLE_ADDRESSES = [GOV1ADDR, GOV2ADDR, GOV3ADDR];
 
@@ -83,24 +83,9 @@ export const getISTBalance = async (addr, denom = 'uist', unit = 1_000_000) => {
   return Number(coin.amount) / unit;
 };
 
-export const getOracleInstance = async price => {
-  const instanceRec = await queryVstorage(`published.agoricNames.instance`);
-
-  const value = JSON.parse(instanceRec.value);
-  const body = JSON.parse(value.values.at(-1));
-
-  const feeds = JSON.parse(body.body.substring(1));
-  const feedName = `${price}-USD price feed`;
-
-  const key = Object.keys(feeds).find(k => feeds[k][0] === feedName);
-  if (key) {
-    return body.slots[key];
-  }
-  return null;
-};
-
 export const checkForOracle = async (t, name) => {
-  const instance = await getOracleInstance(name);
+  const instanceName = `${name}-USD price feed`;
+  const instance = await getInstanceBoardId(name);
   t.truthy(instance);
 };
 
