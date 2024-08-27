@@ -8,10 +8,9 @@ export const VALIDATORADDR = 'agoric1estsewt6jqsx77pwcxkn5ah0jqgu8rhgflwfdl';
 
 export const BINARY = NonNullish(process.env.binary);
 
-export const PSM_PAIR = NonNullish(process.env.PSM_PAIR);
 export const ATOM_DENOM = NonNullish(process.env.ATOM_DENOM);
 
 export const CHAINID = NonNullish(process.env.CHAINID);
 export const HOME = NonNullish(process.env.HOME);
 
-export const SDK_ROOT = '/usr/src/agoric-sdk';
+export const SDK_ROOT = process.env.AGORIC_SDK || '/usr/src/agoric-sdk';

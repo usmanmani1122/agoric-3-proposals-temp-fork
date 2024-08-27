@@ -15,43 +15,54 @@
  */
 
 import anyTest from 'ava';
+import dbOpenAmbient from 'better-sqlite3';
 import * as cpAmbient from 'child_process'; // TODO: use execa
 import * as fspAmbient from 'fs/promises';
-import { tmpName as tmpNameAmbient } from 'tmp';
 import * as pathAmbient from 'path';
 import * as processAmbient from 'process';
-import dbOpenAmbient from 'better-sqlite3';
+import { tmpName as tmpNameAmbient } from 'tmp';
 
 // TODO: factor out ambient authority from these
 // or at least allow caller to supply authority.
 import {
   agoric,
-  wellKnownIdentities,
-} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
-import {
   provisionSmartWallet,
   voteLatestProposalAndWait,
   waitForBlock,
-} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
+  wellKnownIdentities,
+} from '@agoric/synthetic-chain';
 
-import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
-import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
 import {
-  makeFileRd,
-  makeFileRW,
-} from '@agoric/synthetic-chain/src/lib/webAsset.js';
-import {
+  dbTool,
   ensureISTForInstall,
   flags,
   getContractInfo,
   loadedBundleIds,
-  testIncludes,
+  makeAgd,
+  makeFileRd,
+  makeFileRW,
   txAbbr,
-} from './core-eval-support.js';
+} from '@agoric/synthetic-chain';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
-/** @type {import('ava').TestFn<TestContext>}} */
-const test = anyTest;
+
+const test = /** @type {import('ava').TestFn<TestContext>}} */ (anyTest);
+
+/**
+ * Asserts that `haystack` includes `needle` (or when `sense` is false, that it
+ * does not), providing pretty output in the case of failure.
+ *
+ * @param {import('ava').ExecutionContext} t
+ * @param {unknown} needle
+ * @param {unknown[]} haystack
+ * @param {string} label
+ * @param {boolean} [sense] true to assert inclusion; false for exclusion
+ * @returns {void}
+ */
+export const testIncludes = (t, needle, haystack, label, sense = true) => {
+  const matches = haystack.filter(c => Object.is(c, needle));
+  t.deepEqual(matches, sense ? [needle] : [], label);
+};
 
 const assetInfo = {
   /** @type {Record<string, ProposalInfo>} */
@@ -208,7 +219,7 @@ const getFileSize = async (src, fileName) => {
   return size;
 };
 
-/** @param {import('./lib/webAsset.js').FileRd} src */
+/** @param {import('@agoric/synthetic-chain').FileRd} src */
 const readBundleSizes = async src => {
   const info = staticConfig.buildInfo;
   const bundleSizes = await Promise.all(

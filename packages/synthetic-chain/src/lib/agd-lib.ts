@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { ExecFileSyncOptionsWithStringEncoding } from 'node:child_process';
-import { CHAINID, VALIDATORADDR } from './constants';
-import { agd } from './cliHelper';
+import { CHAINID, VALIDATORADDR } from './constants.js';
+import { agd } from './cliHelper.js';
 
 const { freeze } = Object;
 

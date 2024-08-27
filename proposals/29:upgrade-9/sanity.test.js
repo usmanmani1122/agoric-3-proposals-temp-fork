@@ -3,19 +3,12 @@ import test from 'ava';
 
 import fsp from 'node:fs/promises';
 
-import {
-  agd,
-  agops,
-  agoric,
-} from '@agoric/synthetic-chain';
+import { agd, agops, agoric } from '@agoric/synthetic-chain';
 
 import { getUser } from '@agoric/synthetic-chain';
-import {
-  GOV1ADDR,
-  GOV2ADDR,
-  GOV3ADDR,
-  PSM_PAIR,
-} from '@agoric/synthetic-chain';
+import { GOV1ADDR, GOV2ADDR, GOV3ADDR } from '@agoric/synthetic-chain';
+
+const PSM_PAIR = process.env.PSM_PAIR;
 
 test(`there's only uist`, async t => {
   const result = await agd.query(
