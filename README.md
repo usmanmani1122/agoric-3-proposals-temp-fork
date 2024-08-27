@@ -18,11 +18,11 @@ docker run -p 26657:26657 -p 1317:1317 -p 9090:9090 ghcr.io/agoric/agoric-3-prop
 
 The `-p` is short for [publish](https://docs.docker.com/network/#published-ports) to make the `agd` [daemon's ports](https://docs.cosmos.network/v0.46/core/grpc_rest.html) available on your host machine:
 
-| Port | Purpose |
-| --- | --- |
-| 1317 | REST server |
-| 9090 | gRPC server |
-| 26657| Tendermint RPC endpoint |
+| Port  | Purpose                 |
+| ----- | ----------------------- |
+| 1317  | REST server             |
+| 9090  | gRPC server             |
+| 26657 | Tendermint RPC endpoint |
 
 ## Design
 
