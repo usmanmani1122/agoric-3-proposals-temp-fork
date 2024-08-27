@@ -42,6 +42,12 @@
       "js": true,
       "ts": "module"
     },
+    "environmentVariables": {
+      "binary": "fake-agd",
+      "ATOM_DENOM": "uatom",
+      "CHAINID": "fakechain",
+      "HOME": "/tmp/fake-home"
+    },
     "nodeArguments": [
       "--import=tsimp"
     ]

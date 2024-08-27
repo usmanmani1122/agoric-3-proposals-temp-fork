@@ -1,5 +1,5 @@
 import { $, execaCommand } from 'execa';
-import { BINARY } from './constants.js';
+import { BINARY, SDK_ROOT } from './constants.js';
 
 export const executeCommand = async (
   command: string,
@@ -86,10 +86,7 @@ export const agoric = {
   },
 };
 
-export const { stdout: agopsLocation } = await $({
-  shell: true,
-  cwd: '/usr/src/agoric-sdk',
-})`yarn bin agops`;
+export const agopsLocation = `${SDK_ROOT}/node_modules/.bin/agops`;
 
 export const agops = {
   vaults: async (...params: string[]) => {
@@ -123,10 +120,7 @@ export const agops = {
   },
 };
 
-export const { stdout: bundleSourceLocation } = await $({
-  shell: true,
-  cwd: '/usr/src/agoric-sdk',
-})`yarn bin bundle-source`;
+export const bundleSourceLocation = `${SDK_ROOT}/node_modules/.bin/bundle-source`;
 
 /**
  * @returns Returns the filepath of the bundle
