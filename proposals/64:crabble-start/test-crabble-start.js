@@ -50,8 +50,8 @@ import {
 } from './core-eval-support.js';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
-/** @type {import('ava').TestFn<TestContext>}} */
-const test = anyTest;
+
+const test = /** @type {import('ava').TestFn<TestContext>}} */ (anyTest);
 
 const assetInfo = {
   /** @type {Record<string, ProposalInfo>} */
@@ -208,7 +208,7 @@ const getFileSize = async (src, fileName) => {
   return size;
 };
 
-/** @param {import('./lib/webAsset.js').FileRd} src */
+/** @param {import('@agoric/synthetic-chain').FileRd} src */
 const readBundleSizes = async src => {
   const info = staticConfig.buildInfo;
   const bundleSizes = await Promise.all(
