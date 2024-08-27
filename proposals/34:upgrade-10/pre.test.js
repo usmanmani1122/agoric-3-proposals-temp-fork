@@ -13,9 +13,10 @@ import {
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
-  PSM_PAIR,
 } from '@agoric/synthetic-chain/src/lib/constants.js';
 import { openVault } from '@agoric/synthetic-chain/src/lib/econHelpers.js';
+
+const PSM_PAIR = process.env.PSM_PAIR;
 
 test(`Ensure there's only uist`, async t => {
   const result = await agd.query(

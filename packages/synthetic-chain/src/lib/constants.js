@@ -8,7 +8,6 @@ export const VALIDATORADDR = 'agoric1estsewt6jqsx77pwcxkn5ah0jqgu8rhgflwfdl';
 
 export const BINARY = NonNullish(process.env.binary);
 
-export const PSM_PAIR = NonNullish(process.env.PSM_PAIR);
 export const ATOM_DENOM = NonNullish(process.env.ATOM_DENOM);
 
 export const CHAINID = NonNullish(process.env.CHAINID);
