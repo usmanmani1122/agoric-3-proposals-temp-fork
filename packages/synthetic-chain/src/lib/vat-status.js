@@ -37,6 +37,7 @@ const makeSwingstore = db => {
   const sql = dbTool(db);
 
   /** @param {string} key */
+  // @ts-expect-error sqlite typedefs
   const kvGet = key => sql.get`select * from kvStore where key = ${key}`.value;
   /** @param {string} key */
   const kvGetJSON = key => JSON.parse(kvGet(key));
@@ -77,6 +78,7 @@ export const getVatDetails = async vatName => {
   const vatInfo = kStore.lookupVat(vatID);
 
   const source = vatInfo.source();
+  // @ts-expect-error sqlite typedefs
   const { incarnation } = vatInfo.currentSpan();
   return { vatName, vatID, incarnation, ...source };
 };

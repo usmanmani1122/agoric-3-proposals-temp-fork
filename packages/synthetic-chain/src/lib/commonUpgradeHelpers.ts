@@ -122,7 +122,7 @@ export const calculateWalletState = async (
 
 export const executeOffer = async (
   address: string,
-  offerPromise: Promise<string>,
+  offerPromise: string | Promise<string>,
 ) => {
   const offerPath = await mkTemp('agops.XXX');
   const offer = await offerPromise;

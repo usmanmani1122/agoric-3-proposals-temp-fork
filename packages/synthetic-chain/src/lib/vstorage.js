@@ -4,12 +4,17 @@ import { agd } from './cliHelper.js';
 const { freeze: harden } = Object; // XXX
 
 // from '@agoric/internal/src/lib-chainStorage.js';
+/** @type {(cell: unknown) => cell is { blockHeight: number;values: unknown[] }} cell */
 const isStreamCell = cell =>
-  cell &&
-  typeof cell === 'object' &&
-  Array.isArray(cell.values) &&
-  typeof cell.blockHeight === 'string' &&
-  /^0$|^[1-9][0-9]*$/.test(cell.blockHeight);
+  !!(
+    cell &&
+    typeof cell === 'object' &&
+    'values' in cell &&
+    Array.isArray(cell.values) &&
+    'blockHeight' in cell &&
+    typeof cell.blockHeight === 'string' &&
+    /^0$|^[1-9][0-9]*$/.test(cell.blockHeight)
+  );
 harden(isStreamCell);
 
 /**
@@ -37,10 +42,12 @@ export const extractStreamCellValue = (data, index = -1) => {
 };
 harden(extractStreamCellValue);
 
+/** @param {string} path */
 export const queryVstorage = path =>
   agd.query('vstorage', 'data', '--output', 'json', path);
 
 // XXX use endo/marshal?
+/** @param {string} path */
 export const getQuoteBody = async path => {
   const queryOut = await queryVstorage(path);
 
@@ -51,7 +58,7 @@ export const getQuoteBody = async path => {
 /**
  *
  * @param {string} instanceName
- * @returns {string | null} boardId of the named instance in agoricNames
+ * @returns {Promise<string | null>} boardId of the named instance in agoricNames
  */
 export const getInstanceBoardId = async instanceName => {
   const instanceRec = await queryVstorage(`published.agoricNames.instance`);
