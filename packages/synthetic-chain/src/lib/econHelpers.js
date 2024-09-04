@@ -7,9 +7,16 @@ import { queryVstorage, getQuoteBody, getInstanceBoardId } from './vstorage.js';
 const ORACLE_ADDRESSES = [GOV1ADDR, GOV2ADDR, GOV3ADDR];
 
 // TODO return the id of the new vault so subsequent commands can use it
+/**
+ *
+ * @param {string} address
+ * @param {string} mint
+ * @param {string} collateral
+ */
 export const openVault = (address, mint, collateral) => {
   return executeOffer(
     address,
+    // @ts-expect-error could return string[] but not in this case
     agops.vaults('open', '--wantMinted', mint, '--giveCollateral', collateral),
   );
 };
@@ -40,12 +47,14 @@ export const adjustVault = (address, vaultId, vaultParams) => {
     params = [...params, '--giveMinted', vaultParams.giveMinted];
   }
 
+  // @ts-expect-error could return string[] but not in this case
   return executeOffer(address, agops.vaults(...params));
 };
 
 export const closeVault = (address, vaultId, mint) => {
   return executeOffer(
     address,
+    // @ts-expect-error could return string[] but not in this case
     agops.vaults(
       'close',
       '--vaultId',
