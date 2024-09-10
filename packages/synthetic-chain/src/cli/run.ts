@@ -22,11 +22,13 @@ export const debugTestImage = (proposal: ProposalInfo) => {
   And within that shell:
     cd /usr/src/proposals/${proposal.path} && ./test.sh
   
-  The 'proposals' path is mounted in the container so your edits will appear there.
+  To edit files you can use terminal tools like vim, or mount the container in your IDE.
+  In VS Code the command is:
+    Dev Containers: Attach to Running Container...
   `,
   );
 
-  // start the chain, with ports mapped and the repo mounted at /usr/src
-  const cmd = `docker run --publish 26657:26657 --publish 1317:1317 --publish 9090:9090 --mount type=bind,src=./proposals,dst=/usr/src/proposals --interactive --tty --entrypoint /usr/src/upgrade-test-scripts/start_agd.sh ${name}`;
+  // start the chain with ports mapped
+  const cmd = `docker run --publish 26657:26657 --publish 1317:1317 --publish 9090:9090 --interactive --tty --entrypoint /usr/src/upgrade-test-scripts/start_agd.sh ${name}`;
   execSync(cmd, { stdio: 'inherit' });
 };
