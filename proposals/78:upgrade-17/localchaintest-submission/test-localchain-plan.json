@@ -1,0 +1,12 @@
+{
+  "name": "test-localchain",
+  "script": "test-localchain.js",
+  "permit": "test-localchain-permit.json",
+  "bundles": [
+    {
+      "entrypoint": "@agoric/vats/src/proposals/localchain-test.js",
+      "bundleID": "b1-992869483d6a98253f20c340652b10c8cac1fa85a028678739eadb6e12ab42b8effe0b062ce3de70c68256f915712f989bdbe1ea871e5c756a0f3ff8fc9fcb52",
+      "fileName": "/home/rgibson/.agoric/cache/b1-992869483d6a98253f20c340652b10c8cac1fa85a028678739eadb6e12ab42b8effe0b062ce3de70c68256f915712f989bdbe1ea871e5c756a0f3ff8fc9fcb52.json"
+    }
+  ]
+}
