@@ -1,0 +1,17 @@
+{
+  "name": "upgrade-provision-pool",
+  "script": "upgrade-provision-pool.js",
+  "permit": "upgrade-provision-pool-permit.json",
+  "bundles": [
+    {
+      "entrypoint": "@agoric/inter-protocol/src/provisionPool.js",
+      "bundleID": "b1-0782b4caed9d73af62c1ef72a61c4bae5856c55c310e449630dcec94476695811f371734763873be5a71e434c1afbb74090cda5262ca91c7c0a1769fc0730c6e",
+      "fileName": "/home/rgibson/.agoric/cache/b1-0782b4caed9d73af62c1ef72a61c4bae5856c55c310e449630dcec94476695811f371734763873be5a71e434c1afbb74090cda5262ca91c7c0a1769fc0730c6e.json"
+    },
+    {
+      "entrypoint": "@agoric/vats/src/proposals/upgrade-provisionPool-proposal.js",
+      "bundleID": "b1-6d3e38989094919e96d0c597ba6d039c48a6a2abb381151ddd06d3bc0814bd344a2a22f35577cc05b7f3505673b602b6c2baa76ba7a3c144c38f24a537dee2c5",
+      "fileName": "/home/rgibson/.agoric/cache/b1-6d3e38989094919e96d0c597ba6d039c48a6a2abb381151ddd06d3bc0814bd344a2a22f35577cc05b7f3505673b602b6c2baa76ba7a3c144c38f24a537dee2c5.json"
+    }
+  ]
+}
