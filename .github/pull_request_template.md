@@ -11,8 +11,8 @@ Closes #
 When a proposal passes on agoric-3 Mainnet, it should be included in the history that this synthetic image tracks.
 
 - [ ] before this PR, change any `fromTag` using `latest` (such as [a3p-integration](https://github.com/Agoric/agoric-sdk/blob/master/a3p-integration/package.json)) to use a fixed version (otherwise they will fail when this PR changes latest and they pick it up)
-- [ ] before merging this PR, include a link to a PR that restores `latest`
-- [ ] after this PR merges, merge the other PRs so they're back on `latest`
+- [ ] before merging this PR, include a link to a PR that adopts its fromTag `use-${proposalName}` (where proposalName is the part of the agoric-3-proposals proposal directory name after the colon, cf. [a3p-integration/proposals](https://github.com/Agoric/agoric-sdk/tree/master/a3p-integration/proposals#how-to-revise-this-directory-after))
+- [ ] after this PR merges, merge that other PR
 
 ## image building process
 
