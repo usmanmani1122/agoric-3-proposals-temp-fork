@@ -5,10 +5,17 @@ Utilities to build a synthetic chain and test running proposals atop it. The cha
 ## Usage
 
 ```
-build           - build the synthetic-chain "use" images
+prepare-build   - generate Docker build configs
 
-test [--debug]  - build the "test" images and run them
-test -m <name>  - target a particular proposal by substring match
+build           - build the synthetic-chain "use" images
+  [--dry]       - print the config without building images
+
+test            - build the "test" images and run them
+                  respecting any SLOGFILE environment variable
+                  https://github.com/Agoric/agoric-sdk/blob/master/docs/env.md#slogfile
+  [-m <name>]   - target a particular proposal by substring match
+    [--debug]   - run containers with interactive TTY and port mapping
+  [--dry]       - print the config without building images
 
 doctor          - diagnostics and quick fixes
 ```

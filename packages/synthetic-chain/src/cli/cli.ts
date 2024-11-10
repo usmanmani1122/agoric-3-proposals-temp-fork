@@ -42,9 +42,14 @@ const USAGE = `USAGE:
 prepare-build   - generate Docker build configs
 
 build           - build the synthetic-chain "use" images
+  [--dry]       - print the config without building images
 
-test [--debug]  - build the "test" images and run them
-test -m <name>  - target a particular proposal by substring match
+test            - build the "test" images and run them
+                  respecting any SLOGFILE environment variable
+                  https://github.com/Agoric/agoric-sdk/blob/master/docs/env.md#slogfile
+  [-m <name>]   - target a particular proposal by substring match
+    [--debug]   - run containers with interactive TTY and port mapping
+  [--dry]       - print the config without building images
 
 doctor          - diagnostics and quick fixes
 `;
