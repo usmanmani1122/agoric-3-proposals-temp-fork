@@ -32,7 +32,7 @@ The build is [multi-stage](https://docs.docker.com/build/building/multi-stage/) 
 
 - `START` The very first stage, which run `ag0` instead of `agd` as the other layers do. (This was the version of `agd` before JS VM.)
 - `PREPARE` For upgrade proposals: submits the proposal, votes on it, runs to halt for the next stage
-- `EXECUTE` For ugprade proposals: starts `agd` with the new SDK, letting its upgrade handler upgrade the chain
+- `EXECUTE` For upgrade proposals: starts `agd` with the new SDK, letting its upgrade handler upgrade the chain
 - `EVAL` For core-eval proposals: submits the proposal, votes on it, and begin executing. Does not guarantee the eval will finish but does wait several blocks to give it a chance.
 
 All proposals then have two additional stages:
@@ -44,7 +44,7 @@ The `TEST` stage does not RUN as part of the build. It only defines the ENTRYPOI
 
 The `USE` stage is built into images that are pushed to the image repository. These can be used by release branches to source a particular state of the synthetic chain.
 
-Finally there is a `DEFAULT` target which take the last `USE` image and sets its entrypoing to `./start_agd.sh` which runs the chain indefinitely. This makes it easy to source that image as a way to _run_ the synthetic chain with all passed proposals.
+Finally there is a `DEFAULT` target which take the last `USE` image and sets its entrypoint to `./start_agd.sh` which runs the chain indefinitely. This makes it easy to source that image as a way to _run_ the synthetic chain with all passed proposals.
 
 ## Proposals
 
