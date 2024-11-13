@@ -198,10 +198,9 @@ export SIGN_BROADCAST_OPTS="--keyring-backend=test --chain-id=$CHAINID \
 		--yes --broadcast-mode block --from validator"
 
 voteLatestProposalAndWait() {
-  echo "start voteLatestProposalAndWait()"
   waitForBlock
   proposal=$($binary q gov proposals -o json | jq -r '.proposals | last | if .proposal_id == null then .id else .proposal_id end')
-  echo "Latest proposal: $proposal"
+  echo "voteLatestProposalAndWait latest proposal $proposal"
   waitForBlock
   # shellcheck disable=SC2086
   $binary tx gov deposit "$proposal" 50000000ubld $SIGN_BROADCAST_OPTS
@@ -210,21 +209,22 @@ voteLatestProposalAndWait() {
   $binary tx gov vote "$proposal" yes $SIGN_BROADCAST_OPTS
   waitForBlock
 
-  echo "Voted in proposal $proposal"
+  echo "voteLatestProposalAndWait voted yes for proposal $proposal"
   while true; do
     json=$($binary q gov proposal "$proposal" -ojson)
     status=$(echo "$json" | jq -r .status)
     case $status in
     PROPOSAL_STATUS_PASSED)
+      echo "voteLatestProposalAndWait proposal $proposal passed"
       break
       ;;
     PROPOSAL_STATUS_REJECTED | PROPOSAL_STATUS_FAILED)
-      echo "Proposal did not pass (status=$status)"
+      echo "voteLatestProposalAndWait proposal $proposal did not pass (status=$status)"
       echo "$json" | jq .
       exit 1
       ;;
     *)
-      echo "Waiting for proposal to pass (status=$status)"
+      echo "voteLatestProposalAndWait waiting for proposal $proposal to pass (status=$status)"
       sleep 1
       ;;
     esac
