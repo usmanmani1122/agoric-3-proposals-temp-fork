@@ -145,10 +145,11 @@ wait_for_bootstrap() {
 
 # `waitForBlock $n` waits for at least $n (default 1) new blocks to be produced.
 waitForBlock() (
-  n=${1:-1}
+  local n=${1:-1}
   echo "waitForBlock waiting for $n new block(s)..."
-  h0=$(wait_for_bootstrap)
-  lastHeight="$h0"
+  local h0=$(wait_for_bootstrap)
+  local lastHeight="$h0"
+  local currentHeight
   for ((i = 1; i <= n; i++)); do
     while true; do
       sleep 1
