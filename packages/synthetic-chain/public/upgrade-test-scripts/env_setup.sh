@@ -106,16 +106,15 @@ killAgd() {
 provisionSmartWallet() {
   addr="$1"
   amount="$2"
-  echo "funding $addr"
+  echo "provisionSmartWallet funding $addr"
   # shellcheck disable=SC2086
   agd tx bank send "validator" "$addr" "$amount" $SIGN_BROADCAST_OPTS
   waitForBlock
-  echo "provisioning $addr"
+  echo "provisionSmartWallet provisioning $addr"
   # shellcheck disable=SC2086
   agd tx swingset provision-one my-wallet "$addr" SMART_WALLET --from="$addr" $SIGN_BROADCAST_OPTS
-  echo "Waiting for wallet $addr to reach vstorage"
+  echo "provisionSmartWallet waiting five blocks for $addr wallet to reach vstorage"
   waitForBlock 5
-  echo "Reading $addr from vstorage"
   agoric wallet show --from "$addr"
 }
 
