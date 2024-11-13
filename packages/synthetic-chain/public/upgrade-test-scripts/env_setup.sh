@@ -143,22 +143,23 @@ wait_for_bootstrap() {
   echo "done"
 }
 
+# `waitForBlock $n` waits for at least $n (default 1) new blocks to be produced.
 waitForBlock() (
-  echo "waiting for block..."
-  times=${1:-1}
-  echo "$times"
-  for ((i = 1; i <= times; i++)); do
-    b1=$(wait_for_bootstrap)
+  n=${1:-1}
+  echo "waitForBlock waiting for $n new block(s)..."
+  h0=$(wait_for_bootstrap)
+  lastHeight="$h0"
+  for ((i = 1; i <= n; i++)); do
     while true; do
-      b2=$(wait_for_bootstrap)
-      if [[ "$b1" != "$b2" ]]; then
-        echo "block produced"
+      sleep 1
+      currentHeight=$(wait_for_bootstrap)
+      if [[ "$currentHeight" != "$lastHeight" ]]; then
+        echo "waitForBlock saw new height $currentHeight"
+        lastHeight="$currentHeight"
         break
       fi
-      sleep 1
     done
   done
-  echo "done"
 )
 
 fail() {
