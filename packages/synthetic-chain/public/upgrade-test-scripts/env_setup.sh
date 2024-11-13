@@ -120,7 +120,6 @@ provisionSmartWallet() {
 
 # XXX designed for ag0, others start well above height 1
 wait_for_bootstrap() {
-  echo "waiting for bootstrap..."
   endpoint="localhost"
   while true; do
     if json=$(curl -s --fail -m 15 "$endpoint:26657/status"); then
@@ -138,7 +137,6 @@ wait_for_bootstrap() {
     fi
     sleep 2
   done
-  echo "done"
 }
 
 # `waitForBlock $n` waits for at least $n (default 1) new blocks to be produced.
