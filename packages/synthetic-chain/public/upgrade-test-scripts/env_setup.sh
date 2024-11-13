@@ -90,7 +90,6 @@ startAgd() {
   AGD_PID=$!
   echo $AGD_PID >$HOME/.agoric/agd.pid
   wait_for_bootstrap
-  echo "Bootstrap reached, wait two more blocks for race conditions to settle"
   waitForBlock 2
   echo "startAgd() done"
 }
