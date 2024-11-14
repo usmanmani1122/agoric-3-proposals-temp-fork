@@ -90,7 +90,6 @@ startAgd() {
   AGD_PID=$!
   echo $AGD_PID >$HOME/.agoric/agd.pid
   wait_for_bootstrap
-  echo "Bootstrap reached, wait two more blocks for race conditions to settle"
   waitForBlock 2
   echo "startAgd() done"
 }
@@ -107,22 +106,20 @@ killAgd() {
 provisionSmartWallet() {
   addr="$1"
   amount="$2"
-  echo "funding $addr"
+  echo "provisionSmartWallet funding $addr"
   # shellcheck disable=SC2086
   agd tx bank send "validator" "$addr" "$amount" $SIGN_BROADCAST_OPTS
   waitForBlock
-  echo "provisioning $addr"
+  echo "provisionSmartWallet provisioning $addr"
   # shellcheck disable=SC2086
   agd tx swingset provision-one my-wallet "$addr" SMART_WALLET --from="$addr" $SIGN_BROADCAST_OPTS
-  echo "Waiting for wallet $addr to reach vstorage"
+  echo "provisionSmartWallet waiting five blocks for $addr wallet to reach vstorage"
   waitForBlock 5
-  echo "Reading $addr from vstorage"
   agoric wallet show --from "$addr"
 }
 
 # XXX designed for ag0, others start well above height 1
 wait_for_bootstrap() {
-  echo "waiting for bootstrap..."
   endpoint="localhost"
   while true; do
     if json=$(curl -s --fail -m 15 "$endpoint:26657/status"); then
@@ -140,25 +137,26 @@ wait_for_bootstrap() {
     fi
     sleep 2
   done
-  echo "done"
 }
 
+# `waitForBlock $n` waits for at least $n (default 1) new blocks to be produced.
 waitForBlock() (
-  echo "waiting for block..."
-  times=${1:-1}
-  echo "$times"
-  for ((i = 1; i <= times; i++)); do
-    b1=$(wait_for_bootstrap)
+  local n=${1:-1}
+  echo "waitForBlock waiting for $n new block(s)..."
+  local h0=$(wait_for_bootstrap)
+  local lastHeight="$h0"
+  local currentHeight
+  for ((i = 1; i <= n; i++)); do
     while true; do
-      b2=$(wait_for_bootstrap)
-      if [[ "$b1" != "$b2" ]]; then
-        echo "block produced"
+      sleep 1
+      currentHeight=$(wait_for_bootstrap)
+      if [[ "$currentHeight" != "$lastHeight" ]]; then
+        echo "waitForBlock saw new height $currentHeight"
+        lastHeight="$currentHeight"
         break
       fi
-      sleep 1
     done
   done
-  echo "done"
 )
 
 fail() {
@@ -200,10 +198,9 @@ export SIGN_BROADCAST_OPTS="--keyring-backend=test --chain-id=$CHAINID \
 		--yes --broadcast-mode block --from validator"
 
 voteLatestProposalAndWait() {
-  echo "start voteLatestProposalAndWait()"
   waitForBlock
   proposal=$($binary q gov proposals -o json | jq -r '.proposals | last | if .proposal_id == null then .id else .proposal_id end')
-  echo "Latest proposal: $proposal"
+  echo "voteLatestProposalAndWait latest proposal $proposal"
   waitForBlock
   # shellcheck disable=SC2086
   $binary tx gov deposit "$proposal" 50000000ubld $SIGN_BROADCAST_OPTS
@@ -212,21 +209,22 @@ voteLatestProposalAndWait() {
   $binary tx gov vote "$proposal" yes $SIGN_BROADCAST_OPTS
   waitForBlock
 
-  echo "Voted in proposal $proposal"
+  echo "voteLatestProposalAndWait voted yes for proposal $proposal"
   while true; do
     json=$($binary q gov proposal "$proposal" -ojson)
     status=$(echo "$json" | jq -r .status)
     case $status in
     PROPOSAL_STATUS_PASSED)
+      echo "voteLatestProposalAndWait proposal $proposal passed"
       break
       ;;
     PROPOSAL_STATUS_REJECTED | PROPOSAL_STATUS_FAILED)
-      echo "Proposal did not pass (status=$status)"
+      echo "voteLatestProposalAndWait proposal $proposal did not pass (status=$status)"
       echo "$json" | jq .
       exit 1
       ;;
     *)
-      echo "Waiting for proposal to pass (status=$status)"
+      echo "voteLatestProposalAndWait waiting for proposal $proposal to pass (status=$status)"
       sleep 1
       ;;
     esac
