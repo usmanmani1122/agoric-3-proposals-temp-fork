@@ -65,6 +65,28 @@ export function encodeUpgradeInfo(upgradeInfo: unknown): string {
   return upgradeInfo != null ? JSON.stringify(upgradeInfo) : '';
 }
 
+export function compareProposalDirNames(a: string, b: string): -1 | 0 | 1 {
+  // Proposal directories should be named like "$position:$name", and we expect
+  // $position to be numeric but this logic tolerates deviation.
+  // Compare by position numerically, then by position lexicographically (by
+  // code unit for simplicity), then by the full name.
+  const [_a, aPos, aNumericPos] = a.match(/^(([0-9]+)|[^:]*):.*/) || [];
+  const [_b, bPos, bNumericPos] = b.match(/^(([0-9]+)|[^:]*):.*/) || [];
+  if (aNumericPos && !bNumericPos) return -1;
+  if (!aNumericPos && bNumericPos) return 1;
+  if (aNumericPos && bNumericPos) {
+    if (Number(aNumericPos) < Number(bNumericPos)) return -1;
+    if (Number(aNumericPos) > Number(bNumericPos)) return 1;
+  }
+  if (aPos !== undefined && bPos === undefined) return -1;
+  if (aPos === undefined && bPos !== undefined) return 1;
+  if (aPos !== undefined && bPos !== undefined) {
+    if (aPos < bPos) return -1;
+    if (aPos > bPos) return 1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
 export function readProposals(proposalsParent: string): ProposalInfo[] {
   const proposalsDir = path.join(proposalsParent, 'proposals');
   const proposalPaths = fs
@@ -82,7 +104,8 @@ export function readProposals(proposalsParent: string): ProposalInfo[] {
       }
       return hasPackageJson;
     })
-    .map(dirent => dirent.name);
+    .map(dirent => dirent.name)
+    .sort(compareProposalDirNames);
   return proposalPaths.map(readInfo);
 }
 
