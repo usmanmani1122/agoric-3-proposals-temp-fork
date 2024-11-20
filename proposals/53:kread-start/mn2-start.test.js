@@ -22,38 +22,44 @@ import * as pathAmbient from 'path';
 import * as processAmbient from 'process';
 import dbOpenAmbient from 'better-sqlite3';
 
-// TODO: factor out ambient authority from these
-// or at least allow caller to supply authority.
 import {
   agoric,
-  wellKnownIdentities,
-} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
-import {
-  provisionSmartWallet,
-  voteLatestProposalAndWait,
-  waitForBlock,
-} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
-
-import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
-import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
-import {
-  makeFileRW,
-  makeWebCache,
-  makeWebRd,
-} from '@agoric/synthetic-chain/src/lib/webAsset.js';
-import {
   bundleDetail,
+  dbTool,
   ensureISTForInstall,
   flags,
   getContractInfo,
   loadedBundleIds,
-  testIncludes,
+  makeAgd,
+  makeFileRW,
+  makeWebCache,
+  makeWebRd,
+  provisionSmartWallet,
   txAbbr,
-} from './core-eval-support.js';
+  voteLatestProposalAndWait,
+  waitForBlock,
+  wellKnownIdentities,
+} from '@agoric/synthetic-chain';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
 /** @type {import('ava').TestFn<TestContext>}} */
 const test = anyTest;
+
+/**
+ * Asserts that `haystack` includes `needle` (or when `sense` is false, that it
+ * does not), providing pretty output in the case of failure.
+ *
+ * @param {import('ava').ExecutionContext} t
+ * @param {unknown} needle
+ * @param {unknown[]} haystack
+ * @param {string} label
+ * @param {boolean} [sense] true to assert inclusion; false for exclusion
+ * @returns {void}
+ */
+export const testIncludes = (t, needle, haystack, label, sense = true) => {
+  const matches = haystack.filter(c => Object.is(c, needle));
+  t.deepEqual(matches, sense ? [needle] : [], label);
+};
 
 /**
  * URLs of release assets, including bundle hashes agreed by BLD stakers

@@ -10,30 +10,41 @@ import { tmpName as tmpNameAmbient } from 'tmp';
 import { ZipReader } from '@endo/zip';
 
 import {
-  makeFileRW,
-  makeWebCache,
-  makeWebRd,
-} from '@agoric/synthetic-chain/src/lib/webAsset.js';
-import { makeAgd } from '@agoric/synthetic-chain/src/lib/agd-lib.js';
-import { dbTool } from '@agoric/synthetic-chain/src/lib/vat-status.js';
-import { voteLatestProposalAndWait } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
-import {
+  agoric,
   bundleDetail,
+  dbTool,
   ensureISTForInstall,
   flags,
   getContractInfo,
   loadedBundleIds,
-  testIncludes,
+  makeAgd,
+  makeFileRW,
+  makeWebCache,
+  makeWebRd,
   txAbbr,
-} from './core-eval-support.js';
-import {
-  agoric,
+  voteLatestProposalAndWait,
   wellKnownIdentities,
-} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
+} from '@agoric/synthetic-chain';
 
 /** @typedef {Awaited<ReturnType<typeof makeTestContext>>} TestContext */
 /** @type {import('ava').TestFn<TestContext>}} */
 const test = anyTest;
+
+/**
+ * Asserts that `haystack` includes `needle` (or when `sense` is false, that it
+ * does not), providing pretty output in the case of failure.
+ *
+ * @param {import('ava').ExecutionContext} t
+ * @param {unknown} needle
+ * @param {unknown[]} haystack
+ * @param {string} label
+ * @param {boolean} [sense] true to assert inclusion; false for exclusion
+ * @returns {void}
+ */
+export const testIncludes = (t, needle, haystack, label, sense = true) => {
+  const matches = haystack.filter(c => Object.is(c, needle));
+  t.deepEqual(matches, sense ? [needle] : [], label);
+};
 
 /**
  * URLs of assets, including bundle hashes (to be) agreed by BLD stakers
