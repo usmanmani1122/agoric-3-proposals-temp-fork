@@ -79,11 +79,8 @@ export const passCoreEvalProposal = async (
   for (const { name, bundles, evals } of bundleInfos) {
     console.log(
       name,
-      evals[0].script,
-      evals.length,
-      'eval',
-      bundles.length,
-      'bundles',
+      evals.map(record => record.script),
+      `(bundle count: ${bundles.length})`,
     );
   }
 
@@ -119,7 +116,7 @@ export const passCoreEvalProposal = async (
           await fsp.readFile(path.join(dir, fileName), 'utf8'),
         );
         const entry = await bundleEntry(bundle);
-        console.log(entry, fileName.slice(0, 'b1-12345'.length));
+        console.log(`${fileName.slice(0, 'b1-#####'.length)}...`, entry);
         assert(entry.compartment);
         assert(entry.module);
       }
@@ -190,7 +187,7 @@ export const passCoreEvalProposal = async (
     assert.equal(todo, done);
   });
 
-  await step('core eval proposal passes', async () => {
+  await step('ensure core eval proposal passes', async () => {
     const { agd, swingstore, config } = context;
     const from = agd.lookup(config.proposer);
     const { chainId, deposit } = config;
@@ -231,7 +228,10 @@ export const passCoreEvalProposal = async (
     assert.equal(result.code, 0);
 
     const detail = await voteLatestProposalAndWait(info.title);
-    console.log(detail.proposal_id, detail.voting_end_time, detail.status);
+    console.log(
+      `proposal ${detail.proposal_id} end ${detail.voting_end_time}`,
+      detail.status,
+    );
     assert.equal(detail.status, 'PROPOSAL_STATUS_PASSED');
   });
 };
