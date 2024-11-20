@@ -89,7 +89,7 @@ startAgd() {
   agd start --log_level warn "$@" &
   AGD_PID=$!
   echo $AGD_PID >$HOME/.agoric/agd.pid
-  wait_for_bootstrap
+  echo "startAgd() at height $(wait_for_bootstrap | tr '\n' ' ' | sed 's/ $//; s/ /... /g;')"
   waitForBlock 2
   echo "startAgd() done"
 }
