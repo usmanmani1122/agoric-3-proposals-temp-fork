@@ -126,7 +126,6 @@ jobs:
       - name: Build proposal "use" images
         uses: depot/bake-action@v1
         with:
-          no-cache: true
           files: |
             ./docker-bake.json
             ./docker-bake.hcl
