@@ -5,25 +5,25 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@agoric/synthetic-chain@npm:^0.2.0":
-  version: 0.2.1
-  resolution: "@agoric/synthetic-chain@npm:0.2.1"
+"@agoric/synthetic-chain@npm:~0.4.5":
+  version: 0.4.5
+  resolution: "@agoric/synthetic-chain@npm:0.4.5"
   dependencies:
-    "@endo/zip": "npm:^1.0.6"
+    "@endo/zip": "npm:^1.0.7"
     better-sqlite3: "npm:^9.6.0"
     chalk: "npm:^5.3.0"
     cosmjs-types: "npm:^0.9.0"
-    execa: "npm:^8.0.1"
+    execa: "npm:8.x"
   bin:
     synthetic-chain: dist/cli/cli.js
-  checksum: 10c0/ca3bfe968d0f157b4fdad3cc7e234c0d38f2eb8cc55ce4cb0a82f02a5371ef49d534fec05be6ef769cb166d0da278fb3e900b5882d08410008c2bb5e7e719de3
+  checksum: 10c0/f693b52550fc54faa1e04450d9e4b399c929cdd4b5a177c20790465308a66407695ef0d19ac8d69298aba8cb32a912a2b06427b012e170a7ce2f1cf6b149abd2
   languageName: node
   linkType: hard
 
-"@endo/zip@npm:^1.0.6":
-  version: 1.0.7
-  resolution: "@endo/zip@npm:1.0.7"
-  checksum: 10c0/a1c0d155448ce877012b34c8fe8cd3a58de9eb807514c81cddeebb802ee8e552b27d8a9a40fab3f3e4c49e0cb7fea6902fa1dd12a23ff6f30b56161fc3edc1f8
+"@endo/zip@npm:^1.0.7":
+  version: 1.0.9
+  resolution: "@endo/zip@npm:1.0.9"
+  checksum: 10c0/3fccea31bd5dad938a3b5f531454d3c49513892d6d5aba1f0af1034ff0ae54c3e28a346a9df08bd9e5201354acccd631e45c9c0e68fa2848a876a3919f3830dc
   languageName: node
   linkType: hard
 
@@ -751,7 +751,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^8.0.1":
+"execa@npm:8.x":
   version: 8.0.1
   resolution: "execa@npm:8.0.1"
   dependencies:
@@ -1851,7 +1851,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@agoric/synthetic-chain": "npm:^0.2.0"
+    "@agoric/synthetic-chain": "npm:~0.4.5"
     ava: "npm:^5.3.1"
     better-sqlite3: "npm:^8.5.1"
   languageName: unknown

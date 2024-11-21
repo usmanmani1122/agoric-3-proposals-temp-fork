@@ -2,13 +2,14 @@
 
 import assert from 'node:assert/strict';
 
-import { agoric, agops } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
-import { GOV1ADDR } from '@agoric/synthetic-chain/src/lib/constants.js';
 import {
+  GOV1ADDR,
+  agops,
+  agoric,
   openVault,
   adjustVault,
   closeVault,
-} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
+} from '@agoric/synthetic-chain';
 
 console.log('Open Vaults');
 

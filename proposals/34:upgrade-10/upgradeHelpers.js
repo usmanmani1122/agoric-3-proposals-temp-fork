@@ -1,6 +1,4 @@
-import { CHAINID } from '@agoric/synthetic-chain/src/lib/constants.js';
-
-import { agd } from '@agoric/synthetic-chain/src/lib/cliHelper.js';
+import { CHAINID, agd } from '@agoric/synthetic-chain';
 
 // submit a DeliverInbound transaction
 //

@@ -3,18 +3,15 @@ import test from 'ava';
 import fsp from 'node:fs/promises';
 
 import {
-  agd,
-  agops,
-  agoric,
-} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
-
-import { getUser } from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
-import {
   GOV1ADDR,
   GOV2ADDR,
   GOV3ADDR,
-} from '@agoric/synthetic-chain/src/lib/constants.js';
-import { openVault } from '@agoric/synthetic-chain/src/lib/econHelpers.js';
+  agd,
+  agops,
+  agoric,
+  getUser,
+  openVault,
+} from '@agoric/synthetic-chain';
 
 const PSM_PAIR = process.env.PSM_PAIR;
 

@@ -2,31 +2,26 @@
 
 import assert from 'node:assert/strict';
 import {
+  GOV1ADDR,
+  GOV2ADDR,
+  agd,
+  agoric,
+  agops,
+  getUser,
+  newOfferId,
+  waitForBlock,
+
+  openVault,
+  adjustVault,
+  closeVault,
+} from '@agoric/synthetic-chain';
+import {
   provisionWallet,
   implementNewAuctionParams,
   raiseDebtCeiling,
   pushPrice,
 } from './actions.js';
-import {
-  agd,
-  agoric,
-  agops,
-} from '@agoric/synthetic-chain/src/lib/cliHelper.js';
-import {
-  GOV1ADDR,
-  GOV2ADDR,
-} from '@agoric/synthetic-chain/src/lib/constants.js';
-import {
-  getUser,
-  newOfferId,
-  waitForBlock,
-} from '@agoric/synthetic-chain/src/lib/commonUpgradeHelpers.js';
 import { submitDeliverInbound } from './upgradeHelpers.js';
-import {
-  openVault,
-  adjustVault,
-  closeVault,
-} from '@agoric/synthetic-chain/src/lib/econHelpers.js';
 
 const START_FREQUENCY = 600; // StartFrequency: 600s (auction runs every 10m)
 const CLOCK_STEP = 20; // ClockStep: 20s (ensures auction completes in time)
