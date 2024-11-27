@@ -56,7 +56,7 @@ Finally there is a `DEFAULT` target which take the last `USE` image and sets its
 
 ### Naming
 
-Each proposal is defined as a subdirectory of `propoals`. E.g. `16:upgrade-8`.
+Each proposal is defined as a subdirectory of `proposals`. E.g. `16:upgrade-8`.
 
 The leading number is its number as submitted to the agoric-3 chain. These are viewable at https://bigdipper.live/agoric/proposals
 
