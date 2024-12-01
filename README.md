@@ -165,8 +165,8 @@ docker run ghcr.io/agoric/agoric-3-proposals:latest
 Or locally,
 
 ```sh
-docker build -t ghrc.io/agoric/agoric-3-proposals:dev .
-docker run  ghrc.io/agoric/agoric-3-proposals:dev
+docker build -t ghcr.io/agoric/agoric-3-proposals:dev .
+docker run  ghcr.io/agoric/agoric-3-proposals:dev
 ```
 
 ## Future work
