@@ -4,8 +4,20 @@ import { ProposalInfo } from './proposals.js';
 import assert from 'node:assert';
 import { execSync } from 'node:child_process';
 
+const checkTestScript = (proposalPath: string) => {
+  const testScript = path.join(proposalPath, 'test.sh');
+  if (fs.existsSync(testScript)) {
+    const content = fs.readFileSync(testScript, 'utf-8');
+    assert(
+      content.includes('set -e'),
+      'test.sh must include "set -e"; otherwise lines may fail silently. "set -euo pipefail" is recommended.',
+    );
+  }
+};
+
 const fixupProposal = (proposal: ProposalInfo) => {
   const proposalPath = path.join('proposals', proposal.path);
+  checkTestScript(proposalPath);
   const packageJson = JSON.parse(
     fs.readFileSync(path.join(proposalPath, 'package.json'), 'utf-8'),
   );
