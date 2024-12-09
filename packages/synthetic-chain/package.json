@@ -28,7 +28,7 @@
     "glob": "^11.0.0"
   },
   "devDependencies": {
-    "@agoric/cosmic-proto": "^0.4.1-dev-c5284e4.0",
+    "@agoric/cosmic-proto": "dev",
     "@types/better-sqlite3": "^7.6.11",
     "@types/glob": "^8.1.0",
     "@types/node": "^18.19.50",
