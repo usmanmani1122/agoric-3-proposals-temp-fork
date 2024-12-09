@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 # TODO stATOM-USD price feed instance in agoricNames
 # TODO manager in vstorage

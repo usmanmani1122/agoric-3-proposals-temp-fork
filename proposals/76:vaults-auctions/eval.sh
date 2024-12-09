@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 echo "[$PROPOSAL] Recording the auctioneer instance"
 ./saveAuctionInstance.js
