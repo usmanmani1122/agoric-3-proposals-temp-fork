@@ -3,6 +3,7 @@
         "allowSyntheticDefaultImports": true,
         "allowJs": true,
         "checkJs": true,
+        "skipLibCheck": true,
         "strict": true,
         "noImplicitAny": false,
         "maxNodeModuleJsDepth": 2,
