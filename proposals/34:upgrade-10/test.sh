@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -e
 
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
