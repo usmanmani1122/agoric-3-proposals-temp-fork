@@ -10,6 +10,9 @@ import {
   type SoftwareUpgradePackage,
 } from './proposals.js';
 
+// We need this unstable syntax for the `COPY --exclude` feature.
+const syntaxPragma = '# syntax=docker/dockerfile:1.7-labs';
+
 /**
  * Templates for Dockerfile stages
  */
@@ -211,7 +214,7 @@ export function writeDockerfile(
 ) {
   // Each stage tests something about the left argument and prepare an upgrade to the right side (by passing the proposal and halting the chain.)
   // The upgrade doesn't happen until the next stage begins executing.
-  const blocks: string[] = ['# syntax=docker/dockerfile:1.4'];
+  const blocks: string[] = [syntaxPragma];
 
   let previousProposal: ProposalInfo | null = null;
 
