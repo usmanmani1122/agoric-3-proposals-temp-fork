@@ -27,7 +27,7 @@ __metadata:
     "@types/glob": "npm:^8.1.0"
     "@types/node": "npm:^18.19.50"
     ava: "npm:^6.2.0"
-    better-sqlite3: "npm:^9.6.0"
+    better-sqlite3: "npm:^11.8.0"
     chalk: "npm:^5.4.1"
     cosmjs-types: "npm:^0.9.0"
     execa: "npm:^9.5.2"
@@ -891,14 +891,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^9.6.0":
-  version: 9.6.0
-  resolution: "better-sqlite3@npm:9.6.0"
+"better-sqlite3@npm:^11.8.0":
+  version: 11.8.0
+  resolution: "better-sqlite3@npm:11.8.0"
   dependencies:
     bindings: "npm:^1.5.0"
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.1"
-  checksum: 10c0/8db9b38f414e26a56d4c40fc16e94a253118491dae0e2c054338a9e470f1a883c7eb4cb330f2f5737db30f704d4f2e697c59071ca04e03364ee9fe04375aa9c8
+  checksum: 10c0/8dcebf674c47882662c423aa5c1de141082bec48fda8c0b9fe417151de666eb66ca893baaf5dd2336b271beb86d4582c0dcd632f5e4d3c5f4069faa46e2a6b56
   languageName: node
   linkType: hard
 
