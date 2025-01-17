@@ -5,13 +5,15 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@agoric/cosmic-proto@npm:dev":
-  version: 0.4.1-dev-74ab972.0
-  resolution: "@agoric/cosmic-proto@npm:0.4.1-dev-74ab972.0"
+"@agoric/cosmic-proto@npm:0.5.0-u18.5":
+  version: 0.5.0-u18.5
+  resolution: "@agoric/cosmic-proto@npm:0.5.0-u18.5"
   dependencies:
     "@endo/base64": "npm:^1.0.9"
     "@endo/init": "npm:^1.1.7"
-  checksum: 10c0/7b4d4b8cd098a5b82fe353a34172960f4ef038aeced9dc12933e9cdbafd2f297ec65d154d19875181035b4d77017e09b931e60f8aafbd4afc9d7587b2f7db851
+    bech32: "npm:^2.0.0"
+    query-string: "npm:^9.1.1"
+  checksum: 10c0/48491fbf80f0530678dd3387135023f395b0471ec2c788a929d398786eb3a77d0754612b523d791b252de3e30ad8af0bd7d8911ee96045babd2a431e52f0e610
   languageName: node
   linkType: hard
 
@@ -19,7 +21,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@agoric/synthetic-chain@workspace:packages/synthetic-chain"
   dependencies:
-    "@agoric/cosmic-proto": "npm:dev"
+    "@agoric/cosmic-proto": "npm:0.5.0-u18.5"
     "@endo/zip": "npm:^1.0.7"
     "@types/better-sqlite3": "npm:^7.6.11"
     "@types/glob": "npm:^8.1.0"
@@ -882,6 +884,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bech32@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "bech32@npm:2.0.0"
+  checksum: 10c0/45e7cc62758c9b26c05161b4483f40ea534437cf68ef785abadc5b62a2611319b878fef4f86ddc14854f183b645917a19addebc9573ab890e19194bc8f521942
+  languageName: node
+  linkType: hard
+
 "better-sqlite3@npm:^9.6.0":
   version: 9.6.0
   resolution: "better-sqlite3@npm:9.6.0"
@@ -1241,6 +1250,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"decode-uri-component@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "decode-uri-component@npm:0.4.1"
+  checksum: 10c0/a180bbdb5398ec8270d236a3ac07cb988bbf6097428481780b85840f088951dc0318a8d8f9d56796e1a322b55b29859cea29982f22f9b03af0bc60974c54e591
+  languageName: node
+  linkType: hard
+
 "decompress-response@npm:^6.0.0":
   version: 6.0.0
   resolution: "decompress-response@npm:6.0.0"
@@ -1559,6 +1575,13 @@ __metadata:
   dependencies:
     to-regex-range: "npm:^5.0.1"
   checksum: 10c0/7cdad7d426ffbaadf45aeb5d15ec675bbd77f7597ad5399e3d2766987ed20bda24d5fac64b3ee79d93276f5865608bb22344a26b9b1ae6c4d00bd94bf611623f
+  languageName: node
+  linkType: hard
+
+"filter-obj@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "filter-obj@npm:5.1.0"
+  checksum: 10c0/716e8ad2bc352e206556b3e5695b3cdff8aab80c53ea4b00c96315bbf467b987df3640575100aef8b84e812cf5ea4251db4cd672bbe33b1e78afea88400c67dd
   languageName: node
   linkType: hard
 
@@ -2756,6 +2779,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"query-string@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "query-string@npm:9.1.1"
+  dependencies:
+    decode-uri-component: "npm:^0.4.1"
+    filter-obj: "npm:^5.1.0"
+    split-on-first: "npm:^3.0.0"
+  checksum: 10c0/16481f17754f660aec3cae7abb838a70e383dfcf152414d184e0d0f81fae426acf112b4d51bf754f9c256eaf83ba4241241ba907c8d58b6ed9704425e1712e8c
+  languageName: node
+  linkType: hard
+
 "queue-microtask@npm:^1.2.2":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
@@ -3107,6 +3141,13 @@ __metadata:
   dependencies:
     whatwg-url: "npm:^7.0.0"
   checksum: 10c0/fb4d9bde9a9fdb2c29b10e5eae6c71d10e09ef467e1afb75fdec2eb7e11fa5b343a2af553f74f18b695dbc0b81f9da2e9fa3d7a317d5985e9939499ec6087835
+  languageName: node
+  linkType: hard
+
+"split-on-first@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "split-on-first@npm:3.0.0"
+  checksum: 10c0/a1262eae12b68de235e1a08e011bf5b42c42621985ddf807e6221fb1e2b3304824913ae7019f18436b96b8fab8aef5f1ad80dedd2385317fdc51b521c3882cd0
   languageName: node
   linkType: hard
 
