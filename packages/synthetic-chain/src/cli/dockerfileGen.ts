@@ -81,7 +81,7 @@ ENV \
     SKIP_PROPOSAL_VALIDATION=${skipProposalValidation}
 
 ${createCopyCommand(
-  ['node_modules', 'test', 'test.sh'],
+  ['host', 'node_modules', 'test', 'test.sh'],
   `./proposals/${path}`,
   `/usr/src/proposals/${path}`,
 )}
@@ -116,7 +116,7 @@ WORKDIR /usr/src/upgrade-test-scripts
 
 # base is a fresh sdk image so set up the proposal and its dependencies
 ${createCopyCommand(
-  ['node_modules', 'test', 'test.sh'],
+  ['host', 'node_modules', 'test', 'test.sh'],
   `./proposals/${path}`,
   `/usr/src/proposals/${path}`,
 )}
@@ -149,7 +149,7 @@ RUN ./run_execute.sh ${planName}
 FROM use-${lastProposal.proposalName} as eval-${proposalName}
 
 ${createCopyCommand(
-  ['node_modules', 'test', 'test.sh'],
+  ['host', 'node_modules', 'test', 'test.sh'],
   `./proposals/${path}`,
   `/usr/src/proposals/${path}`,
 )}
@@ -215,7 +215,7 @@ FROM use-${proposalName} as test-${proposalName}
 # to copy only missing files, but there may be none. Fortunately, copying extra
 # does not invalidate other images because nothing depends on this layer.
 ${createCopyCommand(
-  ['node_modules'],
+  ['host', 'node_modules'],
   `./proposals/${path}`,
   `/usr/src/proposals/${path}`,
 )}
