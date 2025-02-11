@@ -49,6 +49,10 @@ const makeSwingstore = db => {
       options: () => kvGetJSON(`${vatID}.options`),
       currentSpan: () =>
         sql.get`select * from transcriptSpans where isCurrent = 1 and vatID = ${vatID}`,
+      terminated: () => {
+        const terminatedIDs = kvGetJSON('vat.terminated');
+        return terminatedIDs.some(terminatedID => vatID === terminatedID);
+      },
     });
   };
 
@@ -88,7 +92,9 @@ export const getVatDetails = async vatName => {
   const source = vatInfo.source();
   // @ts-expect-error sqlite typedefs
   const { incarnation } = vatInfo.currentSpan();
-  return { vatName, vatID, incarnation, ...source };
+  const terminated = vatInfo.terminated();
+
+  return { vatName, vatID, incarnation, ...source, terminated };
 };
 
 /**
@@ -118,7 +124,8 @@ export const getDetailsMatchingVats = async vatName => {
     const source = vatInfo.source();
     // @ts-expect-error cast
     const { incarnation } = vatInfo.currentSpan();
-    infos.push({ vatName: name, vatID, incarnation, ...source });
+    const terminated = vatInfo.terminated();
+    infos.push({ vatName: name, vatID, incarnation, ...source, terminated });
   }
 
   return infos;
