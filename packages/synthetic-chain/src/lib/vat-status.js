@@ -77,17 +77,18 @@ const makeSwingstoreTool = db => {
   });
 };
 
-function makeSwingstore() {
+/** @typedef {ReturnType<typeof makeSwingstoreTool>} SwingstoreTool */
+
+const buildSwingstoreTool = () => {
   const fullPath = swingstorePath.replace(/^~/, NonNullish(HOME));
   return makeSwingstoreTool(dbOpenAmbient(fullPath, { readonly: true }));
-}
+};
 
-/** @typedef {ReturnType<typeof makeSwingstore>} Swingstore
 /**
- * @param {Swingstore} kStore
+ * @param {SwingstoreTool} kStore
  * @param {string} vatID
  */
-function getVatDetailsFromID(kStore, vatID) {
+const getVatDetailsFromID = (kStore, vatID) => {
   const vatInfo = kStore.lookupVat(vatID);
   const vatName = vatInfo.options().name;
 
@@ -97,11 +98,11 @@ function getVatDetailsFromID(kStore, vatID) {
   const terminated = vatInfo.terminated();
 
   return { vatName, vatID, incarnation, ...source, terminated };
-}
+};
 
 /** @param {string} vatName */
 export const getVatDetails = async vatName => {
-  const kStore = makeSwingstore();
+  const kStore = buildSwingstoreTool();
   const vatID = kStore.findVat(vatName);
   return getVatDetailsFromID(kStore, vatID);
 };
@@ -118,7 +119,7 @@ export const getIncarnation = async vatName => {
 
 /** @param {string} vatSubstring substring to search for within the vat name. */
 export const getDetailsMatchingVats = async vatSubstring => {
-  const kStore = makeSwingstore();
+  const kStore = buildSwingstoreTool();
   const vatIDs = kStore.findVats(vatSubstring);
   const infos = [];
   for (const vatID of vatIDs) {
