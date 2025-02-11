@@ -30,10 +30,8 @@ export const dbTool = db => {
   return sql;
 };
 
-/**
- * @param {import('better-sqlite3').Database} db
- */
-const makeSwingstore = db => {
+/** @param {import('better-sqlite3').Database} db */
+const makeSwingstoreTool = db => {
   const sql = dbTool(db);
 
   /** @param {string} key */
@@ -49,6 +47,10 @@ const makeSwingstore = db => {
       options: () => kvGetJSON(`${vatID}.options`),
       currentSpan: () =>
         sql.get`select * from transcriptSpans where isCurrent = 1 and vatID = ${vatID}`,
+      terminated: () => {
+        const terminatedIDs = kvGetJSON('vat.terminated');
+        return terminatedIDs.some(terminatedID => vatID === terminatedID);
+      },
     });
   };
 
@@ -75,25 +77,37 @@ const makeSwingstore = db => {
   });
 };
 
-/**
- * @param {string} vatName
- */
-export const getVatDetails = async vatName => {
-  const fullPath = swingstorePath.replace(/^~/, NonNullish(HOME));
-  const kStore = makeSwingstore(dbOpenAmbient(fullPath, { readonly: true }));
+/** @typedef {ReturnType<typeof makeSwingstoreTool>} SwingstoreTool */
 
-  const vatID = kStore.findVat(vatName);
+const buildSwingstoreTool = () => {
+  const fullPath = swingstorePath.replace(/^~/, NonNullish(HOME));
+  return makeSwingstoreTool(dbOpenAmbient(fullPath, { readonly: true }));
+};
+
+/**
+ * @param {SwingstoreTool} kStore
+ * @param {string} vatID
+ */
+const getVatDetailsFromID = (kStore, vatID) => {
   const vatInfo = kStore.lookupVat(vatID);
+  const vatName = vatInfo.options().name;
 
   const source = vatInfo.source();
   // @ts-expect-error sqlite typedefs
   const { incarnation } = vatInfo.currentSpan();
-  return { vatName, vatID, incarnation, ...source };
+  const terminated = vatInfo.terminated();
+
+  return { vatName, vatID, incarnation, ...source, terminated };
 };
 
-/**
- * @param {string} vatName
- */
+/** @param {string} vatName */
+export const getVatDetails = async vatName => {
+  const kStore = buildSwingstoreTool();
+  const vatID = kStore.findVat(vatName);
+  return getVatDetailsFromID(kStore, vatID);
+};
+
+/** @param {string} vatName */
 export const getIncarnation = async vatName => {
   const details = await getVatDetails(vatName);
 
@@ -103,22 +117,13 @@ export const getIncarnation = async vatName => {
   return details.incarnation;
 };
 
-/** @param {string} vatName */
-export const getDetailsMatchingVats = async vatName => {
-  const fullPath = swingstorePath.replace(/^~/, NonNullish(HOME));
-
-  const db = dbOpenAmbient(fullPath, { readonly: true });
-  const kStore = makeSwingstore(db);
-
-  const vatIDs = kStore.findVats(vatName);
+/** @param {string} vatSubstring substring to search for within the vat name. */
+export const getDetailsMatchingVats = async vatSubstring => {
+  const kStore = buildSwingstoreTool();
+  const vatIDs = kStore.findVats(vatSubstring);
   const infos = [];
   for (const vatID of vatIDs) {
-    const vatInfo = kStore.lookupVat(vatID);
-    const name = vatInfo.options().name;
-    const source = vatInfo.source();
-    // @ts-expect-error cast
-    const { incarnation } = vatInfo.currentSpan();
-    infos.push({ vatName: name, vatID, incarnation, ...source });
+    infos.push(getVatDetailsFromID(kStore, vatID));
   }
 
   return infos;
