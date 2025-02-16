@@ -1,0 +1,20 @@
+{
+  "agoricProposal": {
+    "releaseNotes": "https://github.com/Agoric/agoric-sdk/releases/tag/agoric-upgrade-18a",
+    "sdkImageTag": "57",
+    "planName": "agoric-upgrade-18a",
+    "upgradeInfo": {
+      "binaries": {
+        "any": "https://github.com/Agoric/agoric-sdk/archive/4e4d2b4dedc5a268178712fc6beb89496518480a.zip//agoric-sdk-4e4d2b4dedc5a268178712fc6beb89496518480a?checksum=sha256:e984d7ce7491187fa741d2eb2fd606974576d2ac0c668841f79c53216f48aa3b"
+      },
+      "source": "https://github.com/Agoric/agoric-sdk/archive/4e4d2b4dedc5a268178712fc6beb89496518480a.zip?checksum=sha256:e984d7ce7491187fa741d2eb2fd606974576d2ac0c668841f79c53216f48aa3b"
+    },
+    "type": "Software Upgrade Proposal"
+  },
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "agops": "yarn --cwd /usr/src/agoric-sdk/ --silent agops"
+  },
+  "packageManager": "yarn@4.5.3"
+}
