@@ -1,4 +1,4 @@
-# CoreEvalProposal to upgrade vaults and auctions
+# CoreEvalProposal to deploy a beta of Fast USDC
 
 The `submission` permit and script are extracted from proposal 87 submitted to mainNet. (see `Makefile`)
 

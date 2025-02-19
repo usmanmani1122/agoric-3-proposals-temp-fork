@@ -9,7 +9,7 @@ PROPOSAL=76
 proposer.json:
 	agd --node $(ARCHIVE_NODE) query gov proposer $(PROPOSAL) -o json >$@
 
-# Get proposer's tranasction history.
+# Get proposer's transaction history.
 proposer-tx-hist.json: proposer.json
 	PROPOSER="$$(jq -r .proposer $<)"; \
 	agd --node $(ARCHIVE_NODE) query txs --events="message.sender=$$PROPOSER" -o json >$@
