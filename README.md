@@ -150,7 +150,7 @@ But this one is a problem:
 ERR CONSENSUS FAILURE!!! err="runtime error: invalid memory address or nil pointer dereference" module=consensus
 ```
 
-The most likely cause is a problem voting in the the proposal to upgrade.
+The most likely cause is a problem voting in the proposal to upgrade.
 
 ## Contributing
 
