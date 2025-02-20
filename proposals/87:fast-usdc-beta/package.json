@@ -6,7 +6,11 @@
   "type": "module",
   "license": "Apache-2.0",
   "dependencies": {
-    "@agoric/synthetic-chain": "~0.5.2",
+    "@agoric/client-utils": "dev",
+    "@agoric/fast-usdc": "dev",
+    "@agoric/synthetic-chain": "~0.5.3",
+    "@endo/init": "^1.1.8",
+    "agoric": "dev",
     "ava": "^5.3.1"
   },
   "ava": {
@@ -19,5 +23,5 @@
   "scripts": {
     "agops": "yarn --cwd /usr/src/agoric-sdk/ --silent agops"
   },
-  "packageManager": "yarn@4.2.2"
+  "packageManager": "yarn@4.6.0"
 }

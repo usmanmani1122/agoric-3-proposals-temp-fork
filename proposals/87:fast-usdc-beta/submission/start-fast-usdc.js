@@ -8862,9 +8862,9 @@ const getManifestCall = harden([
         },
         noNoble: false,
         oracles: {
-          "01node": "agoric1ym488t6j24x3ys3va3452ftx44lhs64rz8pu7h",
-          DSRV: "agoric17crpkfxarq658e9ddru2petrfr0fhjzvjfccq9",
-          SimplyStaking: "agoric1s5yawjgj6xcw4ea5r2x4cjrnkprmd0fcun2tyk",
+          GOV1: 'agoric1ee9hr0jyrxhy999y755mp862ljgycmwyp4pl7q',
+          GOV2: 'agoric1wrfh296eu2z34p6pah7q04jjuyj3mxu9v98277',
+          GOV3: 'agoric1ydzxwh6f893jvpaslmaz6l8j2ulup9a7x8qvvq',          
         },
         terms: {
           usdcDenom: "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",

@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process';
+import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
 import { existsSync, realpathSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { fileSync as createTempFile } from 'tmp';
@@ -60,6 +60,8 @@ export const runTestImage = ({
 
   const containerFilePath = '/root/message-file-path';
 
+  let runResult: SpawnSyncReturns<Buffer>;
+
   try {
     executeHostScriptIfPresent(
       {
@@ -71,7 +73,7 @@ export const runTestImage = ({
 
     console.log(`Running test image for proposal ${proposal.proposalName}`);
     const { name } = imageNameForProposal(proposal, 'test');
-    spawnSync(
+    runResult = spawnSync(
       'docker',
       [
         'run',
@@ -96,6 +98,11 @@ export const runTestImage = ({
     );
   } finally {
     removeTempFileCallback();
+  }
+
+  if (runResult.status !== 0) {
+    console.error(`Run of ${name} failed with exit code ${runResult.status}`);
+    throw new Error(`Run of ${name} failed`);
   }
 };
 
