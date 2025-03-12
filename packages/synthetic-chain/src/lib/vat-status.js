@@ -92,14 +92,16 @@ const buildSwingstoreTool = () => {
 /**
  * @param {SwingstoreTool} kStore
  * @param {string} vatID
+ * @returns {{vatName: string, vatID: string, incarnation: number, terminated: boolean}}
  */
 const getVatDetailsFromID = (kStore, vatID) => {
   const vatInfo = kStore.lookupVat(vatID);
   const vatName = vatInfo.options().name;
 
   const source = vatInfo.source();
-  // @ts-expect-error sqlite typedefs
-  const { incarnation } = vatInfo.currentSpan();
+  const { incarnation } = /** @type {{incarnation: number}} */ (
+    vatInfo.currentSpan()
+  );
   const terminated = vatInfo.terminated();
 
   return { vatName, vatID, incarnation, ...source, terminated };
@@ -112,7 +114,10 @@ export const getVatDetails = async vatName => {
   return getVatDetailsFromID(kStore, vatID);
 };
 
-/** @param {string} vatName */
+/**
+ * @param {string} vatName
+ * @returns {Promise<number>}
+ */
 export const getIncarnation = async vatName => {
   const details = await getVatDetails(vatName);
 
