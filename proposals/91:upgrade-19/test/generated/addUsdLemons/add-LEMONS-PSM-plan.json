@@ -1,0 +1,22 @@
+{
+  "name": "add-LEMONS-PSM",
+  "script": "add-LEMONS-PSM.js",
+  "permit": "add-LEMONS-PSM-permit.json",
+  "bundles": [
+    {
+      "entrypoint": "@agoric/inter-protocol/src/psm/psm.js",
+      "bundleID": "b1-b584bbc81dc2a3f8758ca9fdc61c4c72419ebb5ff5f3e9371d0d26c71d1cc41cc035b860c887f7cbbfc77aff4d7cd2b52060dd06f1c8d738d2ead53e4eff0edd",
+      "fileName": "/Users/ahmadbhatti/.agoric/cache/b1-b584bbc81dc2a3f8758ca9fdc61c4c72419ebb5ff5f3e9371d0d26c71d1cc41cc035b860c887f7cbbfc77aff4d7cd2b52060dd06f1c8d738d2ead53e4eff0edd.json"
+    },
+    {
+      "entrypoint": "@agoric/vats/src/mintHolder.js",
+      "bundleID": "b1-dd9936f5d30f621bff3aaf20a2d454f509ddbe0e011de385d075956589e9186336a96f4f11ee2d5cb1b12b8acfd7d4aba6beea22ef639b0c4ad6723d37467df4",
+      "fileName": "/Users/ahmadbhatti/.agoric/cache/b1-dd9936f5d30f621bff3aaf20a2d454f509ddbe0e011de385d075956589e9186336a96f4f11ee2d5cb1b12b8acfd7d4aba6beea22ef639b0c4ad6723d37467df4.json"
+    },
+    {
+      "entrypoint": "@agoric/inter-protocol/src/proposals/startPSM.js",
+      "bundleID": "b1-e04a36a106cb0df35c7fa7e178c2d59f58a0b29ba112fe4dbf4b31e2c55f13ccd77650fc2510bf1ddf27a64482f18a2d1a5f0fe16ab0ecc394d36f71d95e1552",
+      "fileName": "/Users/ahmadbhatti/.agoric/cache/b1-e04a36a106cb0df35c7fa7e178c2d59f58a0b29ba112fe4dbf4b31e2c55f13ccd77650fc2510bf1ddf27a64482f18a2d1a5f0fe16ab0ecc394d36f71d95e1552.json"
+    }
+  ]
+}
