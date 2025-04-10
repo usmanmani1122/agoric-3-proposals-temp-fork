@@ -1,0 +1,12 @@
+{
+  "name": "publish-test-info",
+  "script": "publish-test-info.js",
+  "permit": "publish-test-info-permit.json",
+  "bundles": [
+    {
+      "entrypoint": "@agoric/builders/scripts/testing/publish-test-info.js",
+      "bundleID": "b1-d54ae1df0053279e3014e861b5a2bebe0e88622c4fa32e95910417366ea585139d51d9234167dd02974abb259cf007dd77612c49919795b4e534fe2b78ff766f",
+      "fileName": "/Users/ahmadbhatti/.agoric/cache/b1-d54ae1df0053279e3014e861b5a2bebe0e88622c4fa32e95910417366ea585139d51d9234167dd02974abb259cf007dd77612c49919795b4e534fe2b78ff766f.json"
+    }
+  ]
+}
