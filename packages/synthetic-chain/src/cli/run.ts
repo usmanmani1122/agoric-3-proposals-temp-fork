@@ -59,6 +59,7 @@ export const runTestImage = ({
     createMessageFile(proposal);
 
   const containerFilePath = '/root/message-file-path';
+  const { name: imageName } = imageNameForProposal(proposal, 'test');
 
   let runResult: SpawnSyncReturns<Buffer>;
 
@@ -72,7 +73,6 @@ export const runTestImage = ({
     );
 
     console.log(`Running test image for proposal ${proposal.proposalName}`);
-    const { name } = imageNameForProposal(proposal, 'test');
     runResult = spawnSync(
       'docker',
       [
@@ -84,7 +84,7 @@ export const runTestImage = ({
         ...(removeContainerOnExit ? ['--rm'] : []),
         ...propagateSlogfile(process.env),
         ...extraDockerArgs,
-        name,
+        imageName,
       ],
       { stdio: 'inherit' },
     );
@@ -101,8 +101,10 @@ export const runTestImage = ({
   }
 
   if (runResult.status !== 0) {
-    console.error(`Run of ${name} failed with exit code ${runResult.status}`);
-    throw new Error(`Run of ${name} failed`);
+    console.error(
+      `Run of ${imageName} failed with exit code ${runResult.status}`,
+    );
+    throw new Error(`Run of ${imageName} failed`);
   }
 };
 
