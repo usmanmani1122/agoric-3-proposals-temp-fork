@@ -23,9 +23,9 @@ __metadata:
   dependencies:
     "@agoric/cosmic-proto": "npm:0.5.0-u18.5"
     "@endo/zip": "npm:^1.0.9"
-    "@types/better-sqlite3": "npm:^7.6.12"
+    "@types/better-sqlite3": "npm:^7.6.13"
     "@types/glob": "npm:^8.1.0"
-    "@types/node": "npm:^18.19.50"
+    "@types/node": "npm:^18.19.86"
     "@types/tmp": "npm:0.2.6"
     ava: "npm:^6.2.0"
     better-sqlite3: "npm:^11.8.1"
@@ -34,9 +34,9 @@ __metadata:
     execa: "npm:^9.5.2"
     glob: "npm:^11.0.1"
     tmp: "npm:0.2.3"
-    ts-blank-space: "npm:^0.5.1"
+    ts-blank-space: "npm:^0.6.1"
     tsup: "npm:^8.4.0"
-    typescript: "npm:^5.7.3"
+    typescript: "npm:^5.8.3"
   bin:
     synthetic-chain: dist/cli/cli.js
   languageName: unknown
@@ -585,12 +585,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/better-sqlite3@npm:^7.6.12":
-  version: 7.6.12
-  resolution: "@types/better-sqlite3@npm:7.6.12"
+"@types/better-sqlite3@npm:^7.6.13":
+  version: 7.6.13
+  resolution: "@types/better-sqlite3@npm:7.6.13"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10c0/5367de7492e2c697aa20cc4024ba26210971d15f60c01ef691eddfbbfd39ccf9f80d5129fd7fd6c76c98804739325e23d2b156b0eac8f5a7665ba374a08ac1e7
+  checksum: 10c0/c4336e7b92343eb0e988ded007c53fa9887b98a38d61175226e86124a1a2c28b1a4e3892873c5041e350b7bfa2901f85c82db1542c4f0eed1d3a899682c92106
   languageName: node
   linkType: hard
 
@@ -627,12 +627,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.19.50":
-  version: 18.19.50
-  resolution: "@types/node@npm:18.19.50"
+"@types/node@npm:^18.19.86":
+  version: 18.19.86
+  resolution: "@types/node@npm:18.19.86"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/36e6bc9eb47213ce94a868dad9504465ad89fba6af9f7954e22bb27fb17a32ac495f263d0cf4fdaee74becd7b2629609a446ec8c2b59b7a07bd587567c8a4782
+  checksum: 10c0/1017c4ba61661ab30e4b4a78040cb66980919549f56d85755326dcccbe7a0405be7d6be1b2a91bace8eaef0d2a24b63d4f104b381be7f957c2483e465d829690
   languageName: node
   linkType: hard
 
@@ -2708,12 +2708,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.4.2":
-  version: 3.4.2
-  resolution: "prettier@npm:3.4.2"
+"prettier@npm:^3.5.3":
+  version: 3.5.3
+  resolution: "prettier@npm:3.5.3"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/99e076a26ed0aba4ebc043880d0f08bbb8c59a4c6641cdee6cdadf2205bdd87aa1d7823f50c3aea41e015e99878d37c58d7b5f0e663bba0ef047f94e36b96446
+  checksum: 10c0/3880cb90b9dc0635819ab52ff571518c35bd7f15a6e80a2054c05dbc8a3aa6e74f135519e91197de63705bcb38388ded7e7230e2178432a1468005406238b877
   languageName: node
   linkType: hard
 
@@ -2944,7 +2944,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@agoric/synthetic-chain": "workspace:*"
-    prettier: "npm:^3.4.2"
+    prettier: "npm:^3.5.3"
   languageName: unknown
   linkType: soft
 
@@ -3383,12 +3383,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-blank-space@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "ts-blank-space@npm:0.5.1"
+"ts-blank-space@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "ts-blank-space@npm:0.6.1"
   dependencies:
-    typescript: "npm:5.1.6 - 5.7.x"
-  checksum: 10c0/fc7945dc3a241c607846c610b87843a295bef95f2877547da73b563eeafa2e65b8d2ec3416332aee630f438560425e9f823ca8c9e39eca8f06056653e8152e2c
+    typescript: "npm:5.1.6 - 5.8.x"
+  checksum: 10c0/cf674e96d204c3f6d99e29966580b7c3526680ff012dfa3e45aef10a1052011b5ced55bae81d57f46b153053ed9413082a2d15db7812c2c0eb138d178b0f376c
   languageName: node
   linkType: hard
 
@@ -3456,23 +3456,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.1.6 - 5.7.x, typescript@npm:^5.7.3":
-  version: 5.7.3
-  resolution: "typescript@npm:5.7.3"
+"typescript@npm:5.1.6 - 5.8.x, typescript@npm:^5.8.3":
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/b7580d716cf1824736cc6e628ab4cd8b51877408ba2be0869d2866da35ef8366dd6ae9eb9d0851470a39be17cbd61df1126f9e211d8799d764ea7431d5435afa
+  checksum: 10c0/5f8bb01196e542e64d44db3d16ee0e4063ce4f3e3966df6005f2588e86d91c03e1fb131c2581baf0fb65ee79669eea6e161cd448178986587e9f6844446dbb48
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.1.6 - 5.7.x#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>":
-  version: 5.7.3
-  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"
+"typescript@patch:typescript@npm%3A5.1.6 - 5.8.x#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/6fd7e0ed3bf23a81246878c613423730c40e8bdbfec4c6e4d7bf1b847cbb39076e56ad5f50aa9d7ebd89877999abaee216002d3f2818885e41c907caaa192cc4
+  checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
   languageName: node
   linkType: hard
 
