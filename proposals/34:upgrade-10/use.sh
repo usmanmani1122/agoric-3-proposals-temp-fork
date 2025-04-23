@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit when any command fails
-set -e
+set -o errexit
 
 source /usr/src/upgrade-test-scripts/env_setup.sh
 
