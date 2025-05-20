@@ -33,7 +33,6 @@ jobs:
                 | wc -l)
 
           echo "DIFFERENCE=$NEW" >> $GITHUB_OUTPUT
-        working-directory: proposals
 
 name: Create Mainfork Snapshot
 
