@@ -12,14 +12,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - id: get-proposal-count-difference
+      - env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        id: get-proposal-count-difference
         name: Get Proposals Count Difference
         run: |
           #! /bin/bash
           set -o errexit -o errtrace -o xtrace
 
-          ${{ github.event }}
-          echo "${{ github.event.pull_request.commits_url }}"
+          echo "$GITHUB_CONTEXT"
           CURRENT_BRANCH="$(git branch --show-current)"
           MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
           PRE_MERGE_COMMIT="$(git rev-parse "$MERGE_COMMIT^1")"
