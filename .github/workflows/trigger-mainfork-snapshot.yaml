@@ -1,3 +1,7 @@
+env:
+  BUCKET_NAME: 'agoric-snapshots-public'
+  PROJECT_ID: 60745596728
+
 jobs:
   create-snapshot:
     if: ${{ github.event.pull_request.merged }} == 'true'
@@ -5,7 +9,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -19,10 +22,12 @@ jobs:
           #! /bin/bash
           set -o errexit -o errtrace -o xtrace
 
-          PRE_MERGE_COMMIT="${{ github.event.pull_request.base.sha }}"
+          CURRENT_BRANCH="$(git branch --show-current)"
+          MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
+          PRE_MERGE_COMMIT="$(git rev-parse "$MERGE_COMMIT^1")"
 
           get_number_of_proposals() {
-            find 'proposals' -maxdepth 1 -mindepth 1 -type d | \
+            find '.' -maxdepth 1 -mindepth 1 -type d | \
             while read directory
             do
                 if find "$directory" -type f | grep --silent .
@@ -34,21 +39,12 @@ jobs:
           }
 
           current_count="$(get_number_of_proposals)"
-          git checkout "$PRE_MERGE_COMMIT"
+          git checkout "$PRE_MERGE_COMMIT" --detach
           previous_count="$(get_number_of_proposals)"
+          git checkout "$CURRENT_BRANCH"
+
           echo "DIFFERENCE=$((current_count - previous_count))" >> $GITHUB_OUTPUT
-
-      - name: Script
-        run: |
-          #! /bin/bash
-          set -o errexit -o errtrace -o xtrace
-
-          echo "difference value: ${{ steps.get-proposal-count-difference.outputs.DIFFERENCE }}"
-
-          if test "${{ steps.get-proposal-count-difference.outputs.DIFFERENCE }}" -gt "0"
-          then
-            echo "actual difference of: ${{ steps.get-proposal-count-difference.outputs.DIFFERENCE }}"
-          fi
+        working-directory: proposals
 
 name: Create Mainfork Snapshot
 
