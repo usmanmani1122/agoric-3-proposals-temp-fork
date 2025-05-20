@@ -11,28 +11,43 @@ jobs:
         with:
           fetch-depth: 0
 
-      - env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        id: get-proposal-count-difference
+      - id: get-proposal-count-difference
         name: Get Proposals Count Difference
         run: |
           #! /bin/bash
           set -o errexit -o errtrace -o xtrace
 
-          echo "$GITHUB_CONTEXT"
-          PRE=${{ github.event.before }}
-          POST=${{ github.event.after }}
-          PRE_LIST=$(git -C proposals ls-tree -d --name-only "$PRE")
-          POST_LIST=$(git -C proposals ls-tree -d --name-only "$POST")
+          PRE_MERGE_COMMIT=${{ github.event.before }}
+          POST_MERGE_COMMIT=${{ github.event.after }}
 
-          # compute “dir in POST but not in PRE”
-          # comm -13 requires sorted inputs
-          NEW=$(comm -13 \
-                  <(printf "%s\n" $PRE_LIST    | sort) \
-                  <(printf "%s\n" $POST_LIST   | sort) \
-                | wc -l)
+          get_number_of_proposals() {
+            find '.' -maxdepth 1 -mindepth 1 -type d | \
+            while read directory
+            do
+                if find "$directory" -type f | grep --silent .
+                then
+                    echo "$directory"
+                fi
+            done |
+            wc --lines
+          }
 
-          echo "DIFFERENCE=$NEW" >> $GITHUB_OUTPUT
+          git checkout "$PRE_MERGE_COMMIT"
+          previous_count="$(get_number_of_proposals)"
+
+          git checkout "$POST_MERGE_COMMIT"
+          current_count="$(get_number_of_proposals)"
+
+          echo "DIFFERENCE=$((current_count - previous_count))" >> $GITHUB_OUTPUT
+        working-directory: proposals
+
+      - name: Trigger snapshot creation
+        run: |
+          #! /bin/bash
+          set -o errexit -o errtrace
+
+          echo "${{ steps.get-proposal-count-difference.outputs.DIFFERENCE }}"
+          git rev-parse --verify HEAD
 
 name: Create Mainfork Snapshot
 
