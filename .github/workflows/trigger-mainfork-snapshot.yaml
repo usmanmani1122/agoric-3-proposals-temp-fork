@@ -1,6 +1,5 @@
 jobs:
   create-snapshot:
-    if: ${{ github.event.pull_request.merged }} == 'true'
     name: Create Mainfork Snapshot
     permissions:
       contents: read
@@ -21,35 +20,24 @@ jobs:
           set -o errexit -o errtrace -o xtrace
 
           echo "$GITHUB_CONTEXT"
-          CURRENT_BRANCH="$(git branch --show-current)"
-          MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
-          PRE_MERGE_COMMIT="$(git rev-parse "$MERGE_COMMIT^1")"
+          PRE=${{ github.event.before }}
+          POST=${{ github.event.after }}
+          PRE_LIST=$(git -C proposals ls-tree -d --name-only "$PRE")
+          POST_LIST=$(git -C proposals ls-tree -d --name-only "$POST")
 
-          get_number_of_proposals() {
-            find '.' -maxdepth 1 -mindepth 1 -type d | \
-            while read directory
-            do
-                if find "$directory" -type f | grep --silent .
-                then
-                    echo "$directory"
-                fi
-            done |
-            wc --lines
-          }
+          # compute “dir in POST but not in PRE”
+          # comm -13 requires sorted inputs
+          NEW=$(comm -13 \
+                  <(printf "%s\n" $PRE_LIST    | sort) \
+                  <(printf "%s\n" $POST_LIST   | sort) \
+                | wc -l)
 
-          current_count="$(get_number_of_proposals)"
-          git checkout "$PRE_MERGE_COMMIT" --detach
-          previous_count="$(get_number_of_proposals)"
-          git checkout "$CURRENT_BRANCH"
-
-          echo "DIFFERENCE=$((current_count - previous_count))" >> $GITHUB_OUTPUT
+          echo "DIFFERENCE=$NEW" >> $GITHUB_OUTPUT
         working-directory: proposals
 
 name: Create Mainfork Snapshot
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types:
-      - closed
