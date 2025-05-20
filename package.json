@@ -8,9 +8,7 @@
     "build": "yarn build-cli && synthetic-chain build",
     "doctor": "yarn synthetic-chain doctor",
     "test": "yarn build-cli && synthetic-chain test",
-    "lint": "prettier .",
-    "lint-check": "yarn lint --check",
-    "lint-fix": "yarn lint --write"
+    "lint": "prettier --check ."
   },
   "dependencies": {
     "@agoric/synthetic-chain": "workspace:*"
