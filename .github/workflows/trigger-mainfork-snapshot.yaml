@@ -18,7 +18,7 @@ jobs:
           #! /bin/bash
           set -o errexit -o errtrace -o xtrace
 
-          echo "${{ github.event }}"
+          ${{ github.event }}
           echo "${{ github.event.pull_request.commits_url }}"
           CURRENT_BRANCH="$(git branch --show-current)"
           MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
